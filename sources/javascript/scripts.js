@@ -5,7 +5,11 @@ document.getElementById('year').textContent = new Date().getFullYear();
 const searchInput = document.getElementById('searchInput');
 const categorySelect = document.getElementById('categorySelect');
 const sizeSelect = document.getElementById('sizeSelect');
-const products = Array.from(document.querySelectorAll('.product'));
+
+let products = [];
+function setProductsFromDOM(){
+  products = Array.from(document.querySelectorAll('.product'));
+}
 
 const MAX_VISIBLE = 4; // cambia este número si quieres mostrar menos/más al inicio
 let isExpanded = false;
@@ -162,6 +166,90 @@ function prepMail(e) {
 }
 window.prepMail = prepMail;
 
+//////////////////////////////////////////////////////
+const grid = document.getElementById('grid');
+
+function formatMXN(num){
+  return Number(num).toLocaleString('es-MX', {maximumFractionDigits:0});
+}
+
+function productCardHTML(p){
+  // Mantiene tu misma estructura y data-attributes para filtros/“cotización”
+  return `
+    <div class="col product" data-tags="${p.tags || ''}" data-category="${p.category || ''}" data-size="${p.size || ''}">
+      <div class="card h-100">
+        <div class="neon-thumb ratio ratio-1x1">
+          <img src="${p.image_url}" alt="${p.title}" loading="lazy" decoding="async">
+        </div>
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">${p.title}</h5>
+          <p class="card-text text-secondary">${p.description || ''}</p>
+          <div class="mt-auto d-flex justify-content-between align-items-center">
+            <span class="price">$${formatMXN(p.price)}</span>
+            <span class="badge text-bg-secondary">${p.size || ''}</span>
+          </div>
+          <div class="d-grid gap-2 mt-3">
+            <button class="btn btn-primary add-to-quote" data-title="${p.title}" data-price="${p.price}">Agregar a cotización</button>
+            <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
+                    data-title="${p.title}"
+                    data-description="${p.description || ''}"
+                    data-price="${p.price}"
+                    data-sizes="${p.sizes_label || ''}"
+                    data-eta="${p.eta || ''}">
+              Detalles
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function loadProducts(){
+  // Carga SQLite WASM desde CDN
+  const SQL = await initSqlJs({
+    locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
+  });
+
+  // Carga tu archivo .db (ajusta la ruta si es distinta)
+  const buf = await fetch('C:/Users/noese/Documents/GitHub/Neonautasoficial/sources/data/data.db').then(r => r.arrayBuffer());
+  const db = new SQL.Database(new Uint8Array(buf));
+
+  // Lee productos
+  const stmt = db.prepare(`
+    SELECT id, title, description, price, size, category, tags, image_url, sizes_label, eta
+    FROM productos
+    ORDER BY id ASC
+  `);
+
+  const items = [];
+  while (stmt.step()) items.push(stmt.getAsObject());
+  stmt.free();
+  db.close();
+
+  // Renderiza tarjetas (reusa tu productCardHTML)
+  grid.innerHTML = items.map(productCardHTML).join('');
+
+  // Reconecta listeners y filtros existentes
+  setProductsFromDOM();
+  document.querySelectorAll('.add-to-quote').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const title = btn.dataset.title;
+      const price = parseFloat(btn.dataset.price || '0');
+      addToQuote(title, price);
+    });
+  });
+
+  // Resetea “Mostrar más/menos” y aplica filtros
+  isExpanded = false;
+  filterProducts();
+}
+
+
+
+
+
+
 // Inicial
-filterProducts();
+loadProducts();
 renderQuote();
+
