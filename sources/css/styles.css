@@ -1,0 +1,102 @@
+    :root {
+        --neon-cyan: #00f7ff;
+        --neon-pink: #ff3bd4;
+        --neon-purple: #a970ff;
+        --bg-velvet: #0a0a12;
+    }
+
+    body {
+        background: radial-gradient(1200px 600px at 10% 0%, rgba(255, 59, 212, .10), transparent 40%),
+            radial-gradient(1000px 500px at 90% 20%, rgba(0, 247, 255, .10), transparent 40%),
+            var(--bg-velvet);
+    }
+
+    .navbar-brand {
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+
+    .brand-glow {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 8px rgba(0, 247, 255, .6), 0 0 24px rgba(0, 247, 255, .35)
+    }
+
+    .hero-title {
+        font-weight: 800;
+        line-height: 1.05;
+    }
+
+    .hero-title .accent {
+        color: var(--neon-pink);
+        text-shadow: 0 0 12px rgba(255, 59, 212, .55), 0 0 30px rgba(255, 59, 212, .3)
+    }
+
+    .glass {
+        backdrop-filter: blur(8px);
+        background: rgba(255, 255, 255, .06);
+        border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .card {
+        border: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .card:hover {
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 40px rgba(0, 0, 0, .35), 0 0 24px rgba(169, 112, 255, .25)
+    }
+
+    .neon-thumb {
+        position: relative;
+        overflow: hidden;
+        border-radius: .8rem
+    }
+
+    .neon-thumb::before {
+        content: "";
+        position: absolute;
+        inset: -2px;
+        background: conic-gradient(from 180deg at 50% 50%, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
+        filter: blur(18px);
+        opacity: .35
+    }
+
+    .neon-thumb>div {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: clamp(1.1rem, 2.6vw, 1.6rem);
+        letter-spacing: .04em;
+        color: white;
+        text-shadow: 0 0 10px rgba(255, 255, 255, .6), 0 0 30px rgba(255, 255, 255, .35)
+    }
+
+    .neon-chip {
+        border: 1px solid rgba(255, 255, 255, .15);
+        background: rgba(255, 255, 255, .05)
+    }
+
+    .filter-bar .form-control,
+    .filter-bar .form-select {
+        background: rgba(255, 255, 255, .07);
+        border: 1px solid rgba(255, 255, 255, .12)
+    }
+
+    .price {
+        font-weight: 800
+    }
+
+    .cta-shadow {
+        box-shadow: 0 0 16px rgba(0, 247, 255, .35), inset 0 0 8px rgba(0, 247, 255, .25)
+    }
+
+    .badge-neon {
+        background: linear-gradient(90deg, rgba(0, 247, 255, .25), rgba(255, 59, 212, .25));
+        border: 1px solid rgba(255, 255, 255, .2)
+    }
+
+    footer a {
+        color: #b9f;
+    }
