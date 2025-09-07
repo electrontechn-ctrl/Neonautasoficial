@@ -11,6 +11,15 @@
             var(--bg-velvet);
     }
 
+    .brand-logo {
+        height: 48px;
+        width: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        display: inline-block;
+        
+    }
+
     .navbar-brand {
         font-weight: 700;
         letter-spacing: .5px;
