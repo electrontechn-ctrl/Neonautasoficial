@@ -24,6 +24,31 @@
         letter-spacing: .5px;
     }
 
+    .navbar-brand {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: #00e5ff !important;
+        text-shadow: 0 0 5px #00e5ff, 0 0 12px rgba(0, 229, 255, 0.7);
+    }
+
+    /* Links con un solo color neón */
+    .nav-link {
+        color: #bbb !important;
+        margin: 0 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        /* espacio entre ícono y texto */
+        transition: all 0.3s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+        color: #00e5ff !important;
+        text-shadow: 0 0 6px #00e5ff, 0 0 15px rgba(0, 229, 255, 0.7);
+    }
+
     .brand-glow {
         color: var(--neon-cyan);
         text-shadow: 0 0 8px rgba(0, 247, 255, .6), 0 0 24px rgba(0, 247, 255, .35)
@@ -107,4 +132,18 @@
 
     footer a {
         color: #b9f;
+    }
+
+
+    .neon-thumb::before {
+      z-index: 0;
+    }
+
+    .neon-thumb img {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
