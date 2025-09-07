@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,133 +7,45 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
   <style>
-    :root {
-      --neon-cyan: #00f7ff;
-      --neon-pink: #ff3bd4;
-      --neon-purple: #a970ff;
-      --bg-velvet: #0a0a12;
+    :root{
+      --neon-cyan:#00f7ff;
+      --neon-pink:#ff3bd4;
+      --neon-purple:#a970ff;
+      --bg-velvet:#0a0a12;
     }
-
-    body {
-      background: radial-gradient(1200px 600px at 10% 0%, rgba(255, 59, 212, .10), transparent 40%),
-        radial-gradient(1000px 500px at 90% 20%, rgba(0, 247, 255, .10), transparent 40%),
-        var(--bg-velvet);
+    body{background: radial-gradient(1200px 600px at 10% 0%, rgba(255,59,212,.10), transparent 40%),
+                     radial-gradient(1000px 500px at 90% 20%, rgba(0,247,255,.10), transparent 40%),
+                     var(--bg-velvet);}
+    .navbar-brand{
+      font-weight:700;
+      letter-spacing:.5px;
     }
-
-    .navbar-brand {
-      font-weight: 700;
-      letter-spacing: .5px;
-    }
-
-    .brand-glow {
-      color: var(--neon-cyan);
-      text-shadow: 0 0 8px rgba(0, 247, 255, .6), 0 0 24px rgba(0, 247, 255, .35)
-    }
-
-    .hero-title {
-      font-weight: 800;
-      line-height: 1.05;
-    }
-
-    .hero-title .accent {
-      color: var(--neon-pink);
-      text-shadow: 0 0 12px rgba(255, 59, 212, .55), 0 0 30px rgba(255, 59, 212, .3)
-    }
-
-    .glass {
-      backdrop-filter: blur(8px);
-      background: rgba(255, 255, 255, .06);
-      border: 1px solid rgba(255, 255, 255, .08)
-    }
-
-    .card {
-      border: 1px solid rgba(255, 255, 255, .08)
-    }
-
-    .card:hover {
-      box-shadow: 0 0 0 1px rgba(255, 255, 255, .08), 0 10px 40px rgba(0, 0, 0, .35), 0 0 24px rgba(169, 112, 255, .25)
-    }
-
-    .neon-thumb {
-      position: relative;
-      overflow: hidden;
-      border-radius: .8rem
-    }
-
-    .neon-thumb::before {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      background: conic-gradient(from 180deg at 50% 50%, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
-      filter: blur(18px);
-      opacity: .35
-    }
-
-    .neon-thumb>div {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: clamp(1.1rem, 2.6vw, 1.6rem);
-      letter-spacing: .04em;
-      color: white;
-      text-shadow: 0 0 10px rgba(255, 255, 255, .6), 0 0 30px rgba(255, 255, 255, .35)
-    }
-
-    .neon-chip {
-      border: 1px solid rgba(255, 255, 255, .15);
-      background: rgba(255, 255, 255, .05)
-    }
-
-    .filter-bar .form-control,
-    .filter-bar .form-select {
-      background: rgba(255, 255, 255, .07);
-      border: 1px solid rgba(255, 255, 255, .12)
-    }
-
-    .price {
-      font-weight: 800
-    }
-
-    .cta-shadow {
-      box-shadow: 0 0 16px rgba(0, 247, 255, .35), inset 0 0 8px rgba(0, 247, 255, .25)
-    }
-
-    .badge-neon {
-      background: linear-gradient(90deg, rgba(0, 247, 255, .25), rgba(255, 59, 212, .25));
-      border: 1px solid rgba(255, 255, 255, .2)
-    }
-
-    footer a {
-      color: #b9f;
-    }
-
-    /* Imágenes dentro de las tarjetas */
-    .neon-thumb::before {
-      z-index: 0;
-    }
-
-    .neon-thumb img {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .brand-glow{color:var(--neon-cyan); text-shadow:0 0 8px rgba(0,247,255,.6),0 0 24px rgba(0,247,255,.35)}
+    .hero-title{font-weight:800; line-height:1.05;}
+    .hero-title .accent{color:var(--neon-pink); text-shadow:0 0 12px rgba(255,59,212,.55), 0 0 30px rgba(255,59,212,.3)}
+    .glass{backdrop-filter: blur(8px); background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08)}
+    .card{border:1px solid rgba(255,255,255,.08)}
+    .card:hover{box-shadow:0 0 0 1px rgba(255,255,255,.08), 0 10px 40px rgba(0,0,0,.35), 0 0 24px rgba(169,112,255,.25)}
+    .neon-thumb{position:relative; overflow:hidden; border-radius:.8rem}
+    .neon-thumb::before{content:""; position:absolute; inset:-2px; background:conic-gradient(from 180deg at 50% 50%, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan)); filter:blur(18px); opacity:.35}
+    .neon-thumb>div{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:clamp(1.1rem, 2.6vw, 1.6rem); letter-spacing:.04em; color:white; text-shadow: 0 0 10px rgba(255,255,255,.6), 0 0 30px rgba(255,255,255,.35)}
+    .neon-chip{border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.05)}
+    .filter-bar .form-control,.filter-bar .form-select{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12)}
+    .price{font-weight:800}
+    .cta-shadow{box-shadow:0 0 16px rgba(0,247,255,.35), inset 0 0 8px rgba(0,247,255,.25)}
+    .badge-neon{background:linear-gradient(90deg, rgba(0,247,255,.25), rgba(255,59,212,.25)); border:1px solid rgba(255,255,255,.2)}
+    footer a{color:#b9f;}
+      /* Imágenes dentro de las tarjetas */
+    .neon-thumb::before{ z-index: 0; }
+    .neon-thumb img{ position: relative; z-index: 1; width: 100%; height: 100%; object-fit: cover; display: block; }
   </style>
 </head>
-
 <body>
   <!-- NAV -->
   <nav class="navbar navbar-expand-lg sticky-top glass">
     <div class="container">
-      <a class="navbar-brand" href="#"><i class="bi bi-lightning-charge-fill brand-glow"></i> Neon<span
-          class="brand-glow">Studio</span> MX</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-        aria-controls="mainNav" aria-expanded="false" aria-label="Alternar navegación">
+      <a class="navbar-brand" href="#"><i class="bi bi-lightning-charge-fill brand-glow"></i> Neon<span class="brand-glow">Studio</span> MX</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Alternar navegación">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
@@ -144,13 +55,10 @@
           <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
         </ul>
         <div class="ms-lg-3 d-flex gap-2">
-          <button id="themeToggle" class="btn btn-outline-light btn-sm" type="button"><i class="bi bi-moon-stars"></i>
-            Tema</button>
-          <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas"
-            data-bs-target="#cotizacion" aria-controls="cotizacion">
+          <button id="themeToggle" class="btn btn-outline-light btn-sm" type="button"><i class="bi bi-moon-stars"></i> Tema</button>
+          <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cotizacion" aria-controls="cotizacion">
             <i class="bi bi-bag"></i> Cotización
-            <span id="quoteCount"
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-info">0</span>
+            <span id="quoteCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-info">0</span>
           </button>
         </div>
       </div>
@@ -162,14 +70,11 @@
     <div class="container">
       <div class="row align-items-center g-4">
         <div class="col-lg-7">
-          <h1 class="hero-title display-4 mb-3">Ilumina tu marca con <span class="accent">letreros de neón</span> a la
-            medida</h1>
-          <p class="lead text-secondary">Fabricamos letreros LED tipo neón de alta calidad para negocios, eventos y
-            decoración. Envío a todo México, garantía 12 meses.</p>
+          <h1 class="hero-title display-4 mb-3">Ilumina tu marca con <span class="accent">letreros de neón</span> a la medida</h1>
+          <p class="lead text-secondary">Fabricamos letreros LED tipo neón de alta calidad para negocios, eventos y decoración. Envío a todo México, garantía 12 meses.</p>
           <div class="d-flex gap-2">
             <a href="#catalogo" class="btn btn-primary btn-lg cta-shadow"><i class="bi bi-grid"></i> Ver catálogo</a>
-            <a href="#contacto" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Cotiza tu
-              diseño</a>
+            <a href="#contacto" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Cotiza tu diseño</a>
           </div>
           <div class="d-flex gap-2 mt-4 flex-wrap">
             <span class="badge rounded-pill badge-neon"><i class="bi bi-shield-check"></i> Garantía 12m</span>
@@ -180,8 +85,7 @@
         </div>
         <div class="col-lg-5">
           <div class="neon-thumb ratio ratio-4x3">
-            <div>Tu logo en <span style="color:var(--neon-cyan); text-shadow:0 0 10px rgba(0,247,255,.7)">NEÓN</span>
-              aquí ✨</div>
+            <div>Tu logo en <span style="color:var(--neon-cyan); text-shadow:0 0 10px rgba(0,247,255,.7)">NEÓN</span> aquí ✨</div>
           </div>
         </div>
       </div>
@@ -244,12 +148,8 @@
                 <span class="badge text-bg-secondary">S</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="OPEN Azul 60cm" data-price="1899">Agregar a
-                  cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="OPEN Azul 60cm"
-                  data-description="Neón LED azul con respaldo de acrílico transparente, fuente 12V incluida."
-                  data-price="1899" data-sizes="60 cm" data-eta="3-5 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="OPEN Azul 60cm" data-price="1899">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="OPEN Azul 60cm" data-description="Neón LED azul con respaldo de acrílico transparente, fuente 12V incluida." data-price="1899" data-sizes="60 cm" data-eta="3-5 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -258,24 +158,18 @@
         <div class="col product" data-tags="barberia rojo azul poste" data-category="Comercial" data-size="M">
           <div class="card h-100">
             <div class="neon-thumb ratio ratio-1x1">
-              <img src="/img/neon/barberia-classic-80.jpg" alt="Letrero Barbería Classic 80cm" loading="lazy"
-                decoding="async">
+              <img src="/img/neon/barberia-classic-80.jpg" alt="Letrero Barbería Classic 80cm" loading="lazy" decoding="async">
             </div>
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">Barbería Classic 80cm</h5>
-              <p class="card-text text-secondary">Diseño clásico rojo/azul estilo poste de barbería. Llama la atención.
-              </p>
+              <p class="card-text text-secondary">Diseño clásico rojo/azul estilo poste de barbería. Llama la atención.</p>
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <span class="price">$2,990</span>
                 <span class="badge text-bg-secondary">M</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="Barbería Classic 80cm"
-                  data-price="2990">Agregar a cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="Barbería Classic 80cm"
-                  data-description="Neón bicolor con dimmer opcional. Perfecto para fachadas." data-price="2990"
-                  data-sizes="80 cm" data-eta="5-7 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="Barbería Classic 80cm" data-price="2990">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="Barbería Classic 80cm" data-description="Neón bicolor con dimmer opcional. Perfecto para fachadas." data-price="2990" data-sizes="80 cm" data-eta="5-7 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -288,19 +182,14 @@
             </div>
             <div class="card-body d-flex flex-column">
               <h5 class="card-title">Tu Logo en Neón 90cm</h5>
-              <p class="card-text text-secondary">Envíanos tu archivo y lo convertimos en neón LED de alta fidelidad.
-              </p>
+              <p class="card-text text-secondary">Envíanos tu archivo y lo convertimos en neón LED de alta fidelidad.</p>
               <div class="mt-auto d-flex justify-content-between align-items-center">
                 <span class="price">$4,990</span>
                 <span class="badge text-bg-secondary">L</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="Logo en Neón 90cm" data-price="4990">Agregar a
-                  cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="Logo en Neón 90cm"
-                  data-description="Personalización total: colores, tipografía y formas. Incluye vista previa digital."
-                  data-price="4990" data-sizes="Hasta 90 cm" data-eta="7-10 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="Logo en Neón 90cm" data-price="4990">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="Logo en Neón 90cm" data-description="Personalización total: colores, tipografía y formas. Incluye vista previa digital." data-price="4990" data-sizes="Hasta 90 cm" data-eta="7-10 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -319,12 +208,8 @@
                 <span class="badge text-bg-secondary">M</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="Flecha Vintage 70cm" data-price="2490">Agregar
-                  a cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="Flecha Vintage 70cm"
-                  data-description="Ideal para foto-ops. Brillo regulable con dimmer (opcional)." data-price="2490"
-                  data-sizes="70 cm" data-eta="5-7 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="Flecha Vintage 70cm" data-price="2490">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="Flecha Vintage 70cm" data-description="Ideal para foto-ops. Brillo regulable con dimmer (opcional)." data-price="2490" data-sizes="70 cm" data-eta="5-7 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -343,12 +228,8 @@
                 <span class="badge text-bg-secondary">S</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="ABIERTO Rojo 50cm" data-price="1590">Agregar a
-                  cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="ABIERTO Rojo 50cm"
-                  data-description="Montaje sencillo con tornillos o 3M. Fuente 12V incluida." data-price="1590"
-                  data-sizes="50 cm" data-eta="3-5 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="ABIERTO Rojo 50cm" data-price="1590">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="ABIERTO Rojo 50cm" data-description="Montaje sencillo con tornillos o 3M. Fuente 12V incluida." data-price="1590" data-sizes="50 cm" data-eta="3-5 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -367,12 +248,8 @@
                 <span class="badge text-bg-secondary">L</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="Café & Pan 100cm" data-price="3990">Agregar a
-                  cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="Café & Pan 100cm"
-                  data-description="LED de alto CRI para tonos cálidos agradables. Para interior/exterior (IP65 opcional)."
-                  data-price="3990" data-sizes="100 cm" data-eta="7-10 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="Café & Pan 100cm" data-price="3990">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="Café & Pan 100cm" data-description="LED de alto CRI para tonos cálidos agradables. Para interior/exterior (IP65 opcional)." data-price="3990" data-sizes="100 cm" data-eta="7-10 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -391,12 +268,8 @@
                 <span class="badge text-bg-secondary">L</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="Bodas Love 110cm" data-price="3490">Agregar a
-                  cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="Bodas Love 110cm"
-                  data-description="Efecto neón rosa/fucsia con brillo uniforme. Montaje rápido." data-price="3490"
-                  data-sizes="110 cm" data-eta="7-10 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="Bodas Love 110cm" data-price="3490">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="Bodas Love 110cm" data-description="Efecto neón rosa/fucsia con brillo uniforme. Montaje rápido." data-price="3490" data-sizes="110 cm" data-eta="7-10 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -415,12 +288,8 @@
                 <span class="badge text-bg-secondary">M</span>
               </div>
               <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-primary add-to-quote" data-title="Gaming Play 75cm" data-price="2790">Agregar a
-                  cotización</button>
-                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                  data-title="Gaming Play 75cm"
-                  data-description="RGB o color fijo a elección. Respaldo en acrílico negro brillante."
-                  data-price="2790" data-sizes="75 cm" data-eta="5-7 días">Detalles</button>
+                <button class="btn btn-primary add-to-quote" data-title="Gaming Play 75cm" data-price="2790">Agregar a cotización</button>
+                <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal" data-title="Gaming Play 75cm" data-description="RGB o color fijo a elección. Respaldo en acrílico negro brillante." data-price="2790" data-sizes="75 cm" data-eta="5-7 días">Detalles</button>
               </div>
             </div>
           </div>
@@ -431,8 +300,7 @@
         <button id="showMoreBtn" class="btn btn-outline-info">Más</button>
       </div>
 
-      <p class="text-center text-secondary mt-4">¿Buscas algo específico? <a href="#contacto" class="link-info">Envíanos
-          tu idea</a> y lo diseñamos.</p>
+      <p class="text-center text-secondary mt-4">¿Buscas algo específico? <a href="#contacto" class="link-info">Envíanos tu idea</a> y lo diseñamos.</p>
     </div>
   </section>
 
@@ -467,8 +335,7 @@
           <p class="text-secondary">Escríbenos por WhatsApp o correo. Respuesta el mismo día hábil.</p>
           <div class="d-flex flex-wrap gap-2">
             <a href="https://wa.me/5215512345678" class="btn btn-success"><i class="bi bi-whatsapp"></i> WhatsApp</a>
-            <a href="mailto:ventas@neonstudio.mx?subject=Cotización%20Letrero%20de%20Neón"
-              class="btn btn-outline-light"><i class="bi bi-envelope"></i> ventas@neonstudio.mx</a>
+            <a href="mailto:ventas@neonstudio.mx?subject=Cotización%20Letrero%20de%20Neón" class="btn btn-outline-light"><i class="bi bi-envelope"></i> ventas@neonstudio.mx</a>
           </div>
         </div>
         <div class="col-lg-6">
@@ -484,8 +351,7 @@
               </div>
               <div class="col-12">
                 <label class="form-label">Mensaje</label>
-                <textarea id="cMsg" class="form-control" rows="3"
-                  placeholder="Cuéntanos tu idea, medidas, color…"></textarea>
+                <textarea id="cMsg" class="form-control" rows="3" placeholder="Cuéntanos tu idea, medidas, color…"></textarea>
               </div>
               <div class="col-12 d-grid d-sm-flex gap-2">
                 <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Enviar solicitud</button>
@@ -515,8 +381,7 @@
     <div class="offcanvas-body d-flex flex-column">
       <ul id="quoteList" class="list-group list-group-flush mb-3"></ul>
       <div class="mt-auto d-grid gap-2">
-        <div class="d-flex justify-content-between"><strong>Total estimado:</strong> <strong id="quoteTotal">$0</strong>
-        </div>
+        <div class="d-flex justify-content-between"><strong>Total estimado:</strong> <strong id="quoteTotal">$0</strong></div>
         <a id="mailtoQuote" class="btn btn-primary" href="#">Enviar por correo</a>
         <button class="btn btn-outline-light" type="button" onclick="clearQuote()">Vaciar</button>
       </div>
@@ -557,27 +422,30 @@
     const themeToggle = document.getElementById('themeToggle');
     const rootHtml = document.documentElement;
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) { rootHtml.setAttribute('data-bs-theme', savedTheme); }
-    themeToggle.addEventListener('click', () => {
+    if(savedTheme){ rootHtml.setAttribute('data-bs-theme', savedTheme); }
+    themeToggle.addEventListener('click', ()=>{
       const current = rootHtml.getAttribute('data-bs-theme') || 'dark';
       const next = current === 'dark' ? 'light' : 'dark';
       rootHtml.setAttribute('data-bs-theme', next);
       localStorage.setItem('theme', next);
     });
 
-    // Filtro catálogo
+    // Filtro catálogo (con "Mostrar más")
     const searchInput = document.getElementById('searchInput');
     const categorySelect = document.getElementById('categorySelect');
     const sizeSelect = document.getElementById('sizeSelect');
     const products = Array.from(document.querySelectorAll('.product'));
-    const MAX_VISIBLE = 8;
+
+    const MAX_VISIBLE = 6; // cambia este número si quieres mostrar menos/más al inicio
     let isExpanded = false;
+
     const showMoreContainer = document.getElementById('showMoreContainer');
     const showMoreBtn = document.getElementById('showMoreBtn');
-    // Normaliza texto: minúsculas y sin acentos para búsquedas más robustas
-    const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-    function filterProducts() {
+    // Normaliza texto: minúsculas y sin acentos para búsquedas más robustas
+    const norm = (s)=> (s||'').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+
+    function filterProducts(){
       const q = norm(searchInput.value.trim());
       const cat = norm(categorySelect.value);
       const size = sizeSelect.value; // S, M, L o ""
@@ -585,7 +453,7 @@
       let matches = 0; // cuántos cumplen filtros
       let shown = 0;   // cuántos se muestran (colapsado o expandido)
 
-      products.forEach(card => {
+      products.forEach(card=>{
         const title = norm(card.querySelector('.card-title')?.textContent || '');
         const tags = norm(card.dataset.tags || '');
         const category = norm(card.dataset.category || '');
@@ -595,9 +463,9 @@
         const matchS = !size || sizeAttr === size;
         const match = matchQ && matchC && matchS;
 
-        if (match) {
+        if(match){
           matches++;
-          if (!isExpanded && shown >= MAX_VISIBLE) {
+          if(!isExpanded && shown >= MAX_VISIBLE){
             card.style.display = 'none';
           } else {
             card.style.display = '';
@@ -608,48 +476,47 @@
         }
       });
 
-      // Mostrar/ocultar mensaje "sin resultados" según coincidencias (no según mostrados)
-      if (!document.getElementById('noResults')) {
-        const p = document.createElement('p');
-        p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
-        document.querySelector('#catalogo .container').appendChild(p);
+      // Mensaje "sin resultados"
+      let noRes = document.getElementById('noResults');
+      if(!noRes){
+        noRes = document.createElement('p');
+        noRes.id = 'noResults';
+        noRes.className='text-center text-secondary mt-3';
+        noRes.textContent='No se encontraron productos con esos filtros.';
+        document.querySelector('#catalogo .container').appendChild(noRes);
       }
-      document.getElementById('noResults').style.display = matches ? 'none' : '';
+      noRes.style.display = matches ? 'none' : '';
 
       // Botón "Más" visible solo si hay más de MAX_VISIBLE coincidencias y aún está colapsado
-      if (showMoreContainer) {
-        const shouldShowBtn = matches > MAX_VISIBLE;
-        showMoreContainer.style.display = shouldShowBtn ? '' : 'none';
-        if (shouldShowBtn && showMoreBtn) {
-          showMoreBtn.textContent = isExpanded ? 'Ver menos' : 'Más';
-        }
+      if(showMoreContainer){
+        showMoreContainer.style.display = (matches > MAX_VISIBLE) ? '' : 'none';
+      }
+      if(showMoreBtn){
+        showMoreBtn.textContent = isExpanded ? 'Mostrar menos' : 'Mostrar más';
       }
     }
 
     // Click en "Más" -> expandir y ocultar el botón
-    if (showMoreBtn) {
-      showMoreBtn.addEventListener('click', () => {
-        isExpanded = true;
+    if(showMoreBtn){
+      showMoreBtn.addEventListener('click', ()=>{
+        isExpanded = !isExpanded; // alterna
         filterProducts();
-        if (showMoreContainer) showMoreContainer.style.display = 'none';
+        if(!isExpanded){
+          const cat = document.getElementById('catalogo');
+          if(cat && 'scrollIntoView' in cat){
+            cat.scrollIntoView({behavior:'smooth', block:'start'});
+          }
+        }
       });
     }
-    if (!document.getElementById('noResults')) {
-      const p = document.createElement('p');
-      p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
-      document.querySelector('#catalogo .container').appendChild(p);
-    }
-    document.getElementById('noResults').style.display = visible ? 'none' : '';
 
-    if (!document.getElementById('noResults')) {
-      const p = document.createElement('p');
-      p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
-      document.querySelector('#catalogo .container').appendChild(p);
-    }
-    document.getElementById('noResults').style.display = visible ? 'none' : '';
+    // Al cambiar filtros o buscar, colapsa de nuevo
+    function resetAndFilter(){ isExpanded = false; filterProducts(); }
+    searchInput.addEventListener('input', resetAndFilter);
+    ;[categorySelect, sizeSelect].forEach(el=>{ el.addEventListener('change', resetAndFilter); el.addEventListener('input', resetAndFilter); });
 
-    searchInput.addEventListener('input', filterProducts);
-    [categorySelect, sizeSelect].forEach(el => { el.addEventListener('change', filterProducts); el.addEventListener('input', filterProducts); });
+    // Inicial
+    filterProducts();
 
     // Cotización simple (Offcanvas)
     const quote = [];
@@ -658,10 +525,10 @@
     const quoteCount = document.getElementById('quoteCount');
     const mailtoQuote = document.getElementById('mailtoQuote');
 
-    function renderQuote() {
+    function renderQuote(){
       quoteList.innerHTML = '';
       let total = 0;
-      quote.forEach((item, idx) => {
+      quote.forEach((item, idx)=>{
         total += item.price;
         const li = document.createElement('li');
         li.className = 'list-group-item d-flex justify-content-between align-items-center glass';
@@ -675,13 +542,13 @@
       updateMailto();
     }
 
-    function updateMailto() {
+    function updateMailto(){
       const subject = encodeURIComponent('Cotización Letreros de Neón');
       const bodyLines = [
         'Hola, me interesa cotizar los siguientes productos:',
-        ...quote.map((i, k) => `  ${k + 1}. ${i.title} - $${i.price.toLocaleString()} MXN`),
+        ...quote.map((i, k)=>`  ${k+1}. ${i.title} - $${i.price.toLocaleString()} MXN`),
         '',
-        'Total estimado: ' + quote.reduce((a, b) => a + b.price, 0).toLocaleString() + ' MXN',
+        'Total estimado: ' + quote.reduce((a,b)=>a + b.price, 0).toLocaleString() + ' MXN',
         '',
         'Mis datos:', 'Nombre:', 'Teléfono:', 'Comentarios:'
       ];
@@ -689,36 +556,36 @@
       mailtoQuote.href = `mailto:ventas@neonstudio.mx?subject=${subject}&body=${body}`;
     }
 
-    function addToQuote(title, price) {
-      quote.push({ title, price });
+    function addToQuote(title, price){
+      quote.push({title, price});
       renderQuote();
       const toast = document.createElement('div');
       toast.className = 'toast align-items-center text-bg-dark border-0 position-fixed bottom-0 end-0 m-3';
-      toast.role = 'status';
+      toast.role='status';
       toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class='bi bi-bag-plus'></i> Añadido: ${title}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button></div>`;
       document.body.appendChild(toast);
-      const t = new bootstrap.Toast(toast, { delay: 2000 }); t.show();
-      toast.addEventListener('hidden.bs.toast', () => toast.remove());
+      const t = new bootstrap.Toast(toast, {delay: 2000}); t.show();
+      toast.addEventListener('hidden.bs.toast', ()=> toast.remove());
     }
 
-    function removeFromQuote(idx) { quote.splice(idx, 1); renderQuote(); }
-    function clearQuote() { quote.length = 0; renderQuote(); }
+    function removeFromQuote(idx){ quote.splice(idx,1); renderQuote(); }
+    function clearQuote(){ quote.length = 0; renderQuote(); }
     window.removeFromQuote = removeFromQuote; // expose for inline onclick
     window.clearQuote = clearQuote;
 
-    document.querySelectorAll('.add-to-quote').forEach(btn => {
-      btn.addEventListener('click', () => {
+    document.querySelectorAll('.add-to-quote').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
         const title = btn.dataset.title;
-        const price = parseFloat(btn.dataset.price || '0');
+        const price = parseFloat(btn.dataset.price||'0');
         addToQuote(title, price);
       });
     });
 
     // Modal Detalles (carga dinámica)
     const detailsModal = document.getElementById('detailsModal');
-    detailsModal.addEventListener('show.bs.modal', (ev) => {
+    detailsModal.addEventListener('show.bs.modal', (ev)=>{
       const btn = ev.relatedTarget;
-      if (!btn) return;
+      if(!btn) return;
       document.getElementById('detailsTitle').textContent = btn.dataset.title || 'Detalles';
       document.getElementById('detailsDesc').textContent = btn.dataset.description || '';
       document.getElementById('detailsSize').textContent = btn.dataset.sizes || '';
@@ -727,13 +594,13 @@
     });
 
     // Form contacto -> abre mailto con mensaje + items seleccionados
-    function prepMail(e) {
+    function prepMail(e){
       e.preventDefault();
       const nombre = document.getElementById('cNombre').value.trim();
       const email = document.getElementById('cEmail').value.trim();
       const msg = document.getElementById('cMsg').value.trim();
       const subject = encodeURIComponent(`Cotización | ${nombre}`);
-      const items = quote.map((i, k) => `  ${k + 1}. ${i.title} - $${i.price.toLocaleString()} MXN`).join('\n');
+      const items = quote.map((i, k)=>`  ${k+1}. ${i.title} - $${i.price.toLocaleString()} MXN`).join('\n');
       const body = encodeURIComponent(`Hola,\n\nSoy ${nombre} (${email}).\n\nEstoy interesado en: \n${items || '— (aún sin selección)'}\n\nMensaje adicional:\n${msg}\n\nGracias.`);
       window.location.href = `mailto:ventas@neonstudio.mx?subject=${subject}&body=${body}`;
     }
@@ -744,5 +611,4 @@
     renderQuote();
   </script>
 </body>
-
 </html>
