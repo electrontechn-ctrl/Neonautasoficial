@@ -211,7 +211,7 @@ async function loadProducts(){
   });
 
   // Carga tu archivo .db (ajusta la ruta si es distinta)
-  const buf = await fetch('https://github.com/electrontechn-ctrl/Neonautasoficial/blob/main/sources/data/data.db').then(r => r.arrayBuffer());
+  const buf = await fetch('https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db').then(r => r.arrayBuffer());
   const db = new SQL.Database(new Uint8Array(buf));
 
   // Lee productos
