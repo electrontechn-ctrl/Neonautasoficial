@@ -1,7 +1,7 @@
 // Año footer
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Filtro catálogo (con "Mostrar más")
+// Filtro catálogo
 const searchInput = document.getElementById('searchInput');
 const categorySelect = document.getElementById('categorySelect');
 const sizeSelect = document.getElementById('sizeSelect');
@@ -11,13 +11,13 @@ function setProductsFromDOM(){
   products = Array.from(document.querySelectorAll('.product'));
 }
 
-const MAX_VISIBLE = 4; // cambia este número si quieres mostrar menos/más al inicio
+const MAX_VISIBLE = 4; // número cards
 let isExpanded = false;
 
 const showMoreContainer = document.getElementById('showMoreContainer');
 const showMoreBtn = document.getElementById('showMoreBtn');
 
-// Normaliza texto: minúsculas y sin acentos para búsquedas más robustas
+// Normalizar texto
 const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 function filterProducts() {
@@ -26,7 +26,7 @@ function filterProducts() {
     const size = sizeSelect.value; // S, M, L o ""
 
     let matches = 0; // cuántos cumplen filtros
-    let shown = 0;   // cuántos se muestran (colapsado o expandido)
+    let shown = 0;   // cuántos se muestran
 
     products.forEach(card => {
         const title = norm(card.querySelector('.card-title')?.textContent || '');
@@ -62,7 +62,7 @@ function filterProducts() {
     }
     noRes.style.display = matches ? 'none' : '';
 
-    // Botón "Más" visible solo si hay más de MAX_VISIBLE coincidencias y aún está colapsado
+    // Botón "Más"
     if (showMoreContainer) {
         showMoreContainer.style.display = (matches > MAX_VISIBLE) ? '' : 'none';
     }
@@ -71,7 +71,7 @@ function filterProducts() {
     }
 }
 
-// Click en "Más" -> expandir y ocultar el botón
+// Click en "Más"
 if (showMoreBtn) {
     showMoreBtn.addEventListener('click', () => {
         isExpanded = !isExpanded; // alterna
@@ -85,15 +85,13 @@ if (showMoreBtn) {
     });
 }
 
-// Al cambiar filtros o buscar, colapsa de nuevo
+// Cambiar filtros o buscar
 function resetAndFilter() { isExpanded = false; filterProducts(); }
 searchInput.addEventListener('input', resetAndFilter);
 ;[categorySelect, sizeSelect].forEach(el => { el.addEventListener('change', resetAndFilter); el.addEventListener('input', resetAndFilter); });
 
-// Inicial
-filterProducts();
 
-// Cotización simple (Offcanvas)
+// Offcanvas
 const quote = [];
 const quoteList = document.getElementById('quoteList');
 const quoteTotal = document.getElementById('quoteTotal');
@@ -141,7 +139,7 @@ document.querySelectorAll('.add-to-quote').forEach(btn => {
     });
 });
 
-// Modal Detalles (carga dinámica)
+// carga dinámica
 const detailsModal = document.getElementById('detailsModal');
 detailsModal.addEventListener('show.bs.modal', (ev) => {
     const btn = ev.relatedTarget;
@@ -153,20 +151,70 @@ detailsModal.addEventListener('show.bs.modal', (ev) => {
     document.getElementById('detailsPrice').textContent = btn.dataset.price ? `$${Number(btn.dataset.price).toLocaleString()}` : '';
 });
 
-// Form contacto -> abre mailto con mensaje + items seleccionados
-function prepMail(e) {
-    e.preventDefault();
-    const nombre = document.getElementById('cNombre').value.trim();
-    const email = document.getElementById('cEmail').value.trim();
-    const msg = document.getElementById('cMsg').value.trim();
-    const subject = encodeURIComponent(`Cotización | ${nombre}`);
-    const items = quote.map((i, k) => `  ${k + 1}. ${i.title} - $${i.price.toLocaleString()} MXN`).join('\n');
-    const body = encodeURIComponent(`Hola,\n\nSoy ${nombre} (${email}).\n\nEstoy interesado en: \n${items || '— (aún sin selección)'}\n\nMensaje adicional:\n${msg}\n\nGracias.`);
-    window.location.href = `mailto:ventas@neonstudio.mx?subject=${subject}&body=${body}`;
-}
-window.prepMail = prepMail;
+const WHATS_NUMBER = '524428124789';
+const wDirect = document.getElementById('wDirect');
 
-//////////////////////////////////////////////////////
+function getQuoteItems(){
+  if (typeof quote !== 'undefined' && Array.isArray(quote)) return quote;
+  if (typeof window !== 'undefined' && Array.isArray(window.quote)) return window.quote;
+  
+  const lis = document.querySelectorAll('#quoteList li');
+  if (lis.length) {
+    return Array.from(lis).map(li => {
+      const spans = li.querySelectorAll('span');
+      const title = spans[0]?.textContent.trim() || '';
+      const priceNum = Number((spans[1]?.textContent || '').replace(/[^\d]/g,''));
+      return { title, price: Number.isFinite(priceNum) ? priceNum : 0 };
+    });
+  }
+  return [];
+}
+
+function buildWhatsMessage({ includeContact = true } = {}) {
+  const nombre = (document.getElementById('wNombre')?.value || '').trim();
+  const ciudad = (document.getElementById('wCiudad')?.value || '').trim();
+  const msg    = (document.getElementById('wMsg')?.value || '').trim();
+
+  const items = getQuoteItems();
+
+  const lines = [];
+  if (includeContact && (nombre || ciudad)) {
+    lines.push(`Hola, soy ${nombre || '—'}${ciudad ? ' de ' + ciudad : ''}.`, '');
+  }
+
+  lines.push('Estoy interesado en:');
+  if (items.length) {
+    lines.push(...items.map((i, k) => `  ${k + 1}. ${i.title} - $${i.price.toLocaleString('es-MX')} MXN`));
+    const total = items.reduce((a, b) => a + (b.price || 0), 0);
+    lines.push('', `Total estimado: $${total.toLocaleString('es-MX')} MXN`);
+  } else {
+    lines.push('  — (aún sin selección en “Cotización”)');
+  }
+
+  if (msg) {
+    lines.push('', 'Mensaje adicional:', msg);
+  }
+
+  return lines.join('\n');
+}
+
+function sendWhatsApp(e) {
+  e.preventDefault();
+  const text = buildWhatsMessage({ includeContact: true });
+  const url  = `https://wa.me/${WHATS_NUMBER}?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+function updateWhatsLink() {
+  wDirect.href = `https://wa.me/${WHATS_NUMBER}`;
+}
+
+['wNombre', 'wCiudad', 'wMsg'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', updateWhatsLink);
+});
+
+
 const grid = document.getElementById('grid');
 
 function formatMXN(num){
@@ -174,7 +222,7 @@ function formatMXN(num){
 }
 
 function productCardHTML(p){
-  // Mantiene tu misma estructura y data-attributes para filtros/“cotización”
+    
   return `
     <div class="col product" data-tags="${p.tags || ''}" data-category="${p.category || ''}" data-size="${p.size || ''}">
       <div class="card h-100">
@@ -205,16 +253,16 @@ function productCardHTML(p){
 }
 
 async function loadProducts(){
-  // Carga SQLite WASM desde CDN
+    
   const SQL = await initSqlJs({
     locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
   });
 
-  // Carga tu archivo .db (ajusta la ruta si es distinta)
+  
   const buf = await fetch('https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db').then(r => r.arrayBuffer());
   const db = new SQL.Database(new Uint8Array(buf));
 
-  // Lee productos
+  
   const stmt = db.prepare(`
     SELECT id, title, description, price, size, category, tags, image_url, sizes_label, eta
     FROM productos
@@ -226,10 +274,10 @@ async function loadProducts(){
   stmt.free();
   db.close();
 
-  // Renderiza tarjetas (reusa tu productCardHTML)
+  // Renderizar
   grid.innerHTML = items.map(productCardHTML).join('');
 
-  // Reconecta listeners y filtros existentes
+  
   setProductsFromDOM();
   document.querySelectorAll('.add-to-quote').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -239,17 +287,13 @@ async function loadProducts(){
     });
   });
 
-  // Resetea “Mostrar más/menos” y aplica filtros
+  
   isExpanded = false;
   filterProducts();
 }
 
-
-
-
-
-
 // Inicial
+updateWhatsLink();
 loadProducts();
 renderQuote();
 
