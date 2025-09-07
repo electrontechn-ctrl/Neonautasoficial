@@ -427,6 +427,10 @@
         </div>
       </div>
 
+      <div id="showMoreContainer" class="text-center mt-3">
+        <button id="showMoreBtn" class="btn btn-outline-info">Más</button>
+      </div>
+
       <p class="text-center text-secondary mt-4">¿Buscas algo específico? <a href="#contacto" class="link-info">Envíanos
           tu idea</a> y lo diseñamos.</p>
     </div>
@@ -547,15 +551,30 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Año footer
-    // Año footer
     document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Toggle tema (persistente)
+    const themeToggle = document.getElementById('themeToggle');
+    const rootHtml = document.documentElement;
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) { rootHtml.setAttribute('data-bs-theme', savedTheme); }
+    themeToggle.addEventListener('click', () => {
+      const current = rootHtml.getAttribute('data-bs-theme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      rootHtml.setAttribute('data-bs-theme', next);
+      localStorage.setItem('theme', next);
+    });
 
     // Filtro catálogo
     const searchInput = document.getElementById('searchInput');
     const categorySelect = document.getElementById('categorySelect');
     const sizeSelect = document.getElementById('sizeSelect');
     const products = Array.from(document.querySelectorAll('.product'));
-
+    const MAX_VISIBLE = 8;
+    let isExpanded = false;
+    const showMoreContainer = document.getElementById('showMoreContainer');
+    const showMoreBtn = document.getElementById('showMoreBtn');
+    // Normaliza texto: minúsculas y sin acentos para búsquedas más robustas
     const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
     function filterProducts() {
@@ -563,36 +582,74 @@
       const cat = norm(categorySelect.value);
       const size = sizeSelect.value; // S, M, L o ""
 
-      let visible = 0;
+      let matches = 0; // cuántos cumplen filtros
+      let shown = 0;   // cuántos se muestran (colapsado o expandido)
+
       products.forEach(card => {
         const title = norm(card.querySelector('.card-title')?.textContent || '');
         const tags = norm(card.dataset.tags || '');
         const category = norm(card.dataset.category || '');
         const sizeAttr = (card.dataset.size || '');
-
         const matchQ = !q || title.includes(q) || tags.includes(q);
         const matchC = !cat || category === cat;
         const matchS = !size || sizeAttr === size;
+        const match = matchQ && matchC && matchS;
 
-        const show = matchQ && matchC && matchS;
-        card.style.display = show ? '' : 'none';
-        if (show) visible++;
+        if (match) {
+          matches++;
+          if (!isExpanded && shown >= MAX_VISIBLE) {
+            card.style.display = 'none';
+          } else {
+            card.style.display = '';
+            shown++;
+          }
+        } else {
+          card.style.display = 'none';
+        }
       });
 
+      // Mostrar/ocultar mensaje "sin resultados" según coincidencias (no según mostrados)
       if (!document.getElementById('noResults')) {
         const p = document.createElement('p');
-        p.id = 'noResults';
-        p.className = 'text-center text-secondary mt-3';
-        p.textContent = 'No se encontraron productos con esos filtros.';
+        p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
         document.querySelector('#catalogo .container').appendChild(p);
       }
-      document.getElementById('noResults').style.display = visible ? 'none' : '';
+      document.getElementById('noResults').style.display = matches ? 'none' : '';
+
+      // Botón "Más" visible solo si hay más de MAX_VISIBLE coincidencias y aún está colapsado
+      if (showMoreContainer) {
+        const shouldShowBtn = matches > MAX_VISIBLE;
+        showMoreContainer.style.display = shouldShowBtn ? '' : 'none';
+        if (shouldShowBtn && showMoreBtn) {
+          showMoreBtn.textContent = isExpanded ? 'Ver menos' : 'Más';
+        }
+      }
     }
+
+    // Click en "Más" -> expandir y ocultar el botón
+    if (showMoreBtn) {
+      showMoreBtn.addEventListener('click', () => {
+        isExpanded = true;
+        filterProducts();
+        if (showMoreContainer) showMoreContainer.style.display = 'none';
+      });
+    }
+    if (!document.getElementById('noResults')) {
+      const p = document.createElement('p');
+      p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
+      document.querySelector('#catalogo .container').appendChild(p);
+    }
+    document.getElementById('noResults').style.display = visible ? 'none' : '';
+
+    if (!document.getElementById('noResults')) {
+      const p = document.createElement('p');
+      p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
+      document.querySelector('#catalogo .container').appendChild(p);
+    }
+    document.getElementById('noResults').style.display = visible ? 'none' : '';
+
     searchInput.addEventListener('input', filterProducts);
-    [categorySelect, sizeSelect].forEach(el => {
-      el.addEventListener('change', filterProducts);
-      el.addEventListener('input', filterProducts);
-    });
+    [categorySelect, sizeSelect].forEach(el => { el.addEventListener('change', filterProducts); el.addEventListener('input', filterProducts); });
 
     // Cotización simple (Offcanvas)
     const quote = [];

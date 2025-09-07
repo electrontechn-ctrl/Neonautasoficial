@@ -47,6 +47,7 @@ searchInput.addEventListener('input', filterProducts);
 
 // Cotización simple (Offcanvas)
 const quote = [];
+window.quote = quote;
 const quoteList = document.getElementById('quoteList');
 const quoteTotal = document.getElementById('quoteTotal');
 const quoteCount = document.getElementById('quoteCount');
@@ -128,21 +129,22 @@ function sendWhatsApp(e) {
     const ciudad = document.getElementById('wCiudad').value.trim();
     const msg = document.getElementById('wMsg').value.trim();
 
-    // Incluye selección del carrito si existe en la página
     let items = '';
-    if (window.quote && Array.isArray(quote) && quote.length) {
-        items = '\n\nSeleccionados:\n' + quote.map((i, k) => `  ${k + 1}. ${i.title} - $${(i.price || 0).toLocaleString()} MXN`).join('\n');
-        items += '\nTotal estimado: $' + quote.reduce((a, b) => a + (b.price || 0), 0).toLocaleString() + ' MXN';
+    const q = Array.isArray(window.quote) ? window.quote
+        : (typeof quote !== 'undefined' && Array.isArray(quote) ? quote : []);
+    if (q.length) {
+        items = '\n\nSeleccionados:\n' + q
+            .map(i => `• ${i.title} - $${(i.price || 0).toLocaleString()} MXN`)
+            .join('\n');
     }
 
     const texto = `Hola, soy ${nombre}${ciudad ? ' de ' + ciudad : ''}.\n` +
         `Quiero cotizar un letrero de neón.\n` +
         (msg ? `Detalles: ${msg}\n` : '') +
-        items + `\n\nDesde: ${location.href}`;
+        items + `\n\nDesde: La página de Neonautas`;
     const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`;
     window.open(url, '_blank', 'noopener');
 
-    // link auxiliar "Abrir chat"
     const wDirect = document.getElementById('wDirect');
     if (wDirect) wDirect.href = url;
 }
