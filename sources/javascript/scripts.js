@@ -1,47 +1,49 @@
 // Año footer
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Toggle tema (persistente)
-const themeToggle = document.getElementById('themeToggle');
-const rootHtml = document.documentElement;
-const savedTheme = localStorage.getItem('theme');
-if (savedTheme) { rootHtml.setAttribute('data-bs-theme', savedTheme); }
-themeToggle.addEventListener('click', () => {
-    const current = rootHtml.getAttribute('data-bs-theme') || 'dark';
-    const next = current === 'dark' ? 'light' : 'dark';
-    rootHtml.setAttribute('data-bs-theme', next);
-    localStorage.setItem('theme', next);
-});
-
 // Filtro catálogo
 const searchInput = document.getElementById('searchInput');
 const categorySelect = document.getElementById('categorySelect');
 const sizeSelect = document.getElementById('sizeSelect');
 const products = Array.from(document.querySelectorAll('.product'));
 
+const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 function filterProducts() {
-    const q = searchInput.value.trim().toLowerCase();
-    const cat = categorySelect.value;
-    const size = sizeSelect.value;
+    const q = norm(searchInput.value.trim());
+    const cat = norm(categorySelect.value);
+    const size = sizeSelect.value; // S, M, L o ""
+
     let visible = 0;
     products.forEach(card => {
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        const tags = (card.dataset.tags || '').toLowerCase();
+        const title = norm(card.querySelector('.card-title')?.textContent || '');
+        const tags = norm(card.dataset.tags || '');
+        const category = norm(card.dataset.category || '');
+        const sizeAttr = (card.dataset.size || '');
+
         const matchQ = !q || title.includes(q) || tags.includes(q);
-        const matchC = !cat || card.dataset.category === cat;
-        const matchS = !size || card.dataset.size === size;
+        const matchC = !cat || category === cat;
+        const matchS = !size || sizeAttr === size;
+
         const show = matchQ && matchC && matchS;
         card.style.display = show ? '' : 'none';
         if (show) visible++;
     });
+
     if (!document.getElementById('noResults')) {
         const p = document.createElement('p');
-        p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
+        p.id = 'noResults';
+        p.className = 'text-center text-secondary mt-3';
+        p.textContent = 'No se encontraron productos con esos filtros.';
         document.querySelector('#catalogo .container').appendChild(p);
     }
     document.getElementById('noResults').style.display = visible ? 'none' : '';
 }
-[searchInput, categorySelect, sizeSelect].forEach(el => el.addEventListener('input', filterProducts));
+searchInput.addEventListener('input', filterProducts);
+[categorySelect, sizeSelect].forEach(el => {
+    el.addEventListener('change', filterProducts);
+    el.addEventListener('input', filterProducts);
+});
 
 // Cotización simple (Offcanvas)
 const quote = [];
@@ -118,18 +120,32 @@ detailsModal.addEventListener('show.bs.modal', (ev) => {
     document.getElementById('detailsPrice').textContent = btn.dataset.price ? `$${Number(btn.dataset.price).toLocaleString()}` : '';
 });
 
-// Form contacto -> abre mailto con mensaje + items seleccionados
-function prepMail(e) {
+const waNumber = '524428124789';
+
+function sendWhatsApp(e) {
     e.preventDefault();
-    const nombre = document.getElementById('cNombre').value.trim();
-    const email = document.getElementById('cEmail').value.trim();
-    const msg = document.getElementById('cMsg').value.trim();
-    const subject = encodeURIComponent(`Cotización | ${nombre}`);
-    const items = quote.map((i, k) => `  ${k + 1}. ${i.title} - $${i.price.toLocaleString()} MXN`).join('\n');
-    const body = encodeURIComponent(`Hola,\n\nSoy ${nombre} (${email}).\n\nEstoy interesado en: \n${items || '— (aún sin selección)'}\n\nMensaje adicional:\n${msg}\n\nGracias.`);
-    window.location.href = `mailto:ventas@neonstudio.mx?subject=${subject}&body=${body}`;
+    const nombre = document.getElementById('wNombre').value.trim();
+    const ciudad = document.getElementById('wCiudad').value.trim();
+    const msg = document.getElementById('wMsg').value.trim();
+
+    // Incluye selección del carrito si existe en la página
+    let items = '';
+    if (window.quote && Array.isArray(quote) && quote.length) {
+        items = '\n\nSeleccionados:\n' + quote.map((i, k) => `  ${k + 1}. ${i.title} - $${(i.price || 0).toLocaleString()} MXN`).join('\n');
+        items += '\nTotal estimado: $' + quote.reduce((a, b) => a + (b.price || 0), 0).toLocaleString() + ' MXN';
+    }
+
+    const texto = `Hola, soy ${nombre}${ciudad ? ' de ' + ciudad : ''}.\n` +
+        `Quiero cotizar un letrero de neón.\n` +
+        (msg ? `Detalles: ${msg}\n` : '') +
+        items + `\n\nDesde: ${location.href}`;
+    const url = `https://wa.me/${waNumber}?text=${encodeURIComponent(texto)}`;
+    window.open(url, '_blank', 'noopener');
+
+    // link auxiliar "Abrir chat"
+    const wDirect = document.getElementById('wDirect');
+    if (wDirect) wDirect.href = url;
 }
-window.prepMail = prepMail;
 
 // Inicial
 filterProducts();

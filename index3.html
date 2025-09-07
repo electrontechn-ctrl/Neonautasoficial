@@ -110,7 +110,8 @@
                         </select>
                     </div>
                     <div class="col-12 col-lg-4 text-lg-end">
-                        <small class="text-secondary d-block mb-2">Precios estimados en MXN. Instalación no incluida.</small>
+                        <small class="text-secondary d-block mb-2">Precios estimados en MXN. Instalación no
+                            incluida.</small>
                         <a href="#contacto" class="btn btn-outline-info"><i class="bi bi-sliders"></i> Diseña el
                             tuyo</a>
                     </div>
@@ -127,7 +128,8 @@
                 <div class="col product" data-tags="open azul tienda" data-category="Comercial" data-size="S">
                     <div class="card h-100">
                         <div class="neon-thumb ratio ratio-1x1">
-                             <img src="sources/img/Alas.jpg" alt="Letrero OPEN azul 60cm" loading="lazy" decoding="async">
+                            <img src="sources/img/Alas.jpg" alt="Letrero OPEN azul 60cm" loading="lazy"
+                                decoding="async">
                         </div>
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">OPEN Azul 60cm</h5>
@@ -339,7 +341,7 @@
                         <li class="list-group-item glass">Nos compartes tu idea, logo o texto (medidas y color).</li>
                         <li class="list-group-item glass">Te enviamos una vista previa y cotización detallada.</li>
                         <li class="list-group-item glass">Producción 3–10 días hábiles según tamaño y complejidad.</li>
-                        <li class="list-group-item glass">Envío seguro a todo México. Incluye fuente 12V y herrajes.
+                        <li class="list-group-item glass">Envío seguro. Incluye fuente 12V y herrajes.
                         </li>
                     </ol>
                 </div>
@@ -357,37 +359,40 @@
         <div class="container">
             <div class="row g-4">
                 <div class="col-lg-6">
-                    <h2 class="mb-3">¿Listo para cotizar?</h2>
-                    <p class="text-secondary">Escríbenos por WhatsApp o correo. Respuesta el mismo día hábil.</p>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="https://wa.me/5215512345678" class="btn btn-success"><i class="bi bi-whatsapp"></i>
-                            WhatsApp</a>
-                        <a href="mailto:ventas@neonstudio.mx?subject=Cotización%20Letrero%20de%20Neón"
-                            class="btn btn-outline-light"><i class="bi bi-envelope"></i> ventas@neonstudio.mx</a>
-                    </div>
+                    <h2 class="mb-3">¿Listo para cotizar por WhatsApp?</h2>
+                    <p class="text-secondary">Envíanos un mensaje y te respondemos a la brevedad.</p>
+                    <ul class="small text-secondary mb-0">
+                        <li><i class="bi bi-whatsapp"></i> Atención L–V 10:00–18:00</li>
+                        <li><i class="bi bi-truck"></i> Envío a todo México</li>
+                        <li><i class="bi bi-shield-check"></i> Garantía 12 meses</li>
+                    </ul>
                 </div>
+
                 <div class="col-lg-6">
                     <div class="glass rounded-3 p-3">
-                        <form class="row g-3" onsubmit="prepMail(event)">
+                        <form class="row g-3" onsubmit="sendWhatsApp(event)">
                             <div class="col-md-6">
                                 <label class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="cNombre" required>
+                                <input type="text" class="form-control" id="wNombre" required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="cEmail" required>
+                                <label class="form-label">Ciudad</label>
+                                <input type="text" class="form-control" id="wCiudad" placeholder="CDMX, GDL, MTY…">
                             </div>
                             <div class="col-12">
                                 <label class="form-label">Mensaje</label>
-                                <textarea id="cMsg" class="form-control" rows="3"
+                                <textarea id="wMsg" class="form-control" rows="3"
                                     placeholder="Cuéntanos tu idea, medidas, color…"></textarea>
                             </div>
                             <div class="col-12 d-grid d-sm-flex gap-2">
-                                <button class="btn btn-primary" type="submit"><i class="bi bi-send"></i> Enviar
-                                    solicitud</button>
-                                <a class="btn btn-outline-info" href="#catalogo"><i class="bi bi-bag-plus"></i> Ver
-                                    selección</a>
+                                <button class="btn btn-success" type="submit">
+                                    <i class="bi bi-whatsapp"></i> Enviar por WhatsApp
+                                </button>
+                                <a id="wDirect" class="btn btn-outline-light" href="#" target="_blank"
+                                    rel="noopener">Abrir chat</a>
                             </div>
+                            <small class="text-secondary">*Si ya agregaste productos a “Cotización”, se incluirán en el
+                                mensaje automáticamente.</small>
                         </form>
                     </div>
                 </div>
@@ -445,8 +450,8 @@
         </div>
     </div>
 
+    <script src="sources/javascript/scripts.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="sources/javascript/script.js"></script>
 </body>
 
 </html>

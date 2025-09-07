@@ -547,19 +547,8 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Año footer
+    // Año footer
     document.getElementById('year').textContent = new Date().getFullYear();
-
-    // Toggle tema (persistente)
-    const themeToggle = document.getElementById('themeToggle');
-    const rootHtml = document.documentElement;
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) { rootHtml.setAttribute('data-bs-theme', savedTheme); }
-    themeToggle.addEventListener('click', () => {
-      const current = rootHtml.getAttribute('data-bs-theme') || 'dark';
-      const next = current === 'dark' ? 'light' : 'dark';
-      rootHtml.setAttribute('data-bs-theme', next);
-      localStorage.setItem('theme', next);
-    });
 
     // Filtro catálogo
     const searchInput = document.getElementById('searchInput');
@@ -567,29 +556,43 @@
     const sizeSelect = document.getElementById('sizeSelect');
     const products = Array.from(document.querySelectorAll('.product'));
 
+    const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
     function filterProducts() {
-      const q = searchInput.value.trim().toLowerCase();
-      const cat = categorySelect.value;
-      const size = sizeSelect.value;
+      const q = norm(searchInput.value.trim());
+      const cat = norm(categorySelect.value);
+      const size = sizeSelect.value; // S, M, L o ""
+
       let visible = 0;
       products.forEach(card => {
-        const title = card.querySelector('.card-title').textContent.toLowerCase();
-        const tags = (card.dataset.tags || '').toLowerCase();
+        const title = norm(card.querySelector('.card-title')?.textContent || '');
+        const tags = norm(card.dataset.tags || '');
+        const category = norm(card.dataset.category || '');
+        const sizeAttr = (card.dataset.size || '');
+
         const matchQ = !q || title.includes(q) || tags.includes(q);
-        const matchC = !cat || card.dataset.category === cat;
-        const matchS = !size || card.dataset.size === size;
+        const matchC = !cat || category === cat;
+        const matchS = !size || sizeAttr === size;
+
         const show = matchQ && matchC && matchS;
         card.style.display = show ? '' : 'none';
         if (show) visible++;
       });
+
       if (!document.getElementById('noResults')) {
         const p = document.createElement('p');
-        p.id = 'noResults'; p.className = 'text-center text-secondary mt-3'; p.textContent = 'No se encontraron productos con esos filtros.';
+        p.id = 'noResults';
+        p.className = 'text-center text-secondary mt-3';
+        p.textContent = 'No se encontraron productos con esos filtros.';
         document.querySelector('#catalogo .container').appendChild(p);
       }
       document.getElementById('noResults').style.display = visible ? 'none' : '';
     }
-    [searchInput, categorySelect, sizeSelect].forEach(el => el.addEventListener('input', filterProducts));
+    searchInput.addEventListener('input', filterProducts);
+    [categorySelect, sizeSelect].forEach(el => {
+      el.addEventListener('change', filterProducts);
+      el.addEventListener('input', filterProducts);
+    });
 
     // Cotización simple (Offcanvas)
     const quote = [];
