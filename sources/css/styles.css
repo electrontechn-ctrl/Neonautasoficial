@@ -205,3 +205,8 @@
         background-size: 16px 16px;
         padding-right: 2.25rem;
     }
+
+    #catalogo { scroll-margin-top: 100px; }
+    #como-funciona { scroll-margin-top: 80px; }
+    #contacto { scroll-margin-top: 80px; }
+    #redes { scroll-margin-top: 80px; }
