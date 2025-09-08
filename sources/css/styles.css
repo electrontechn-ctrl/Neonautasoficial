@@ -177,3 +177,31 @@
     .social-handle {
         font-weight: 600;
     }
+
+    .form-select.select-oscuro {
+        background-color: #111827;
+        color: #e5e7eb;
+        border-color: #374151;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+
+    .form-select.select-oscuro:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 .25rem rgba(59, 130, 246, .25);
+        color: #fff;
+    }
+
+    .form-select.select-oscuro option[value=""] {
+        color: #9ca3af;
+    }
+
+    .form-select.select-oscuro {
+        background-image:
+            url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'><path d='M3.2 5.5l4.8 4.8 4.8-4.8' stroke='white' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right .75rem center;
+        background-size: 16px 16px;
+        padding-right: 2.25rem;
+    }
