@@ -230,7 +230,7 @@ function productCardHTML(p){
         </div>
         <div class="card-body d-flex flex-column">
           <h5 class="card-title">${p.title}</h5>
-          <p class="card-text text-secondary">${p.description || ''}</p>
+          
           <div class="mt-auto d-flex justify-content-between align-items-center">
             <span class="price">$${formatMXN(p.price)}</span>
             <span class="badge text-bg-secondary">${p.size || ''}</span>
@@ -241,7 +241,7 @@ function productCardHTML(p){
                     data-title="${p.title}"
                     data-description="${p.description || ''}"
                     data-price="${p.price}"
-                    data-sizes="${p.sizes_label || ''}"
+                    data-sizes="${p.sizes_label || ''}">
               Detalles
             </button>
           </div>
