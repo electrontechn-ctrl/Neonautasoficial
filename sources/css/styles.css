@@ -12,14 +12,27 @@
     }
 
     .btn-fab {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      font-size: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,.3);
+        position: fixed;
+        bottom: 1.25rem;
+        right: 1.25rem;
+        z-index: 1050;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
+        transition: opacity .25s ease, transform .2s ease;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(6px);
+    }
+
+    .btn-fab.visible {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
     }
 
     .brand-logo {
@@ -217,7 +230,18 @@
         padding-right: 2.25rem;
     }
 
-    #catalogo { scroll-margin-top: 100px; }
-    #como-funciona { scroll-margin-top: 80px; }
-    #contacto { scroll-margin-top: 80px; }
-    #redes { scroll-margin-top: 80px; }
+    #catalogo {
+        scroll-margin-top: 100px;
+    }
+
+    #como-funciona {
+        scroll-margin-top: 80px;
+    }
+
+    #contacto {
+        scroll-margin-top: 80px;
+    }
+
+    #redes {
+        scroll-margin-top: 80px;
+    }

@@ -293,11 +293,16 @@ async function loadProducts() {
 const fab = document.getElementById("fab");
 const section = document.getElementById("catalogoimg");
 
-window.addEventListener("scroll", () => {
-  const rect = section.getBoundingClientRect();
-  const inView = rect.top <= window.innerHeight && rect.bottom >= 0;
-  fab.classList.toggle("hidden", !inView);
+// Observa cuándo la sección entra/sale del viewport
+const io = new IntersectionObserver(entries => {
+  const entry = entries[0];
+  fab.classList.toggle('visible', entry.isIntersecting);
+}, {
+  threshold: 0.01     // con 1% de la sección ya se considera visible
+  // rootMargin: "0px 0px -20% 0px"  // opcional para ajustar el punto de aparición
 });
+
+io.observe(section);
 
 
 // Inicial
