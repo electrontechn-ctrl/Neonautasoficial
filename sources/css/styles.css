@@ -11,6 +11,17 @@
             var(--bg-velvet);
     }
 
+    .btn-fab {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,.3);
+    }
+
     .brand-logo {
         height: 48px;
         width: 48px;

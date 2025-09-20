@@ -96,11 +96,9 @@
                         <label class="form-label" for="categorySelect">Categoría</label>
                         <select id="categorySelect" class="form-select select-oscuro">
                             <option value="">Todas</option>
-                            <option>Alto</option>
-                            <option>Logo</option>
-                            <option>Decorativo</option>
+                            <option>Logos</option>
                             <option>Eventos</option>
-                            <option>Texto</option>
+                            <option>Para negocio</option>
                         </select>
                     </div>
                     <div class="col-6 col-md-3 col-lg-2">
@@ -124,7 +122,7 @@
     </section>
 
     <!-- CATÁLOGO -->
-    <section class="py-4 py-lg-5">
+    <section id="catalogoimg" class="py-4 py-lg-5">
         <div class="container">
             <div id="grid" class="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
 
@@ -289,7 +287,7 @@
                 </div>
                 <div class="modal-body">
                     <p id="detailsDesc" class="mb-2"></p>
-                    <ul class="list-unstyled small text-secondary">
+                    <ul class="list-unstyled small">
                         <li><i class="bi bi-rulers"></i> Tamaño: <span id="detailsSize"></span></li>
                         <li><i class="bi bi-shield-check"></i> Garantía: 3 meses</li>
                         <li><i class="bi bi-plug"></i> Incluye fuente 12V y herrajes</li>
@@ -302,6 +300,10 @@
             </div>
         </div>
     </div>
+
+    <a href="#catalogo" id="fab" class="btn btn-primary btn-fab position-fixed bottom-0 end-0 m-4 hidden">
+    <i class="bi bi-arrow-up"></i>
+  </a>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
