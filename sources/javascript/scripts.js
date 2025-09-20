@@ -291,7 +291,7 @@ async function loadProducts() {
 }
 
 const fab = document.getElementById("fab");
-const section = document.getElementById("especial");
+const section = document.getElementById("catalogoimg");
 
 window.addEventListener("scroll", () => {
   const rect = section.getBoundingClientRect();
