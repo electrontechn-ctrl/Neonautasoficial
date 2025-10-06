@@ -704,18 +704,6 @@ function setLoadingSending(isLoading){
     btn.textContent = isLoading ? 'Enviando…' : 'Finalizar';
   }
 
-
-    // Fallback universal: descarga (el navegador no puede crear carpetas reales desde <a download>)
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Designs_${filename}`; // sugerencia en el nombre
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 15000);
-    return { ok: true, method: 'download', filename };
-  }
-
-
   // ------------------------- Init ----------------------------
   function init() {
     buildBgPicker();
