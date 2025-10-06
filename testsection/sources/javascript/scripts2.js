@@ -95,6 +95,7 @@
   const CLOUDINARY_CLOUD = 'dangyk0wz';       // <- tu cloud name
   const CLOUDINARY_PRESET = 'storagehml';      // <- tu upload preset (Unsigned)
   const CLOUDINARY_FOLDER = 'Designs';         // <- carpeta (opcional)
+  const WA_API_ENDPOINT = 'https://<tu-worker>.workers.dev'; // ← pon aquí tu URL
 
 
 
@@ -540,27 +541,34 @@
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
   on(finalizeBtn, 'click', async () => {
+    const detail = {
+      text: state.lines.join('\n'),
+      lines: state.lines,
+      size: state.size,
+      color: state.color,
+      font: state.font,
+      price: calcPrice(),
+      dimensions: state.dimensions || null
+    };
+    root.dispatchEvent(new CustomEvent('neonBuilder:finalize', { detail }));
+
+    const blob = await capturePreviewBlob();
+    const msg =
+      `Hola 👋, me gustaría cotizar este diseño de neón.\n` +
+      `Medidas aprox: ${state.dimensions?.widthCm ?? state.size}×${state.dimensions?.heightCm ?? '—'} cm\n` +
+      `Tamaño seleccionado: ${state.size} cm de ancho.\n` +
+      `Precio estimado: ${fmtMXN.format(calcPrice())}\n` +
+      `Fuente: ${primaryFont(state.font)} • Color: ${state.color}`;
+
     try {
-      // 1) Capturar preview
-      const blob = await capturePreviewBlob('image/jpeg', 0.92);
-      if (!blob) throw new Error('No se pudo generar la captura');
-
-      // 2) Nombre del archivo
-      const filename = getDesignFilename(); // p.ej. 2025-10-05-14-33-12-design.jpg
-
-      // 3) Subir a Cloudinary (unsigned)
-      const up = await uploadToCloudinary(blob, filename);
-      const link = up.secure_url; // URL pública lista
-
-      // 4) Abrir WhatsApp con el mensaje + link
-      openWhatsAppWithLink(link);
-    } catch (err) {
-      console.error(err);
-      alert('No se pudo generar o subir el diseño. Verifica conexión o preset de Cloudinary.');
+      await sendViaWhatsAppAPI(blob, msg, '524428124789');   // ⟵ envía por Cloud API
+      alert('Enviado por WhatsApp API ✅');
+    } catch (e) {
+      console.warn('Fallo WA API, usando compartir/descarga...', e);
+      // fallback 100% front-end que ya implementamos:
+      await sharePreviewToFixedWhatsApp();
     }
   });
-
-
 
   // ------------------------- Helpers -------------------------
   // Nombre: (YYYY-MM-DD-HH-mm-ss)-design.jpg  (zona horaria local)
@@ -668,6 +676,20 @@
         // cae al fallback de descarga
       }
     }
+
+    async function sendViaWhatsAppAPI(blob, message, to = '524428124789') {
+      const fd = new FormData();
+      fd.append('file', new File([blob], 'neon-preview.png', { type: 'image/png' }));
+      fd.append('message', message);
+      fd.append('to', to);
+      const res = await fetch(WA_API_ENDPOINT, { method: 'POST', body: fd });
+      if (!res.ok) {
+        const err = await res.text().catch(() => '');
+        throw new Error('WA API error: ' + err);
+      }
+      return res.json();
+    }
+
 
     // Fallback universal: descarga (el navegador no puede crear carpetas reales desde <a download>)
     const url = URL.createObjectURL(blob);
