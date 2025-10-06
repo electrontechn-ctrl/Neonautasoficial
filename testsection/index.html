@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1) Si existe ./fondofiesta.jpg en la misma carpeta, úsala como fondo por defecto
   (async () => {
     try {
-      const r = await fetch('./sources/img/bg/fondofiesta.jpg', { method: 'HEAD' });
-      if (r.ok) document.documentElement.style.setProperty('--bg-image', 'url("./sources/img/bg/fondofiesta.jpg")');
+      const r = await fetch('../sources/img/fondofiesta.jpg', { method: 'HEAD' });
+      if (r.ok) document.documentElement.style.setProperty('--bg-image', 'url("../sources/img/fondofiesta.jpg")');
       // Si no existe, no pasa nada: se queda el degradado y NO hay error en consola.
     } catch(_) {}
   })();
