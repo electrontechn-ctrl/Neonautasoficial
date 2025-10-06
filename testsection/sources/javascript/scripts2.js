@@ -470,10 +470,6 @@
   }
 
 
-
-/* ========= WhatsApp Cloud API (vía Cloudflare Worker) ========= */
-const WA_API_ENDPOINT = 'https://TU-WORKER.workers.dev';   // <-- tu URL pública
-
 // Envío por tu Worker (Cloud API)
 async function sendViaWhatsAppAPI(blob, message, to = '524428124789') {
   const fd = new FormData();
@@ -707,76 +703,6 @@ function setLoadingSending(isLoading){
     btn.disabled = isLoading;
     btn.textContent = isLoading ? 'Enviando…' : 'Finalizar';
   }
-
-
-  // Captura el preview a JPG (evita “tainted” asegurando que el fondo sea local/DataURL)
-  async function capturePreviewBlob(mime = 'image/jpeg', quality = 0.92) {
-    const node = document.querySelector('.nb-canvas');
-    if (!node || !window.html2canvas) throw new Error('html2canvas no disponible');
-
-    try { clearSelection?.(); } catch { }
-    await (document.fonts?.ready ?? Promise.resolve());
-    await new Promise(r => requestAnimationFrame(r));
-
-    // (opcional) montar cotas dentro del canvas antes de capturar
-    const restore = (() => {
-      const canvas = document.querySelector('.nb-canvas');
-      const dimH = document.getElementById('nbDimH');
-      const dimV = document.getElementById('nbDimV');
-      const pH = dimH?.parentNode, nH = dimH?.nextSibling;
-      const pV = dimV?.parentNode, nV = dimV?.nextSibling;
-      if (canvas && dimH) canvas.appendChild(dimH);
-      if (canvas && dimV) canvas.appendChild(dimV);
-      return () => {
-        if (pH && dimH) pH.insertBefore(dimH, nH);
-        if (pV && dimV) pV.insertBefore(dimV, nV);
-      };
-    })();
-
-    try {
-      const canvas = await html2canvas(node, {
-        useCORS: true,
-        backgroundColor: '#0b0f18',     // o null si quieres transparencia
-        scale: window.devicePixelRatio,
-        logging: false
-      });
-      return new Promise(resolve => canvas.toBlob(b => resolve(b), mime, quality));
-    } finally {
-      restore();
-    }
-  }
-
-  async function saveDesignLocally(blob, filename) {
-    // File System Access API (Chrome/Edge/Opera con HTTPS)
-    if ('showDirectoryPicker' in window && window.isSecureContext) {
-      try {
-        // El usuario elige una carpeta "raíz" (p.ej. Descargas o Documentos)
-        const rootDir = await window.showDirectoryPicker({ id: 'neon-designs', mode: 'readwrite' });
-        // Creamos/abrimos la subcarpeta Designs
-        const designsDir = await rootDir.getDirectoryHandle('Designs', { create: true });
-        const fileHandle = await designsDir.getFileHandle(filename, { create: true });
-        const stream = await fileHandle.createWritable();
-        await stream.write(blob);
-        await stream.close();
-        return { ok: true, method: 'fs', filename };
-      } catch (e) {
-        console.warn('FS Access falló, uso descarga como fallback:', e);
-        // cae al fallback de descarga
-      }
-    }
-
-    async function sendViaWhatsAppAPI(blob, message, to = '524428124789') {
-      const fd = new FormData();
-      fd.append('file', new File([blob], 'neon-preview.png', { type: 'image/png' }));
-      fd.append('message', message);
-      fd.append('to', to);
-
-      const res = await fetch(WA_API_ENDPOINT, { method: 'POST', body: fd });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(`WA API error: ${JSON.stringify(data)}`);
-      return data;
-    }
-
 
 
     // Fallback universal: descarga (el navegador no puede crear carpetas reales desde <a download>)
