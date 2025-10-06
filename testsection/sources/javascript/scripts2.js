@@ -10,14 +10,7 @@
   // =====================================================
 
   // -------------------------- Utils --------------------------
-  (async () => {
-    const fd = new FormData();
-    fd.append('file', new Blob(['ok'], { type: 'text/plain' }));
-    fd.append('upload_preset', CLOUDINARY_PRESET);
-    if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
-    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, { method: 'POST', body: fd });
-    console.log(await r.json());
-  })();
+
 
 
 
@@ -103,6 +96,16 @@
   const CLOUDINARY_PRESET = 'storagehml';      // <- tu upload preset (Unsigned)
   const CLOUDINARY_FOLDER = 'Designs';         // <- carpeta (opcional)
 
+
+
+  (async () => {
+    const fd = new FormData();
+    fd.append('file', new Blob(['ok'], { type: 'text/plain' }));
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, { method: 'POST', body: fd });
+    console.log(await r.json());
+  })();
 
   // ------------------------- Estado --------------------------
   const state = {
