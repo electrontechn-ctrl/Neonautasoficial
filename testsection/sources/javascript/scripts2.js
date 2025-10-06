@@ -10,6 +10,18 @@
   // =====================================================
 
   // -------------------------- Utils --------------------------
+  (async () => {
+    const fd = new FormData();
+    fd.append('file', new Blob(['ok'], { type: 'text/plain' }));
+    fd.append('upload_preset', CLOUDINARY_PRESET);
+    if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, { method: 'POST', body: fd });
+    console.log(await r.json());
+  })();
+
+
+
+
   const qs = (s, r = document) => r.querySelector(s);
   const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
   const on = (el, evt, fn, opts) => el && el.addEventListener(evt, fn, opts);
@@ -87,9 +99,10 @@
   const WHATSAPP_NUMBER = '524428124789';
 
   // Cloudinary (unsigned)
-  const CLOUDINARY_CLOUD = 'danqyk0wz';     // <- cambia esto
-  const CLOUDINARY_PRESET = 'Tstoragehml';  // <- cambia esto (unsigned)
-  const CLOUDINARY_FOLDER = 'Designs';           // opcional: carpeta destino en Cloudinary
+  const CLOUDINARY_CLOUD = 'dangyk0wz';       // <- tu cloud name
+  const CLOUDINARY_PRESET = 'storagehml';      // <- tu upload preset (Unsigned)
+  const CLOUDINARY_FOLDER = 'Designs';         // <- carpeta (opcional)
+
 
   // ------------------------- Estado --------------------------
   const state = {
@@ -556,20 +569,27 @@
   }
 
   async function uploadToCloudinary(blob, filename) {
+    // Usa /image/upload (puedes usar /auto/upload también)
     const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
+
     const fd = new FormData();
     fd.append('file', blob);
-    fd.append('upload_preset', CLOUDINARY_PRESET);          // unsigned preset
+    fd.append('upload_preset', CLOUDINARY_PRESET); // debe existir y ser Unsigned
     if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
-    // public_id SIN extensión (Cloudinary añade .jpg automáticamente)
+
+    // Nombre estable (sin extensión). Si no lo necesitas, puedes omitir public_id.
     fd.append('public_id', filename.replace(/\.[^.]+$/, ''));
-    // (opcional) metadatos de contexto
-    fd.append('context', `caption=${filename}|alt=Neon design`);
+
+    // Si tu preset tiene "Unique filename: true", no afecta cuando envías public_id.
+    // (Si ya existe un asset con mismo public_id y overwrite=false, fallará)
+    // fd.append('overwrite', 'true'); // <- solo si tu preset permite sobrescritura
 
     const res = await fetch(url, { method: 'POST', body: fd });
-    if (!res.ok) throw new Error(await res.text().catch(() => 'Error Cloudinary'));
-    return res.json(); // => { secure_url, public_id, asset_id, ... }
+    const text = await res.text();
+    if (!res.ok) throw new Error(`Cloudinary ${res.status}: ${text}`);
+    return JSON.parse(text); // { secure_url, public_id, ... }
   }
+
 
   function openWhatsAppWithLink(link) {
     const text = `Este es el diseño que requiere:\n${link}`;
