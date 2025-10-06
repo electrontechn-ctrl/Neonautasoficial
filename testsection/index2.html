@@ -1,133 +1,233 @@
 <!doctype html>
-<html lang="es" data-bs-theme="dark">
-
+<html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neonautas — Constructor de Neón</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
-  <link href="sources/css/styles2.css" rel="stylesheet" />
+  <title>Subir imagen a Cloudinary – HTML + JS</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+    body { margin: 2rem; }
+    .card { max-width: 720px; border: 1px solid #ddd; border-radius: 14px; padding: 1.25rem; box-shadow: 0 1px 16px rgba(0,0,0,.04); }
+    .row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
+    .btn { appearance: none; border: 1px solid #aaa; background: #fff; padding: .6rem 1rem; border-radius: 10px; cursor: pointer; }
+    .btn[disabled] { opacity: .55; cursor: not-allowed; }
+    .hint { color: #555; font-size: .95rem; margin-top: .25rem; }
+    #preview { max-width: 280px; max-height: 220px; border-radius: 12px; display: none; border: 1px solid #eee; }
+    #progress { width: min(420px, 100%); height: 10px; }
+    #result { display: none; }
+    input[type="text"] { width: 100%; padding: .55rem .7rem; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; }
+    code { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: .1rem .35rem; }
+    hr { border: none; border-top: 1px dashed #ddd; margin: 1.25rem 0; }
+  </style>
 </head>
-
 <body>
-  <section id="neon-builder" class="nb">
-    <div class="nb-left">
-      <div class="nb-canvas" aria-label="Vista previa del letrero">
-        <div class="nb-bg nb-bg--1" id="nbBg"></div>
+  <h1>Subir imagen a Cloudinary (HTML + JS)</h1>
+  <p class="hint">Reemplaza <code>CLOUD_NAME</code> y <code>UPLOAD_PRESET</code> con tus valores. Este ejemplo usa <strong>uploads no firmados</strong> (unsigned) con preset público.</p>
 
-        <!-- Reglas/medidas -->
-        <div class="nb-measure nb-measure--h"><span id="nbHeightCm"><i class="bi bi-info-circle"></i> Haz click en una
-            palabra para personalizar </span></div>
-        <div class="nb-measure nb-measure--w"><span id="nbWidthCm">Los colores pueden verse diferentes en la vida
-            real.</span></div>
+  <div class="card" id="native-card">
+    <h2>Opción A — Nativa con <code>XMLHttpRequest</code> (barra de progreso)</h2>
 
-        <!-- Texto en neón -->
-        <div class="nb-preview" id="nbPreview" role="img" aria-label="Tu frase en neón"></div>
-      </div>
-
-      <!-- Cotas dinámicas -->
-      <div id="nbDimH" class="nb-dim nb-dim-h" hidden>
-        <div class="nb-dim-line"></div>
-        <div class="nb-dim-label" id="nbDimHLabel">cm</div>
-      </div>
-      <div id="nbDimV" class="nb-dim nb-dim-v" hidden>
-        <div class="nb-dim-line"></div>
-        <div class="nb-dim-label" id="nbDimVLabel">cm</div>
-      </div>
-
-      <!-- Cambiador de fondo -->
-      <div id="nbBgPicker" class="nb-bg-picker" role="listbox" aria-label="Fondos"></div>
-
-      <small class="nb-note">Los colores pueden verse diferentes en la vida real.</small>
+    <div class="row">
+      <input id="fileInput" type="file" accept="image/*" />
+      <button class="btn" id="uploadBtn" disabled>Subir a Cloudinary</button>
+      <span id="sizeInfo" class="hint"></span>
     </div>
 
-    <div class="nb-right">
-      <h3 class="nb-title">Crea tu Letrero Neón</h3>
+    <div class="row" style="margin-top:.75rem">
+      <img id="preview" alt="Vista previa" />
+    </div>
 
-      <!-- Paso 1: Texto -->
-      <div class="nb-step">
-        <label for="nbText" class="nb-label">Escribe tu texto</label>
-        <textarea id="nbText" class="nb-input" rows="3"
-          placeholder="Crea tu frase (usa Enter para separar renglones)"></textarea>
-        <div id="nbTextHelp" class="nb-help"></div>
-      </div>
+    <div style="margin:.75rem 0">
+      <progress id="progress" value="0" max="100" hidden></progress>
+      <div id="status" class="hint"></div>
+    </div>
 
-      <!-- Paso 2: Tamaño -->
-      <div class="nb-step">
-        <span class="nb-label">Elige el tamaño</span>
-        <div class="nb-sizes" role="radiogroup" aria-label="Tamaño del letrero">
-          <button class="nb-size is-active" role="radio" aria-checked="true" data-size="50">50cm<br><small>Máx. 8
-              letras, 2 renglones</small></button>
-          <button class="nb-size" role="radio" aria-checked="false" data-size="70">70cm<br><small>Máx. 11 letras, 2
-              renglones</small></button>
-          <button class="nb-size" role="radio" aria-checked="false" data-size="90">90cm<br><small>Máx. 13 letras, 2
-              renglones</small></button>
-          <button class="nb-size" role="radio" aria-checked="false" data-size="100">100cm<br><small>Máx. 16 letras, 2
-              renglones</small></button>
-          <button class="nb-size" role="radio" aria-checked="false" data-size="120">120cm<br><small>Máx. 18 letras, 2
-              renglones</small></button>
-          <button class="nb-size" role="radio" aria-checked="false" data-size="150">150cm<br><small>Máx. 22 letras, 2
-              renglones</small></button>
-        </div>
-        <div id="nbSizeHelp" class="nb-help">Las medidas mostradas pueden variar de 2 a 4cm.</div>
-      </div>
-
-      <!-- Paso 3: Color -->
-      <div class="nb-step">
-        <span class="nb-label">Color del neón</span>
-        <!-- Paleta global (se llena por JS con la misma paleta del popover) -->
-        <div id="nbGlobalColors" class="nb-colors" role="group" aria-label="Colores disponibles"></div>
-      </div>
-
-      <!-- Paso 4: Fuente -->
-      <div class="nb-step">
-        <label for="nbFont" class="nb-label">Fuente</label>
-        <select id="nbFont" class="nb-input">
-          <option value="Neon1, system-ui, sans-serif" selected>Neon1</option>
-          <option value="Neon2, system-ui, sans-serif">Neon2</option>
-          <option value="Neon3, system-ui, sans-serif">Neon3</option>
-        </select>
-      </div>
-
-      <!-- Resumen -->
-      <div class="nb-summary">
-        <div class="nb-price">Precio <strong id="nbPrice">$0.00 MXN</strong> <span class="nb-muted">IVA incluido</span>
-        </div>
-        <div id="nbValidation" class="nb-validation" hidden></div>
-      </div>
-
-      <button id="nbFinalize" class="nb-btn" disabled>Finalizar</button>
-
-      <!-- Popover flotante para palabra seleccionada -->
-      <div id="nbWordPopover" class="nb-popover" hidden>
-        <div class="nb-popover-row nb-popover-row--color">
-          <label>Color</label>
-          <button id="nbWordColorBtn" class="nb-chip swatch" aria-haspopup="true" aria-expanded="false"></button>
-          <div id="nbWordColorsMenu" class="nb-swatch-menu" hidden></div>
-        </div>
-        <div class="nb-popover-row">
-          <label for="nbWordFont">Tipografía</label>
-          <select id="nbWordFont">
-            <option value="Neon1, system-ui, sans-serif">Neon1</option>
-            <option value="Neon2, system-ui, sans-serif">Neon2</option>
-            <option value="Neon3, system-ui, sans-serif">Neon3</option>
-          </select>
-        </div>
+    <div id="result">
+      <label class="hint">URL segura subida:</label>
+      <input type="text" id="url" readonly />
+      <div style="margin-top:.5rem" class="row">
+        <button class="btn" id="copyBtn">Copiar URL</button>
+        <a class="btn" id="openBtn" href="#" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
       </div>
     </div>
-  </section>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
-  <script src="sources/javascript/scripts2.js" defer></script>
+  <hr/>
 
+  <div class="card" id="widget-card">
+    <h2>Opción B — Upload Widget oficial (2 clics)</h2>
+    <p class="hint">Más simple, maneja múltiples fuentes (local, cámara, URL) y UI lista.</p>
+    <button class="btn" id="openWidget">Abrir Cloudinary Upload Widget</button>
+  </div>
 
-  <noscript>
-    <div class="container py-4">
-      <div class="alert alert-warning">Para usar el catálogo, activa JavaScript.</div>
-    </div>
-  </noscript>
+  <!-- Script del Upload Widget de Cloudinary -->
+  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+
+  <script>
+    // 🔧 CONFIGURA TUS CREDENCIALES (reemplaza estos valores)
+    const CLOUD_NAME = "tu_cloud_name";        // p.ej. "demo"
+    const UPLOAD_PRESET = "tu_upload_preset";  // preset UNSIGNED creado en Cloudinary
+
+    // --- Utilidades UI ---
+    const $ = (sel) => document.querySelector(sel);
+    const fileInput = $("#fileInput");
+    const uploadBtn = $("#uploadBtn");
+    const progressEl = $("#progress");
+    const statusEl = $("#status");
+    const previewImg = $("#preview");
+    const urlInput = $("#url");
+    const resultBox = $("#result");
+    const copyBtn = $("#copyBtn");
+    const openBtn = $("#openBtn");
+    const sizeInfo = $("#sizeInfo");
+
+    // Validaciones básicas
+    const MAX_BYTES = 8 * 1024 * 1024; // 8 MB (ajusta a tu gusto)
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]; // añade más si quieres
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files?.[0];
+      resetUI();
+
+      if (!file) {
+        uploadBtn.disabled = true;
+        return;
+      }
+      sizeInfo.textContent = `${(file.size/1024/1024).toFixed(2)} MB`;
+
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setStatus(`Tipo no permitido: ${file.type}`, true);
+        uploadBtn.disabled = true;
+        return;
+      }
+      if (file.size > MAX_BYTES) {
+        setStatus(`El archivo supera el límite de ${(MAX_BYTES/1024/1024).toFixed(0)} MB.`, true);
+        uploadBtn.disabled = true;
+        return;
+      }
+
+      // Vista previa
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target?.result;
+        previewImg.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+
+      uploadBtn.disabled = false;
+    });
+
+    uploadBtn.addEventListener("click", async () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      try {
+        const url = await uploadToCloudinary(file, { folder: "ejemplos" }); // opcional: cambia carpeta
+        urlInput.value = url;
+        openBtn.href = url;
+        resultBox.style.display = "block";
+        setStatus("¡Listo! Imagen subida correctamente.");
+      } catch (err) {
+        setStatus(err.message || String(err), true);
+      }
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      if (!urlInput.value) return;
+      try {
+        await navigator.clipboard.writeText(urlInput.value);
+        setStatus("URL copiada al portapapeles.");
+      } catch {
+        setStatus("No se pudo copiar. Selecciona y copia manualmente.", true);
+      }
+    });
+
+    function resetUI() {
+      progressEl.hidden = true;
+      progressEl.value = 0;
+      statusEl.textContent = "";
+      resultBox.style.display = "none";
+      previewImg.style.display = "none";
+    }
+    function setStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.style.color = isError ? "#b00020" : "#333";
+    }
+
+    // --- SUBIDA NATIVA A CLOUDINARY (unsigned) ---
+    function uploadToCloudinary(file, opts = {}) {
+      return new Promise((resolve, reject) => {
+        const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", UPLOAD_PRESET); // preset UNSIGNED
+        if (opts.folder) formData.append("folder", opts.folder);
+        if (opts.tags) formData.append("tags", [].concat(opts.tags).join(","));
+        if (opts.public_id) formData.append("public_id", opts.public_id);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", endpoint);
+
+        xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percent = Math.round((e.loaded / e.total) * 100);
+            progressEl.hidden = false;
+            progressEl.value = percent;
+            setStatus(`Subiendo… ${percent}%`);
+          }
+        };
+
+        xhr.onerror = () => {
+          reject(new Error("Error de red durante la subida."));
+        };
+
+        xhr.onload = () => {
+          try {
+            const res = JSON.parse(xhr.responseText || "{}");
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(res.secure_url);
+            } else {
+              reject(new Error(res.error?.message || `Error ${xhr.status}`));
+            }
+          } catch {
+            reject(new Error("Respuesta inválida del servidor."));
+          }
+        };
+
+        xhr.send(formData);
+      });
+    }
+
+    // --- CLOUDINARY UPLOAD WIDGET (opción B) ---
+    const openWidgetBtn = $("#openWidget");
+    const widget = cloudinary.createUploadWidget(
+      {
+        cloudName: CLOUD_NAME,
+        uploadPreset: UPLOAD_PRESET,
+        sources: ["local", "url", "camera"],
+        multiple: false,
+        folder: "ejemplos", // opcional
+        maxFileSize: MAX_BYTES,
+      },
+      (error, result) => {
+        if (error) {
+          setStatus(error?.message || "Error en el widget", true);
+          return;
+        }
+        if (result && result.event === "success") {
+          const url = result.info.secure_url;
+          urlInput.value = url;
+          openBtn.href = url;
+          resultBox.style.display = "block";
+          setStatus("¡Listo! Imagen subida con el widget.");
+        }
+      }
+    );
+
+    openWidgetBtn.addEventListener("click", () => widget.open());
+
+    // ℹ️ NOTA IMPORTANTE
+    // Para producción, considera subidas firmadas (signed uploads) generando la firma en tu backend
+    // para mayor control (p.ej. restricciones, caducidad, etc.).
+  </script>
 </body>
-
 </html>
