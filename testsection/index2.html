@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es" data-bs-theme="dark">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Neonautas — Constructor de Neón</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="sources/css/styles2.css" rel="stylesheet" />
+</head>
+
+<body>
+  <section id="neon-builder" class="nb">
+    <div class="nb-left">
+      <div class="nb-canvas" aria-label="Vista previa del letrero">
+        <div class="nb-bg nb-bg--1" id="nbBg"></div>
+
+        <!-- Reglas/medidas -->
+        <div class="nb-measure nb-measure--h"><span id="nbHeightCm"><i class="bi bi-info-circle"></i> Haz click en una
+            palabra para personalizar </span></div>
+        <div class="nb-measure nb-measure--w"><span id="nbWidthCm">Los colores pueden verse diferentes en la vida
+            real.</span></div>
+
+        <!-- Texto en neón -->
+        <div class="nb-preview" id="nbPreview" role="img" aria-label="Tu frase en neón"></div>
+      </div>
+
+      <!-- Cotas dinámicas -->
+      <div id="nbDimH" class="nb-dim nb-dim-h" hidden>
+        <div class="nb-dim-line"></div>
+        <div class="nb-dim-label" id="nbDimHLabel">cm</div>
+      </div>
+      <div id="nbDimV" class="nb-dim nb-dim-v" hidden>
+        <div class="nb-dim-line"></div>
+        <div class="nb-dim-label" id="nbDimVLabel">cm</div>
+      </div>
+
+      <!-- Cambiador de fondo -->
+      <div id="nbBgPicker" class="nb-bg-picker" role="listbox" aria-label="Fondos"></div>
+
+      <small class="nb-note">Los colores pueden verse diferentes en la vida real.</small>
+    </div>
+
+    <div class="nb-right">
+      <h3 class="nb-title">Crea tu Letrero Neón</h3>
+
+      <!-- Paso 1: Texto -->
+      <div class="nb-step">
+        <label for="nbText" class="nb-label">Escribe tu texto</label>
+        <textarea id="nbText" class="nb-input" rows="3"
+          placeholder="Crea tu frase (usa Enter para separar renglones)"></textarea>
+        <div id="nbTextHelp" class="nb-help"></div>
+      </div>
+
+      <!-- Paso 2: Tamaño -->
+      <div class="nb-step">
+        <span class="nb-label">Elige el tamaño</span>
+        <div class="nb-sizes" role="radiogroup" aria-label="Tamaño del letrero">
+          <button class="nb-size is-active" role="radio" aria-checked="true" data-size="50">50cm<br><small>Máx. 8
+              letras, 2 renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="70">70cm<br><small>Máx. 11 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="90">90cm<br><small>Máx. 13 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="100">100cm<br><small>Máx. 16 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="120">120cm<br><small>Máx. 18 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="150">150cm<br><small>Máx. 22 letras, 2
+              renglones</small></button>
+        </div>
+        <div id="nbSizeHelp" class="nb-help">Las medidas mostradas pueden variar de 2 a 4cm.</div>
+      </div>
+
+      <!-- Paso 3: Color -->
+      <div class="nb-step">
+        <span class="nb-label">Color del neón</span>
+        <!-- Paleta global (se llena por JS con la misma paleta del popover) -->
+        <div id="nbGlobalColors" class="nb-colors" role="group" aria-label="Colores disponibles"></div>
+      </div>
+
+      <!-- Paso 4: Fuente -->
+      <div class="nb-step">
+        <label for="nbFont" class="nb-label">Fuente</label>
+        <select id="nbFont" class="nb-input">
+          <option value="Neon1, system-ui, sans-serif" selected>Neon1</option>
+          <option value="Neon2, system-ui, sans-serif">Neon2</option>
+          <option value="Neon3, system-ui, sans-serif">Neon3</option>
+        </select>
+      </div>
+
+      <!-- Resumen -->
+      <div class="nb-summary">
+        <div class="nb-price">Precio <strong id="nbPrice">$0.00 MXN</strong> <span class="nb-muted">IVA incluido</span>
+        </div>
+        <div id="nbValidation" class="nb-validation" hidden></div>
+      </div>
+
+      <button id="nbFinalize" class="nb-btn" disabled>Finalizar</button>
+
+      <!-- Popover flotante para palabra seleccionada -->
+      <div id="nbWordPopover" class="nb-popover" hidden>
+        <div class="nb-popover-row nb-popover-row--color">
+          <label>Color</label>
+          <button id="nbWordColorBtn" class="nb-chip swatch" aria-haspopup="true" aria-expanded="false"></button>
+          <div id="nbWordColorsMenu" class="nb-swatch-menu" hidden></div>
+        </div>
+        <div class="nb-popover-row">
+          <label for="nbWordFont">Tipografía</label>
+          <select id="nbWordFont">
+            <option value="Neon1, system-ui, sans-serif">Neon1</option>
+            <option value="Neon2, system-ui, sans-serif">Neon2</option>
+            <option value="Neon3, system-ui, sans-serif">Neon3</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+
+  <script src="sources/javascript/scripts2.js" defer></script>
+
+  <noscript>
+    <div class="container py-4">
+      <div class="alert alert-warning">Para usar el catálogo, activa JavaScript.</div>
+    </div>
+  </noscript>
+</body>
+
+</html>
