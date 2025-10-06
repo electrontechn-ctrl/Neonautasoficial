@@ -1,358 +1,141 @@
-<!DOCTYPE html>
-<html lang="es">
-
+<!doctype html>
+<html lang="es" data-bs-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <title>Subir imagen a Cloudinary</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-    }
-
-    body {
-      display: grid;
-      place-items: center;
-      min-height: 100dvh;
-      padding: 24px;
-      background: #f6f7f9;
-    }
-
-    .card {
-      width: min(720px, 100%);
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
-    }
-
-    h1 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
-
-    p {
-      margin: 0 0 16px;
-      color: #555;
-    }
-
-    .dropzone {
-      border: 2px dashed #c7cbd1;
-      border-radius: 12px;
-      padding: 18px;
-      background: #fafbfc;
-      display: grid;
-      gap: 12px;
-      place-items: center;
-      text-align: center;
-      color: #667085;
-      transition: background .2s, border-color .2s;
-    }
-
-    .dropzone.dragover {
-      background: #eef6ff;
-      border-color: #5b9cff;
-      color: #1f5fbf;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      background: #1a73e8;
-      color: #fff;
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn.secondary {
-      background: #e9eef6;
-      color: #1f2937;
-    }
-
-    .preview {
-      margin-top: 12px;
-      display: grid;
-      place-items: center;
-    }
-
-    .preview img {
-      max-width: 100%;
-      max-height: 280px;
-      border-radius: 12px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
-    }
-
-    .progress {
-      height: 8px;
-      width: 100%;
-      background: #edf2f7;
-      border-radius: 999px;
-      overflow: hidden;
-      margin: 12px 0;
-    }
-
-    .bar {
-      height: 100%;
-      width: 0%;
-      background: #1a73e8;
-      transition: width .15s;
-    }
-
-    .result {
-      word-break: break-all;
-      padding: 10px 12px;
-      background: #f8fafc;
-      border-radius: 10px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    }
-
-    .hint {
-      font-size: 12px;
-      color: #6b7280;
-    }
-  </style>
+  <title>Neonautas — Constructor de Neón</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="sources/css/styles2.css" rel="stylesheet" />
 </head>
 
 <body>
-  <div class="card">
-    <h1>Subir imagen a Cloudinary</h1>
-    <p>Arrastra una imagen o haz clic para elegir un archivo. Luego presiona “Subir”.</p>
+  <!--
+    Añadimos data-attributes para Cloudinary en el contenedor principal.
+    Puedes cambiarlos sin tocar el JS.
+  -->
+  <section id="neon-builder" class="nb"
+           data-cloud-name="danqyk0wz"
+           data-upload-preset="storagehml"
+           data-folder="Designs">
+    <div class="nb-left">
+      <div class="nb-canvas" aria-label="Vista previa del letrero">
+        <div class="nb-bg nb-bg--1" id="nbBg"></div>
 
-    <label class="dropzone" id="dropzone">
-      <input id="fileInput" type="file" accept="image/*" />
-      <div>
-        <div style="font-weight:600;">Arrastra y suelta tu imagen aquí</div>
-        <div class="hint">o haz clic para seleccionar</div>
+        <!-- Reglas/medidas -->
+        <div class="nb-measure nb-measure--h"><span id="nbHeightCm"><i class="bi bi-info-circle"></i> Haz click en una
+            palabra para personalizar </span></div>
+        <div class="nb-measure nb-measure--w"><span id="nbWidthCm">Los colores pueden verse diferentes en la vida
+            real.</span></div>
+
+        <!-- Texto en neón -->
+        <div class="nb-preview" id="nbPreview" role="img" aria-label="Tu frase en neón"></div>
       </div>
-    </label>
 
-    <div class="preview" id="preview" hidden>
-      <img id="previewImg" alt="Vista previa" />
-      <div class="hint" id="fileInfo"></div>
+      <!-- Cotas dinámicas -->
+      <div id="nbDimH" class="nb-dim nb-dim-h" hidden>
+        <div class="nb-dim-line"></div>
+        <div class="nb-dim-label" id="nbDimHLabel">cm</div>
+      </div>
+      <div id="nbDimV" class="nb-dim nb-dim-v" hidden>
+        <div class="nb-dim-line"></div>
+        <div class="nb-dim-label" id="nbDimVLabel">cm</div>
+      </div>
+
+      <!-- Cambiador de fondo -->
+      <div id="nbBgPicker" class="nb-bg-picker" role="listbox" aria-label="Fondos"></div>
+
+      <small class="nb-note">Los colores pueden verse diferentes en la vida real.</small>
     </div>
 
-    <div class="progress" title="Progreso de subida">
-      <div class="bar" id="progressBar"></div>
-    </div>
+    <div class="nb-right">
+      <h3 class="nb-title">Crea tu Letrero Neón</h3>
 
-    <div class="actions">
-      <button class="btn secondary" id="chooseBtn">Elegir archivo</button>
-      <button class="btn" id="uploadBtn" disabled>Subir a Cloudinary</button>
-    </div>
+      <!-- Paso 1: Texto -->
+      <div class="nb-step">
+        <label for="nbText" class="nb-label">Escribe tu texto</label>
+        <textarea id="nbText" class="nb-input" rows="3"
+          placeholder="Crea tu frase (usa Enter para separar renglones)"></textarea>
+        <div id="nbTextHelp" class="nb-help"></div>
+      </div>
 
-    <div id="status" class="hint" style="margin-top:8px;"></div>
+      <!-- Paso 2: Tamaño -->
+      <div class="nb-step">
+        <span class="nb-label">Elige el tamaño</span>
+        <div class="nb-sizes" role="radiogroup" aria-label="Tamaño del letrero">
+          <button class="nb-size is-active" role="radio" aria-checked="true" data-size="50">50cm<br><small>Máx. 8
+              letras, 2 renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="70">70cm<br><small>Máx. 11 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="90">90cm<br><small>Máx. 13 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="100">100cm<br><small>Máx. 16 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="120">120cm<br><small>Máx. 18 letras, 2
+              renglones</small></button>
+          <button class="nb-size" role="radio" aria-checked="false" data-size="150">150cm<br><small>Máx. 22 letras, 2
+              renglones</small></button>
+        </div>
+        <div id="nbSizeHelp" class="nb-help">Las medidas mostradas pueden variar de 2 a 4cm.</div>
+      </div>
 
-    <div id="resultWrap" style="margin-top:12px;" hidden>
-      <div class="hint" style="margin-bottom:6px;">URL del archivo subido:</div>
-      <div class="result" id="resultUrl"></div>
-      <div class="actions" style="margin-top:10px;">
-        <a id="openLink" class="btn" target="_blank" rel="noopener">Abrir</a>
-        <button id="copyBtn" class="btn secondary" type="button">Copiar URL</button>
+      <!-- Paso 3: Color -->
+      <div class="nb-step">
+        <span class="nb-label">Color del neón</span>
+        <!-- Paleta global (se llena por JS con la misma paleta del popover) -->
+        <div id="nbGlobalColors" class="nb-colors" role="group" aria-label="Colores disponibles"></div>
+      </div>
+
+      <!-- Paso 4: Fuente -->
+      <div class="nb-step">
+        <label for="nbFont" class="nb-label">Fuente</label>
+        <select id="nbFont" class="nb-input">
+          <option value="Neon1, system-ui, sans-serif" selected>Neon1</option>
+          <option value="Neon2, system-ui, sans-serif">Neon2</option>
+          <option value="Neon3, system-ui, sans-serif">Neon3</option>
+        </select>
+      </div>
+
+      <!-- Resumen -->
+      <div class="nb-summary">
+        <div class="nb-price">Precio <strong id="nbPrice">$0.00 MXN</strong> <span class="nb-muted">IVA incluido</span>
+        </div>
+        <div id="nbValidation" class="nb-validation" hidden></div>
+      </div>
+
+      <button id="nbFinalize" class="nb-btn" disabled>
+        <span class="label">Finalizar</span>
+        <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+      </button>
+
+      <!-- Popover flotante para palabra seleccionada -->
+      <div id="nbWordPopover" class="nb-popover" hidden>
+        <div class="nb-popover-row nb-popover-row--color">
+          <label>Color</label>
+          <button id="nbWordColorBtn" class="nb-chip swatch" aria-haspopup="true" aria-expanded="false"></button>
+          <div id="nbWordColorsMenu" class="nb-swatch-menu" hidden></div>
+        </div>
+        <div class="nb-popover-row">
+          <label for="nbWordFont">Tipografía</label>
+          <select id="nbWordFont">
+            <option value="Neon1, system-ui, sans-serif">Neon1</option>
+            <option value="Neon2, system-ui, sans-serif">Neon2</option>
+            <option value="Neon3, system-ui, sans-serif">Neon3</option>
+          </select>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <script>
-    // 🔧 Configura tus credenciales:
-    const CLOUD_NAME = "danqyk0wz";     // <- el del dashboard, con Q
-    const UPLOAD_PRESET = "storagehml"; // <- exactamente como sale en "Upload Presets"
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- html2canvas para capturar la vista previa a imagen -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="sources/javascript/scripts2.js" defer></script>
 
-    const FOLDER = ""; // opcional: p.ej. "mis-subidas"
-
-    // ⚙️ Límite de tamaño (opcional): 10MB
-    const MAX_SIZE_BYTES = 10 * 1024 * 1024;
-
-    // 🔗 Endpoint de subida unsigned
-    const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-
-    const fileInput = document.getElementById("fileInput");
-    const dropzone = document.getElementById("dropzone");
-    const chooseBtn = document.getElementById("chooseBtn");
-    const uploadBtn = document.getElementById("uploadBtn");
-    const preview = document.getElementById("preview");
-    const previewImg = document.getElementById("previewImg");
-    const fileInfo = document.getElementById("fileInfo");
-    const progressBar = document.getElementById("progressBar");
-    const statusEl = document.getElementById("status");
-    const resultWrap = document.getElementById("resultWrap");
-    const resultUrl = document.getElementById("resultUrl");
-    const openLink = document.getElementById("openLink");
-    const copyBtn = document.getElementById("copyBtn");
-
-    let currentFile = null;
-
-    // Helpers
-    const fmtBytes = (bytes) => {
-      const units = ["B", "KB", "MB", "GB"];
-      let i = 0, num = bytes;
-      while (num >= 1024 && i < units.length - 1) { num /= 1024; i++; }
-      return `${num.toFixed(num >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
-    };
-
-    function resetUI() {
-      progressBar.style.width = "0%";
-      statusEl.textContent = "";
-      resultWrap.hidden = true;
-      resultUrl.textContent = "";
-      openLink.href = "#";
-    }
-
-    function setFile(file) {
-      currentFile = file;
-      resetUI();
-
-      if (!file) {
-        preview.hidden = true;
-        uploadBtn.disabled = true;
-        return;
-      }
-
-      if (!file.type.startsWith("image/")) {
-        statusEl.textContent = "El archivo seleccionado no es una imagen.";
-        uploadBtn.disabled = true;
-        preview.hidden = true;
-        return;
-      }
-
-      if (file.size > MAX_SIZE_BYTES) {
-        statusEl.textContent = `El archivo supera el límite (${fmtBytes(MAX_SIZE_BYTES)}).`;
-        uploadBtn.disabled = true;
-        preview.hidden = true;
-        return;
-      }
-
-      // Vista previa
-      const url = URL.createObjectURL(file);
-      previewImg.src = url;
-      preview.hidden = false;
-      fileInfo.textContent = `${file.name} — ${fmtBytes(file.size)}`;
-      uploadBtn.disabled = false;
-    }
-
-    chooseBtn.addEventListener("click", () => fileInput.click());
-    dropzone.addEventListener("click", () => fileInput.click());
-
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files?.[0];
-      setFile(file || null);
-    });
-
-    // Drag & drop
-    ["dragenter", "dragover"].forEach(evt =>
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault(); e.stopPropagation();
-        dropzone.classList.add("dragover");
-      })
-    );
-    ["dragleave", "drop"].forEach(evt =>
-      dropzone.addEventListener(evt, (e) => {
-        e.preventDefault(); e.stopPropagation();
-        dropzone.classList.remove("dragover");
-      })
-    );
-    dropzone.addEventListener("drop", (e) => {
-      const file = e.dataTransfer.files?.[0];
-      setFile(file || null);
-    });
-
-    // Subir a Cloudinary (unsigned)
-    uploadBtn.addEventListener("click", async () => {
-      if (!currentFile) return;
-
-      uploadBtn.disabled = true;
-      statusEl.textContent = "Subiendo…";
-
-      const form = new FormData();
-      form.append("file", currentFile);
-      form.append("upload_preset", UPLOAD_PRESET);
-      if (FOLDER) form.append("folder", FOLDER);
-      // Opcionales:
-      // form.append("tags", "demo,ejemplo");
-      // form.append("context", "caption=Mi imagen|alt=Descripción accesible");
-
-      try {
-        const response = await xhrUpload(UPLOAD_URL, form, (pct) => {
-          progressBar.style.width = pct + "%";
-        });
-
-        if (!response.secure_url) {
-          throw new Error("Respuesta inesperada del servidor.");
-        }
-
-        statusEl.textContent = "¡Listo! Subida completa ✅";
-        resultUrl.textContent = response.secure_url;
-        resultWrap.hidden = false;
-        openLink.href = response.secure_url;
-
-      } catch (err) {
-        console.error(err);
-        statusEl.textContent = "Error al subir la imagen. Revisa tu cloud name y preset.";
-      } finally {
-        uploadBtn.disabled = false;
-      }
-    });
-
-    // Subida con progreso usando XHR
-    function xhrUpload(url, formData, onProgress) {
-      return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("POST", url);
-        xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable && typeof onProgress === "function") {
-            const pct = Math.round((e.loaded / e.total) * 100);
-            onProgress(pct);
-          }
-        });
-        xhr.onreadystatechange = () => {
-          if (xhr.readyState === 4) {
-            try {
-              const json = JSON.parse(xhr.responseText || "{}");
-              if (xhr.status >= 200 && xhr.status < 300) resolve(json);
-              else reject(json.error || json);
-            } catch (e) {
-              reject(e);
-            }
-          }
-        };
-        xhr.onerror = () => reject(new Error("Fallo de red"));
-        xhr.send(formData);
-      });
-    }
-
-    // Copiar URL
-    copyBtn.addEventListener("click", async () => {
-      const url = resultUrl.textContent.trim();
-      if (!url) return;
-      try {
-        await navigator.clipboard.writeText(url);
-        copyBtn.textContent = "¡Copiado!";
-        setTimeout(() => (copyBtn.textContent = "Copiar URL"), 1200);
-      } catch {
-        // Fallback
-        const sel = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(resultUrl);
-        sel.removeAllRanges();
-        sel.addRange(range);
-        document.execCommand("copy");
-        sel.removeAllRanges();
-        copyBtn.textContent = "¡Copiado!";
-        setTimeout(() => (copyBtn.textContent = "Copiar URL"), 1200);
-      }
-    });
-  </script>
+  <noscript>
+    <div class="container py-4">
+      <div class="alert alert-warning">Para usar el catálogo, activa JavaScript.</div>
+    </div>
+  </noscript>
 </body>
-
 </html>

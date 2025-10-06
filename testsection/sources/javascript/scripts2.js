@@ -2,19 +2,10 @@
   'use strict';
   // =====================================================
   // Neon Builder — versión optimizada y refactorizada
-  // - Menos lecturas del DOM (cache de nodos)
-  // - Menos reflows: usa DocumentFragment y rAF
-  // - Utilidades reusables y helpers
-  // - Manejo robusto de listeners y guards
-  // - Misma API/IDs, comportamiento equivalente
+  // + Captura de preview, subida a Cloudinary y compartir por WhatsApp
   // =====================================================
 
   // -------------------------- Utils --------------------------
-
-
-
-
-
   const qs = (s, r = document) => r.querySelector(s);
   const qsa = (s, r = document) => Array.from(r.querySelectorAll(s));
   const on = (el, evt, fn, opts) => el && el.addEventListener(evt, fn, opts);
@@ -25,6 +16,14 @@
   const getFS = (el) => parseFloat(getComputedStyle(el).fontSize) || 0;
 
   // --------------------- Configuración -----------------------
+  // Lee Cloudinary desde data-attributes del contenedor (fallback a valores por defecto)
+  const root = qs('#neon-builder');
+  const CLOUDINARY = {
+    CLOUD_NAME: root?.dataset.cloudName || 'danqyk0wz',
+    UPLOAD_PRESET: root?.dataset.uploadPreset || 'storagehml',
+    FOLDER: root?.dataset.folder || ''
+  };
+
   const ACRYLIC_RATE_CM2 = 0.06;   // $/cm²
   const LED_RATE_M = 26;           // $/m
   const POWER_SUPPLY_USD = 60;     // costo fijo
@@ -46,67 +45,47 @@
   };
 
   const CLEARANCE_FACTORS = {      // gap bajo la última línea
-    'Neon1': { base: 0.0, desc: 0.24 },
-    'Neon2': { base: 0.0, desc: 0.08 },
-    'Neon3': { base: 0.0, desc: 0.06 },
+    'Neon1': { base: 0.0,  desc: 0.24 },
+    'Neon2': { base: 0.0,  desc: 0.08 },
+    'Neon3': { base: 0.0,  desc: 0.06 },
     'Pacifico': { base: 0.34, desc: 0.46 },
-    'Poppins': { base: 0.22, desc: 0.30 },
+    'Poppins':  { base: 0.22, desc: 0.30 },
     'Playfair Display': { base: 0.28, desc: 0.38 },
   };
   const DEFAULT_CLEARANCE_FACTOR = { base: 0.32, desc: 0.44 };
 
   const PALETTE = [
-    { label: 'Blanco frío', color: '#ffffff' },
-    { label: 'Blanco cálido', color: '#ffe7b2' },
+    { label: 'Blanco frío',    color: '#ffffff' },
+    { label: 'Blanco cálido',  color: '#ffe7b2' },
     { label: 'Amarillo limón', color: '#f6ff00' },
-    { label: 'Amarillo dorado', color: '#ffd200' },
-    { label: 'Verde', color: '#39ff14' },
-    { label: 'Rojo', color: '#ff3333' },
-    { label: 'Morado', color: '#a970ff' },
-    { label: 'Azul rey', color: '#1e3aff' },
-    { label: 'Azul hielo', color: '#7bdfff' },
-    { label: 'Naranja', color: '#ff7a00' },
+    { label: 'Amarillo dorado',color: '#ffd200' },
+    { label: 'Verde',          color: '#39ff14' },
+    { label: 'Rojo',           color: '#ff3333' },
+    { label: 'Morado',         color: '#a970ff' },
+    { label: 'Azul rey',       color: '#1e3aff' },
+    { label: 'Azul hielo',     color: '#7bdfff' },
+    { label: 'Naranja',        color: '#ff7a00' },
   ];
 
   const FONT_SIZES = { 'Neon1': 90, 'Neon2': 100, 'Neon3': 100 };
   const DEFAULT_FONT_PX = 64;
 
   const SIZE_LIMITS = {
-    50: { maxCharsPerLine: 8, maxLines: 2, basePrice: 1890 },
-    70: { maxCharsPerLine: 11, maxLines: 2, basePrice: 2290 },
-    90: { maxCharsPerLine: 13, maxLines: 2, basePrice: 2790 },
+    50:  { maxCharsPerLine: 8,  maxLines: 2, basePrice: 1890 },
+    70:  { maxCharsPerLine: 11, maxLines: 2, basePrice: 2290 },
+    90:  { maxCharsPerLine: 13, maxLines: 2, basePrice: 2790 },
     100: { maxCharsPerLine: 16, maxLines: 2, basePrice: 3290 },
     120: { maxCharsPerLine: 18, maxLines: 2, basePrice: 3990 },
     150: { maxCharsPerLine: 22, maxLines: 2, basePrice: 4890 },
   };
 
   const BACKGROUNDS = [
-    { id: 'living', label: 'Sala', src: 'sources/img/bg/fondooscuro.jpg', thumb: 'sources/img/bg/fondooscuro.jpg' },
+    { id: 'living',     label: 'Sala',   src: 'sources/img/bg/fondooscuro.jpg',   thumb: 'sources/img/bg/fondooscuro.jpg' },
     { id: 'restaurant', label: 'Blanco', src: 'sources/img/bg/fondoluminoso.jpg', thumb: 'sources/img/bg/fondoluminoso.jpg' },
-    { id: 'party', label: 'Césped', src: 'sources/img/bg/fondofiesta.jpg', thumb: 'sources/img/bg/fondofiesta.jpg' },
+    { id: 'party',      label: 'Césped', src: 'sources/img/bg/fondofiesta.jpg',   thumb: 'sources/img/bg/fondofiesta.jpg' },
   ];
 
   const SCALE_BASE = { w: 1200, h: 540, min: 0.60, max: 1.40 };
-
-  // WhatsApp fijo
-  const WHATSAPP_NUMBER = '524428124789';
-
-  // Cloudinary (unsigned)
-  const CLOUDINARY_CLOUD = 'dangyk0wz';       // <- tu cloud name
-  const CLOUDINARY_PRESET = 'storagehml';      // <- tu upload preset (Unsigned)
-  const CLOUDINARY_FOLDER = 'Designs';         // <- carpeta (opcional)
-  const WA_API_ENDPOINT = 'https://neonautas-what.noesecrangel.workers.dev'; // ← pon aquí tu URL
-
-
-
-  (async () => {
-    const fd = new FormData();
-    fd.append('file', new Blob(['ok'], { type: 'text/plain' }));
-    fd.append('upload_preset', CLOUDINARY_PRESET);
-    if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
-    const r = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/auto/upload`, { method: 'POST', body: fd });
-    console.log(await r.json());
-  })();
 
   // ------------------------- Estado --------------------------
   const state = {
@@ -121,7 +100,6 @@
   };
 
   // ---------------------- Cache de nodos ---------------------
-  const root = qs('#neon-builder');
   const preview = qs('#nbPreview');
   const canvasEl = qs('.nb-canvas');
   const textInput = qs('#nbText');
@@ -130,6 +108,8 @@
   const priceEl = qs('#nbPrice');
   const validateEl = qs('#nbValidation');
   const finalizeBtn = qs('#nbFinalize');
+  const finalizeSpinner = finalizeBtn?.querySelector('.spinner-border');
+  const finalizeLabel = finalizeBtn?.querySelector('.label');
   const fontSelect = qs('#nbFont');
   const bgLayer = qs('#nbBg');
   const bgPickerWrap = qs('#nbBgPicker');
@@ -181,18 +161,13 @@
   function computeDynamicClearancePx(box) {
     const lastLine = box?.querySelector('.nb-line:last-child');
     if (!lastLine) return 24;
-
-    // Detecta descendentes en texto real de la última línea
     const hasDesc = /[gjpqy]/.test(lastLine.textContent || '');
-
-    // Elemento con mayor font-size en la última línea
     let target = lastLine;
     let maxSize = getFS(lastLine);
     lastLine.querySelectorAll('.nb-word').forEach(w => {
       const fs = getFS(w);
       if (fs > maxSize) { maxSize = fs; target = w; }
     });
-
     const fam = primaryFont(getComputedStyle(target).fontFamily);
     const factors = CLEARANCE_FACTORS[fam] || DEFAULT_CLEARANCE_FACTOR;
     const factor = hasDesc ? factors.desc : factors.base;
@@ -469,89 +444,6 @@
     if (textHelp) textHelp.textContent = `Máximo ${lim.maxCharsPerLine} letras por renglón • Máx. ${lim.maxLines} renglones`;
   }
 
-
-// Envío por tu Worker (Cloud API)
-async function sendViaWhatsAppAPI(blob, message, to = '524428124789') {
-  const fd = new FormData();
-  fd.append('file', new File([blob], 'neon-preview.png', { type: 'image/png' }));
-  fd.append('message', message);
-  fd.append('to', to);
-  const res = await fetch(WA_API_ENDPOINT, { method: 'POST', body: fd });
-  const data = await res.json().catch(()=> ({}));
-  if (!res.ok) throw new Error(`WA API error: ${JSON.stringify(data)}`);
-  return data;
-}
-
-/* ========= Captura del preview ========= */
-// Si ya tienes capturePreviewBlob() no dupliques; usa esta versión.
-async function capturePreviewBlob() {
-  const node = document.querySelector('.nb-canvas');
-  if (!node || !window.html2canvas) throw new Error('html2canvas no disponible');
-
-  // Si usas selección por palabra, ciérrala para que no salga en la captura
-  try { clearSelection?.(); } catch {}
-
-  await (document.fonts?.ready ?? Promise.resolve());
-  await new Promise(r => requestAnimationFrame(r));
-
-  const canvas = await html2canvas(node, {
-    useCORS: true,
-    backgroundColor: null,
-    scale: window.devicePixelRatio,
-    logging: false
-  });
-
-  return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 1));
-}
-
-/* ========= Fallback 100% front-end (móvil: Web Share / escritorio: descarga + wa.me) ========= */
-async function sharePreviewToFixedWhatsApp() {
-  const blob = await capturePreviewBlob();
-  if (!blob) throw new Error('No se pudo generar la imagen');
-
-  const file = new File([blob], 'neon-preview.png', { type: 'image/png' });
-
-  // Ajusta estos campos a tu estado actual:
-  const msg =
-    `Hola 👋, me gustaría cotizar este diseño de neón.\n` +
-    `Medidas aprox: ${(state?.dimensions?.widthCm ?? state?.size) ?? ''}×${state?.dimensions?.heightCm ?? '—'} cm\n` +
-    `Tamaño seleccionado: ${state?.size ?? ''} cm de ancho.\n` +
-    `Precio estimado: ${typeof calcPrice==='function' ? fmtMXN.format(calcPrice()) : ''}\n` +
-    `Fuente: ${typeof primaryFont==='function' ? primaryFont(state?.font) : ''} • Color: ${state?.color ?? ''}`;
-
-  // Móvil con Web Share API: adjunta la imagen directo a WhatsApp
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], text: msg, title: 'Cotización Letrero Neón' });
-      return;
-    } catch (e) { console.warn('Share cancelado/falló, uso descarga + wa.me', e); }
-  }
-
-  // Fallback: descarga la imagen y abre chat con el texto
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'neon-preview.png'; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 15000);
-
-  const WAPP_TO = '524428124789';
-  const u = `https://wa.me/${WAPP_TO}?text=${encodeURIComponent(
-    msg + '\n\n(La imagen se descargó automáticamente; adjúntala por favor)'
-  )}`;
-  window.open(u, '_blank', 'noopener,noreferrer');
-}
-
-/* ========= (Opcional) estado de carga en el botón ========= */
-function setLoadingSending(isLoading){
-  const btn = document.getElementById('nbFinalize');
-  if (!btn) return;
-  btn.disabled = isLoading;
-  btn.textContent = isLoading ? 'Enviando…' : 'Finalizar';
-}
-
-
-
-
-
   // -------------------- Ciclo de renderizado ------------------
   let _rafId = 0;
   function renderAll() {
@@ -575,15 +467,15 @@ function setLoadingSending(isLoading){
   on(document, 'click', (e) => {
     // cerrar menú de color si está abierto
     if (wordColorsMenu && !wordColorsMenu.hidden &&
-      !e.target.closest('#nbWordColorsMenu') &&
-      !e.target.closest('#nbWordColorBtn')) {
+        !e.target.closest('#nbWordColorsMenu') &&
+        !e.target.closest('#nbWordColorBtn')) {
       wordColorsMenu.hidden = true;
       wordColorBtn?.setAttribute('aria-expanded', 'false');
     }
     // cerrar popover si clic fuera
     if (wordPopover && !wordPopover.hidden &&
-      !e.target.closest('.nb-popover') &&
-      !e.target.closest('.nb-word')) {
+        !e.target.closest('.nb-popover') &&
+        !e.target.closest('.nb-word')) {
       clearSelection();
     }
   });
@@ -623,69 +515,35 @@ function setLoadingSending(isLoading){
   on(textInput, 'input', () => { state.lines = splitLines(textInput.value); clearSelection(); renderAll(); });
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
-  on(finalizeBtn, 'click', async () => {
-    setLoadingSending(true);
+
+  // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
+  on(qs('#nbFinalize'), 'click', async () => {
+    const detail = { text: state.lines.join('\n'), lines: state.lines, size: state.size, color: state.color, font: state.font, price: calcPrice() };
+    root?.dispatchEvent(new CustomEvent('neonBuilder:finalize', { detail }));
+
+    if (!state.lines.length) return;
+
+    // Abre una pestaña en blanco inmediatamente para no ser bloqueado por el navegador (popup blocker)
+    const waWin = window.open('', '_blank', 'noopener,noreferrer');
+
     try {
-      const blob = await capturePreviewBlob(); // genera imagen del preview
-
-      const msg =
-        `Hola 👋, me gustaría cotizar este diseño de neón.\n` +
-        `Medidas aprox: ${state.dimensions?.widthCm ?? state.size}×${state.dimensions?.heightCm ?? '—'} cm\n` +
-        `Tamaño: ${state.size} cm • Precio: ${fmtMXN.format(calcPrice())}\n` +
-        `Fuente: ${primaryFont(state.font)} • Color: ${state.color}`;
-
-      await sendViaWhatsAppAPI(blob, msg, '524428124789'); // ← Envía por Cloud API
-      alert('Enviado por WhatsApp API ✅');
-    } catch (e) {
-      console.warn('WA API falló, usando fallback...', e);
-      // Fallback 100% front-end (móvil: comparte; escritorio: descarga + abre chat)
-      await sharePreviewToFixedWhatsApp();
+      setLoading(true);
+      const blob = await capturePreviewBlob();
+      const imageUrl = await uploadToCloudinary(blob);
+      const msg = `Hola 👋, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(detail.text)}%0A${detail.size} cm): ${imageUrl}`;
+      const waUrl = `https://wa.me/?text=${msg}`;
+      if (waWin) waWin.location.href = waUrl;
+      else window.open(waUrl, '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      console.error(err);
+      alert('No se pudo subir la imagen. Revisa Cloudinary o tu conexión.');
+      if (waWin) waWin.close();
     } finally {
-      setLoadingSending(false);
+      setLoading(false);
     }
   });
 
-
   // ------------------------- Helpers -------------------------
-  // Nombre: (YYYY-MM-DD-HH-mm-ss)-design.jpg  (zona horaria local)
-  function getDesignFilename() {
-    const d = new Date();
-    const pad = n => String(n).padStart(2, '0');
-    const ts = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
-    return `${ts}-design.jpg`;
-  }
-
-  async function uploadToCloudinary(blob, filename) {
-    // Usa /image/upload (puedes usar /auto/upload también)
-    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
-
-    const fd = new FormData();
-    fd.append('file', blob);
-    fd.append('upload_preset', CLOUDINARY_PRESET); // debe existir y ser Unsigned
-    if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
-
-    // Nombre estable (sin extensión). Si no lo necesitas, puedes omitir public_id.
-    fd.append('public_id', filename.replace(/\.[^.]+$/, ''));
-
-    // Si tu preset tiene "Unique filename: true", no afecta cuando envías public_id.
-    // (Si ya existe un asset con mismo public_id y overwrite=false, fallará)
-    // fd.append('overwrite', 'true'); // <- solo si tu preset permite sobrescritura
-
-    const res = await fetch(url, { method: 'POST', body: fd });
-    const text = await res.text();
-    if (!res.ok) throw new Error(`Cloudinary ${res.status}: ${text}`);
-    return JSON.parse(text); // { secure_url, public_id, ... }
-  }
-
-
-  function openWhatsAppWithLink(link) {
-    const text = `Este es el diseño que requiere:\n${link}`;
-    const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
-    window.open(wa, '_blank', 'noopener,noreferrer');
-  }
-
-
-
   function clearWordOverrides(type) {
     Object.keys(state.wordStyles).forEach(li => {
       Object.keys(state.wordStyles[li]).forEach(wi => {
@@ -697,11 +555,43 @@ function setLoadingSending(isLoading){
     });
   }
 
-  function setLoadingSending(isLoading) {
-    const btn = document.getElementById('nbFinalize');
-    if (!btn) return;
-    btn.disabled = isLoading;
-    btn.textContent = isLoading ? 'Enviando…' : 'Finalizar';
+  // Loading UI
+  function setLoading(is) {
+    if (!finalizeBtn) return;
+    finalizeBtn.disabled = true;
+    if (finalizeSpinner) finalizeSpinner.classList.toggle('d-none', !is);
+    if (finalizeLabel) finalizeLabel.textContent = is ? 'Generando...' : 'Finalizar';
+    if (!is) finalizeBtn.disabled = false;
+  }
+
+  // Captura del canvas de preview como Blob PNG
+  async function capturePreviewBlob() {
+    if (!window.html2canvas) throw new Error('html2canvas no cargado');
+    const el = qs('.nb-canvas');
+    // Espera un frame para asegurar layout
+    await new Promise(r => requestAnimationFrame(r));
+    const canvas = await window.html2canvas(el, {
+      backgroundColor: null,
+      scale: Math.min(2, window.devicePixelRatio || 1),
+      useCORS: true,
+      allowTaint: true
+    });
+    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 0.92));
+  }
+
+  // Sube Blob a Cloudinary (unsigned)
+  async function uploadToCloudinary(blob) {
+    if (!blob) throw new Error('Blob vacío');
+    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY.CLOUD_NAME}/image/upload`;
+    const form = new FormData();
+    form.append('file', blob, 'neon-preview.png');
+    form.append('upload_preset', CLOUDINARY.UPLOAD_PRESET);
+    if (CLOUDINARY.FOLDER) form.append('folder', CLOUDINARY.FOLDER);
+
+    const res = await fetch(url, { method: 'POST', body: form });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body?.error?.message || 'Upload failed');
+    return body.secure_url;
   }
 
   // ------------------------- Init ----------------------------
@@ -713,6 +603,5 @@ function setLoadingSending(isLoading){
     state.lines = splitLines('Crea tu frase');
     renderAll();
   }
-
   init();
 })();
