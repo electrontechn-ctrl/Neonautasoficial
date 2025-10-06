@@ -83,6 +83,14 @@
 
   const SCALE_BASE = { w: 1200, h: 540, min: 0.60, max: 1.40 };
 
+  // WhatsApp fijo
+  const WHATSAPP_NUMBER = '524428124789';
+
+  // Cloudinary (unsigned)
+  const CLOUDINARY_CLOUD = 'danqyk0wz';     // <- cambia esto
+  const CLOUDINARY_PRESET = 'Tstoragehml';  // <- cambia esto (unsigned)
+  const CLOUDINARY_FOLDER = 'Designs';           // opcional: carpeta destino en Cloudinary
+
   // ------------------------- Estado --------------------------
   const state = {
     lines: [],
@@ -517,26 +525,25 @@
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
   on(finalizeBtn, 'click', async () => {
     try {
-      // 1) Captura
+      // 1) Capturar preview
       const blob = await capturePreviewBlob('image/jpeg', 0.92);
       if (!blob) throw new Error('No se pudo generar la captura');
 
       // 2) Nombre del archivo
-      const filename = getDesignFilename(); // (Fecha)-design.jpg
+      const filename = getDesignFilename(); // p.ej. 2025-10-05-14-33-12-design.jpg
 
-      // 3) Guardado local (carpeta "Designs" si es posible, o descarga)
-      await saveDesignLocally(blob, filename);
+      // 3) Subir a Cloudinary (unsigned)
+      const up = await uploadToCloudinary(blob, filename);
+      const link = up.secure_url; // URL pública lista
 
       // 4) Abrir WhatsApp con el mensaje + link
-      openWhatsAppWithDesignLink(filename);
-
-      // (Opcional) Notifica en UI
-      // alert(`Guardado como ${filename}. Recuerda subirlo a /Designs/ en tu servidor para que el link funcione.`);
+      openWhatsAppWithLink(link);
     } catch (err) {
       console.error(err);
-      alert('No se pudo generar o guardar la captura. Vuelve a intentar.');
+      alert('No se pudo generar o subir el diseño. Verifica conexión o preset de Cloudinary.');
     }
   });
+
 
 
   // ------------------------- Helpers -------------------------
@@ -548,14 +555,28 @@
     return `${ts}-design.jpg`;
   }
 
-  const WHATSAPP_NUMBER = '524428124789'; // ya lo tenías, solo asegúrate
+  async function uploadToCloudinary(blob, filename) {
+    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`;
+    const fd = new FormData();
+    fd.append('file', blob);
+    fd.append('upload_preset', CLOUDINARY_PRESET);          // unsigned preset
+    if (CLOUDINARY_FOLDER) fd.append('folder', CLOUDINARY_FOLDER);
+    // public_id SIN extensión (Cloudinary añade .jpg automáticamente)
+    fd.append('public_id', filename.replace(/\.[^.]+$/, ''));
+    // (opcional) metadatos de contexto
+    fd.append('context', `caption=${filename}|alt=Neon design`);
 
-  function openWhatsAppWithDesignLink(filename) {
-    const link = `https://neonautas.icu/Designs/${encodeURIComponent(filename)}`;
+    const res = await fetch(url, { method: 'POST', body: fd });
+    if (!res.ok) throw new Error(await res.text().catch(() => 'Error Cloudinary'));
+    return res.json(); // => { secure_url, public_id, asset_id, ... }
+  }
+
+  function openWhatsAppWithLink(link) {
     const text = `Este es el diseño que requiere:\n${link}`;
     const wa = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`;
     window.open(wa, '_blank', 'noopener,noreferrer');
   }
+
 
 
   function clearWordOverrides(type) {
@@ -578,8 +599,8 @@
     await (document.fonts?.ready ?? Promise.resolve());
     await new Promise(r => requestAnimationFrame(r));
 
-    // (opcional) si mueves cotas dentro del canvas para capturarlas:
-    const restore = (function _mountDimsIntoCanvasForShot() {
+    // (opcional) montar cotas dentro del canvas antes de capturar
+    const restore = (() => {
       const canvas = document.querySelector('.nb-canvas');
       const dimH = document.getElementById('nbDimH');
       const dimV = document.getElementById('nbDimV');
@@ -596,7 +617,7 @@
     try {
       const canvas = await html2canvas(node, {
         useCORS: true,
-        backgroundColor: '#0b0f18', // o null si quieres transparencia
+        backgroundColor: '#0b0f18',     // o null si quieres transparencia
         scale: window.devicePixelRatio,
         logging: false
       });
