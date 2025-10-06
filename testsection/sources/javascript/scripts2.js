@@ -95,7 +95,7 @@
   const CLOUDINARY_CLOUD = 'dangyk0wz';       // <- tu cloud name
   const CLOUDINARY_PRESET = 'storagehml';      // <- tu upload preset (Unsigned)
   const CLOUDINARY_FOLDER = 'Designs';         // <- carpeta (opcional)
-  const WA_API_ENDPOINT = 'https://<tu-worker>.workers.dev'; // ← pon aquí tu URL
+  const WA_API_ENDPOINT = 'https://neonautas-what.noesecrangel.workers.dev'; // ← pon aquí tu URL
 
 
 
@@ -541,34 +541,27 @@
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
   on(finalizeBtn, 'click', async () => {
-    const detail = {
-      text: state.lines.join('\n'),
-      lines: state.lines,
-      size: state.size,
-      color: state.color,
-      font: state.font,
-      price: calcPrice(),
-      dimensions: state.dimensions || null
-    };
-    root.dispatchEvent(new CustomEvent('neonBuilder:finalize', { detail }));
-
-    const blob = await capturePreviewBlob();
-    const msg =
-      `Hola 👋, me gustaría cotizar este diseño de neón.\n` +
-      `Medidas aprox: ${state.dimensions?.widthCm ?? state.size}×${state.dimensions?.heightCm ?? '—'} cm\n` +
-      `Tamaño seleccionado: ${state.size} cm de ancho.\n` +
-      `Precio estimado: ${fmtMXN.format(calcPrice())}\n` +
-      `Fuente: ${primaryFont(state.font)} • Color: ${state.color}`;
-
+    setLoadingSending(true);
     try {
-      await sendViaWhatsAppAPI(blob, msg, '524428124789');   // ⟵ envía por Cloud API
+      const blob = await capturePreviewBlob(); // genera imagen del preview
+
+      const msg =
+        `Hola 👋, me gustaría cotizar este diseño de neón.\n` +
+        `Medidas aprox: ${state.dimensions?.widthCm ?? state.size}×${state.dimensions?.heightCm ?? '—'} cm\n` +
+        `Tamaño: ${state.size} cm • Precio: ${fmtMXN.format(calcPrice())}\n` +
+        `Fuente: ${primaryFont(state.font)} • Color: ${state.color}`;
+
+      await sendViaWhatsAppAPI(blob, msg, '524428124789'); // ← Envía por Cloud API
       alert('Enviado por WhatsApp API ✅');
     } catch (e) {
-      console.warn('Fallo WA API, usando compartir/descarga...', e);
-      // fallback 100% front-end que ya implementamos:
+      console.warn('WA API falló, usando fallback...', e);
+      // Fallback 100% front-end (móvil: comparte; escritorio: descarga + abre chat)
       await sharePreviewToFixedWhatsApp();
+    } finally {
+      setLoadingSending(false);
     }
   });
+
 
   // ------------------------- Helpers -------------------------
   // Nombre: (YYYY-MM-DD-HH-mm-ss)-design.jpg  (zona horaria local)
@@ -620,6 +613,14 @@
       if (!Object.keys(state.wordStyles[li] || {}).length) delete state.wordStyles[li];
     });
   }
+
+  function setLoadingSending(isLoading) {
+    const btn = document.getElementById('nbFinalize');
+    if (!btn) return;
+    btn.disabled = isLoading;
+    btn.textContent = isLoading ? 'Enviando…' : 'Finalizar';
+  }
+
 
   // Captura el preview a JPG (evita “tainted” asegurando que el fondo sea local/DataURL)
   async function capturePreviewBlob(mime = 'image/jpeg', quality = 0.92) {
@@ -682,13 +683,13 @@
       fd.append('file', new File([blob], 'neon-preview.png', { type: 'image/png' }));
       fd.append('message', message);
       fd.append('to', to);
+
       const res = await fetch(WA_API_ENDPOINT, { method: 'POST', body: fd });
-      if (!res.ok) {
-        const err = await res.text().catch(() => '');
-        throw new Error('WA API error: ' + err);
-      }
-      return res.json();
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(`WA API error: ${JSON.stringify(data)}`);
+      return data;
     }
+
 
 
     // Fallback universal: descarga (el navegador no puede crear carpetas reales desde <a download>)
