@@ -469,6 +469,93 @@
     if (textHelp) textHelp.textContent = `Máximo ${lim.maxCharsPerLine} letras por renglón • Máx. ${lim.maxLines} renglones`;
   }
 
+
+
+/* ========= WhatsApp Cloud API (vía Cloudflare Worker) ========= */
+const WA_API_ENDPOINT = 'https://TU-WORKER.workers.dev';   // <-- tu URL pública
+
+// Envío por tu Worker (Cloud API)
+async function sendViaWhatsAppAPI(blob, message, to = '524428124789') {
+  const fd = new FormData();
+  fd.append('file', new File([blob], 'neon-preview.png', { type: 'image/png' }));
+  fd.append('message', message);
+  fd.append('to', to);
+  const res = await fetch(WA_API_ENDPOINT, { method: 'POST', body: fd });
+  const data = await res.json().catch(()=> ({}));
+  if (!res.ok) throw new Error(`WA API error: ${JSON.stringify(data)}`);
+  return data;
+}
+
+/* ========= Captura del preview ========= */
+// Si ya tienes capturePreviewBlob() no dupliques; usa esta versión.
+async function capturePreviewBlob() {
+  const node = document.querySelector('.nb-canvas');
+  if (!node || !window.html2canvas) throw new Error('html2canvas no disponible');
+
+  // Si usas selección por palabra, ciérrala para que no salga en la captura
+  try { clearSelection?.(); } catch {}
+
+  await (document.fonts?.ready ?? Promise.resolve());
+  await new Promise(r => requestAnimationFrame(r));
+
+  const canvas = await html2canvas(node, {
+    useCORS: true,
+    backgroundColor: null,
+    scale: window.devicePixelRatio,
+    logging: false
+  });
+
+  return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 1));
+}
+
+/* ========= Fallback 100% front-end (móvil: Web Share / escritorio: descarga + wa.me) ========= */
+async function sharePreviewToFixedWhatsApp() {
+  const blob = await capturePreviewBlob();
+  if (!blob) throw new Error('No se pudo generar la imagen');
+
+  const file = new File([blob], 'neon-preview.png', { type: 'image/png' });
+
+  // Ajusta estos campos a tu estado actual:
+  const msg =
+    `Hola 👋, me gustaría cotizar este diseño de neón.\n` +
+    `Medidas aprox: ${(state?.dimensions?.widthCm ?? state?.size) ?? ''}×${state?.dimensions?.heightCm ?? '—'} cm\n` +
+    `Tamaño seleccionado: ${state?.size ?? ''} cm de ancho.\n` +
+    `Precio estimado: ${typeof calcPrice==='function' ? fmtMXN.format(calcPrice()) : ''}\n` +
+    `Fuente: ${typeof primaryFont==='function' ? primaryFont(state?.font) : ''} • Color: ${state?.color ?? ''}`;
+
+  // Móvil con Web Share API: adjunta la imagen directo a WhatsApp
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], text: msg, title: 'Cotización Letrero Neón' });
+      return;
+    } catch (e) { console.warn('Share cancelado/falló, uso descarga + wa.me', e); }
+  }
+
+  // Fallback: descarga la imagen y abre chat con el texto
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'neon-preview.png'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 15000);
+
+  const WAPP_TO = '524428124789';
+  const u = `https://wa.me/${WAPP_TO}?text=${encodeURIComponent(
+    msg + '\n\n(La imagen se descargó automáticamente; adjúntala por favor)'
+  )}`;
+  window.open(u, '_blank', 'noopener,noreferrer');
+}
+
+/* ========= (Opcional) estado de carga en el botón ========= */
+function setLoadingSending(isLoading){
+  const btn = document.getElementById('nbFinalize');
+  if (!btn) return;
+  btn.disabled = isLoading;
+  btn.textContent = isLoading ? 'Enviando…' : 'Finalizar';
+}
+
+
+
+
+
   // -------------------- Ciclo de renderizado ------------------
   let _rafId = 0;
   function renderAll() {
