@@ -1,237 +1,357 @@
-
-    // 🔧 CONFIGURA TUS CREDENCIALES (reemplaza estos valores)
-    const CLOUD_NAME = "dangyk0wz";        // p.ej. "demo"
-    const UPLOAD_PRESET = "storagehml";  // preset UNSIGNED creado en Cloudinary
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="utf-8" />
+  <title>Subir imagen a Cloudinary</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Subir imagen a Cloudinary – HTML + JS</title>
   <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
-    body { margin: 2rem; }
-    .card { max-width: 720px; border: 1px solid #ddd; border-radius: 14px; padding: 1.25rem; box-shadow: 0 1px 16px rgba(0,0,0,.04); }
-    .row { display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }
-    .btn { appearance: none; border: 1px solid #aaa; background: #fff; padding: .6rem 1rem; border-radius: 10px; cursor: pointer; }
-    .btn[disabled] { opacity: .55; cursor: not-allowed; }
-    .hint { color: #555; font-size: .95rem; margin-top: .25rem; }
-    #preview { max-width: 280px; max-height: 220px; border-radius: 12px; display: none; border: 1px solid #eee; }
-    #progress { width: min(420px, 100%); height: 10px; }
-    #result { display: none; }
-    input[type="text"] { width: 100%; padding: .55rem .7rem; border-radius: 8px; border: 1px solid #ccc; font-family: inherit; }
-    code { background: #fafafa; border: 1px solid #eee; border-radius: 6px; padding: .1rem .35rem; }
-    hr { border: none; border-top: 1px dashed #ddd; margin: 1.25rem 0; }
+    :root {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      min-height: 100dvh;
+      padding: 24px;
+      background: #f6f7f9;
+    }
+
+    .card {
+      width: min(720px, 100%);
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, .08);
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    p {
+      margin: 0 0 16px;
+      color: #555;
+    }
+
+    .dropzone {
+      border: 2px dashed #c7cbd1;
+      border-radius: 12px;
+      padding: 18px;
+      background: #fafbfc;
+      display: grid;
+      gap: 12px;
+      place-items: center;
+      text-align: center;
+      color: #667085;
+      transition: background .2s, border-color .2s;
+    }
+
+    .dropzone.dragover {
+      background: #eef6ff;
+      border-color: #5b9cff;
+      color: #1f5fbf;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: #1a73e8;
+      color: #fff;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn.secondary {
+      background: #e9eef6;
+      color: #1f2937;
+    }
+
+    .preview {
+      margin-top: 12px;
+      display: grid;
+      place-items: center;
+    }
+
+    .preview img {
+      max-width: 100%;
+      max-height: 280px;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .08);
+    }
+
+    .progress {
+      height: 8px;
+      width: 100%;
+      background: #edf2f7;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: #1a73e8;
+      transition: width .15s;
+    }
+
+    .result {
+      word-break: break-all;
+      padding: 10px 12px;
+      background: #f8fafc;
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #6b7280;
+    }
   </style>
 </head>
+
 <body>
-  <h1>Subir imagen a Cloudinary (HTML + JS)</h1>
-  <p class="hint">Reemplaza <code>CLOUD_NAME</code> y <code>UPLOAD_PRESET</code> con tus valores. Este ejemplo usa <strong>uploads no firmados</strong> (unsigned) con preset público.</p>
+  <div class="card">
+    <h1>Subir imagen a Cloudinary</h1>
+    <p>Arrastra una imagen o haz clic para elegir un archivo. Luego presiona “Subir”.</p>
 
-  <div class="card" id="native-card">
-    <h2>Opción A — Nativa con <code>XMLHttpRequest</code> (barra de progreso)</h2>
-
-    <div class="row">
+    <label class="dropzone" id="dropzone">
       <input id="fileInput" type="file" accept="image/*" />
+      <div>
+        <div style="font-weight:600;">Arrastra y suelta tu imagen aquí</div>
+        <div class="hint">o haz clic para seleccionar</div>
+      </div>
+    </label>
+
+    <div class="preview" id="preview" hidden>
+      <img id="previewImg" alt="Vista previa" />
+      <div class="hint" id="fileInfo"></div>
+    </div>
+
+    <div class="progress" title="Progreso de subida">
+      <div class="bar" id="progressBar"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn secondary" id="chooseBtn">Elegir archivo</button>
       <button class="btn" id="uploadBtn" disabled>Subir a Cloudinary</button>
-      <span id="sizeInfo" class="hint"></span>
     </div>
 
-    <div class="row" style="margin-top:.75rem">
-      <img id="preview" alt="Vista previa" />
-    </div>
+    <div id="status" class="hint" style="margin-top:8px;"></div>
 
-    <div style="margin:.75rem 0">
-      <progress id="progress" value="0" max="100" hidden></progress>
-      <div id="status" class="hint"></div>
-    </div>
-
-    <div id="result">
-      <label class="hint">URL segura subida:</label>
-      <input type="text" id="url" readonly />
-      <div style="margin-top:.5rem" class="row">
-        <button class="btn" id="copyBtn">Copiar URL</button>
-        <a class="btn" id="openBtn" href="#" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+    <div id="resultWrap" style="margin-top:12px;" hidden>
+      <div class="hint" style="margin-bottom:6px;">URL del archivo subido:</div>
+      <div class="result" id="resultUrl"></div>
+      <div class="actions" style="margin-top:10px;">
+        <a id="openLink" class="btn" target="_blank" rel="noopener">Abrir</a>
+        <button id="copyBtn" class="btn secondary" type="button">Copiar URL</button>
       </div>
     </div>
   </div>
 
-  <hr/>
-
-  <div class="card" id="widget-card">
-    <h2>Opción B — Upload Widget oficial (2 clics)</h2>
-    <p class="hint">Más simple, maneja múltiples fuentes (local, cámara, URL) y UI lista.</p>
-    <button class="btn" id="openWidget">Abrir Cloudinary Upload Widget</button>
-  </div>
-
-  <!-- Script del Upload Widget de Cloudinary -->
-  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
-
   <script>
-    // 🔧 CONFIGURA TUS CREDENCIALES (reemplaza estos valores)
+    // 🔧 Configura tus credenciales:
     const CLOUD_NAME = "dangyk0wz";        // p.ej. "demo"
-    const UPLOAD_PRESET = "storagehml";  // preset UNSIGNED creado en Cloudinary
+    const UPLOAD_PRESET = "storagehml"; // preset unsigned
+    const FOLDER = ""; // opcional: p.ej. "mis-subidas"
 
-    // --- Utilidades UI ---
-    const $ = (sel) => document.querySelector(sel);
-    const fileInput = $("#fileInput");
-    const uploadBtn = $("#uploadBtn");
-    const progressEl = $("#progress");
-    const statusEl = $("#status");
-    const previewImg = $("#preview");
-    const urlInput = $("#url");
-    const resultBox = $("#result");
-    const copyBtn = $("#copyBtn");
-    const openBtn = $("#openBtn");
-    const sizeInfo = $("#sizeInfo");
+    // ⚙️ Límite de tamaño (opcional): 10MB
+    const MAX_SIZE_BYTES = 10 * 1024 * 1024;
 
-    // Validaciones básicas
-    const MAX_BYTES = 8 * 1024 * 1024; // 8 MB (ajusta a tu gusto)
-    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"]; // añade más si quieres
+    // 🔗 Endpoint de subida unsigned
+    const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
-    fileInput.addEventListener("change", () => {
-      const file = fileInput.files?.[0];
+    const fileInput = document.getElementById("fileInput");
+    const dropzone = document.getElementById("dropzone");
+    const chooseBtn = document.getElementById("chooseBtn");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const preview = document.getElementById("preview");
+    const previewImg = document.getElementById("previewImg");
+    const fileInfo = document.getElementById("fileInfo");
+    const progressBar = document.getElementById("progressBar");
+    const statusEl = document.getElementById("status");
+    const resultWrap = document.getElementById("resultWrap");
+    const resultUrl = document.getElementById("resultUrl");
+    const openLink = document.getElementById("openLink");
+    const copyBtn = document.getElementById("copyBtn");
+
+    let currentFile = null;
+
+    // Helpers
+    const fmtBytes = (bytes) => {
+      const units = ["B", "KB", "MB", "GB"];
+      let i = 0, num = bytes;
+      while (num >= 1024 && i < units.length - 1) { num /= 1024; i++; }
+      return `${num.toFixed(num >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
+    };
+
+    function resetUI() {
+      progressBar.style.width = "0%";
+      statusEl.textContent = "";
+      resultWrap.hidden = true;
+      resultUrl.textContent = "";
+      openLink.href = "#";
+    }
+
+    function setFile(file) {
+      currentFile = file;
       resetUI();
 
       if (!file) {
+        preview.hidden = true;
         uploadBtn.disabled = true;
         return;
       }
-      sizeInfo.textContent = `${(file.size/1024/1024).toFixed(2)} MB`;
 
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        setStatus(`Tipo no permitido: ${file.type}`, true);
+      if (!file.type.startsWith("image/")) {
+        statusEl.textContent = "El archivo seleccionado no es una imagen.";
         uploadBtn.disabled = true;
+        preview.hidden = true;
         return;
       }
-      if (file.size > MAX_BYTES) {
-        setStatus(`El archivo supera el límite de ${(MAX_BYTES/1024/1024).toFixed(0)} MB.`, true);
+
+      if (file.size > MAX_SIZE_BYTES) {
+        statusEl.textContent = `El archivo supera el límite (${fmtBytes(MAX_SIZE_BYTES)}).`;
         uploadBtn.disabled = true;
+        preview.hidden = true;
         return;
       }
 
       // Vista previa
-      const reader = new FileReader();
-      reader.onload = e => {
-        previewImg.src = e.target?.result;
-        previewImg.style.display = "block";
-      };
-      reader.readAsDataURL(file);
-
+      const url = URL.createObjectURL(file);
+      previewImg.src = url;
+      preview.hidden = false;
+      fileInfo.textContent = `${file.name} — ${fmtBytes(file.size)}`;
       uploadBtn.disabled = false;
+    }
+
+    chooseBtn.addEventListener("click", () => fileInput.click());
+    dropzone.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      setFile(file || null);
     });
 
+    // Drag & drop
+    ["dragenter", "dragover"].forEach(evt =>
+      dropzone.addEventListener(evt, (e) => {
+        e.preventDefault(); e.stopPropagation();
+        dropzone.classList.add("dragover");
+      })
+    );
+    ["dragleave", "drop"].forEach(evt =>
+      dropzone.addEventListener(evt, (e) => {
+        e.preventDefault(); e.stopPropagation();
+        dropzone.classList.remove("dragover");
+      })
+    );
+    dropzone.addEventListener("drop", (e) => {
+      const file = e.dataTransfer.files?.[0];
+      setFile(file || null);
+    });
+
+    // Subir a Cloudinary (unsigned)
     uploadBtn.addEventListener("click", async () => {
-      const file = fileInput.files?.[0];
-      if (!file) return;
+      if (!currentFile) return;
+
+      uploadBtn.disabled = true;
+      statusEl.textContent = "Subiendo…";
+
+      const form = new FormData();
+      form.append("file", currentFile);
+      form.append("upload_preset", UPLOAD_PRESET);
+      if (FOLDER) form.append("folder", FOLDER);
+      // Opcionales:
+      // form.append("tags", "demo,ejemplo");
+      // form.append("context", "caption=Mi imagen|alt=Descripción accesible");
+
       try {
-        const url = await uploadToCloudinary(file, { folder: "ejemplos" }); // opcional: cambia carpeta
-        urlInput.value = url;
-        openBtn.href = url;
-        resultBox.style.display = "block";
-        setStatus("¡Listo! Imagen subida correctamente.");
+        const response = await xhrUpload(UPLOAD_URL, form, (pct) => {
+          progressBar.style.width = pct + "%";
+        });
+
+        if (!response.secure_url) {
+          throw new Error("Respuesta inesperada del servidor.");
+        }
+
+        statusEl.textContent = "¡Listo! Subida completa ✅";
+        resultUrl.textContent = response.secure_url;
+        resultWrap.hidden = false;
+        openLink.href = response.secure_url;
+
       } catch (err) {
-        setStatus(err.message || String(err), true);
+        console.error(err);
+        statusEl.textContent = "Error al subir la imagen. Revisa tu cloud name y preset.";
+      } finally {
+        uploadBtn.disabled = false;
       }
     });
 
-    copyBtn.addEventListener("click", async () => {
-      if (!urlInput.value) return;
-      try {
-        await navigator.clipboard.writeText(urlInput.value);
-        setStatus("URL copiada al portapapeles.");
-      } catch {
-        setStatus("No se pudo copiar. Selecciona y copia manualmente.", true);
-      }
-    });
-
-    function resetUI() {
-      progressEl.hidden = true;
-      progressEl.value = 0;
-      statusEl.textContent = "";
-      resultBox.style.display = "none";
-      previewImg.style.display = "none";
-    }
-    function setStatus(msg, isError = false) {
-      statusEl.textContent = msg;
-      statusEl.style.color = isError ? "#b00020" : "#333";
-    }
-
-    // --- SUBIDA NATIVA A CLOUDINARY (unsigned) ---
-    function uploadToCloudinary(file, opts = {}) {
+    // Subida con progreso usando XHR
+    function xhrUpload(url, formData, onProgress) {
       return new Promise((resolve, reject) => {
-        const endpoint = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", UPLOAD_PRESET); // preset UNSIGNED
-        if (opts.folder) formData.append("folder", opts.folder);
-        if (opts.tags) formData.append("tags", [].concat(opts.tags).join(","));
-        if (opts.public_id) formData.append("public_id", opts.public_id);
-
         const xhr = new XMLHttpRequest();
-        xhr.open("POST", endpoint);
-
-        xhr.upload.onprogress = (e) => {
-          if (e.lengthComputable) {
-            const percent = Math.round((e.loaded / e.total) * 100);
-            progressEl.hidden = false;
-            progressEl.value = percent;
-            setStatus(`Subiendo… ${percent}%`);
+        xhr.open("POST", url);
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable && typeof onProgress === "function") {
+            const pct = Math.round((e.loaded / e.total) * 100);
+            onProgress(pct);
           }
-        };
-
-        xhr.onerror = () => {
-          reject(new Error("Error de red durante la subida."));
-        };
-
-        xhr.onload = () => {
-          try {
-            const res = JSON.parse(xhr.responseText || "{}");
-            if (xhr.status >= 200 && xhr.status < 300) {
-              resolve(res.secure_url);
-            } else {
-              reject(new Error(res.error?.message || `Error ${xhr.status}`));
+        });
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState === 4) {
+            try {
+              const json = JSON.parse(xhr.responseText || "{}");
+              if (xhr.status >= 200 && xhr.status < 300) resolve(json);
+              else reject(json.error || json);
+            } catch (e) {
+              reject(e);
             }
-          } catch {
-            reject(new Error("Respuesta inválida del servidor."));
           }
         };
-
+        xhr.onerror = () => reject(new Error("Fallo de red"));
         xhr.send(formData);
       });
     }
 
-    // --- CLOUDINARY UPLOAD WIDGET (opción B) ---
-    const openWidgetBtn = $("#openWidget");
-    const widget = cloudinary.createUploadWidget(
-      {
-        cloudName: CLOUD_NAME,
-        uploadPreset: UPLOAD_PRESET,
-        sources: ["local", "url", "camera"],
-        multiple: false,
-        folder: "ejemplos", // opcional
-        maxFileSize: MAX_BYTES,
-      },
-      (error, result) => {
-        if (error) {
-          setStatus(error?.message || "Error en el widget", true);
-          return;
-        }
-        if (result && result.event === "success") {
-          const url = result.info.secure_url;
-          urlInput.value = url;
-          openBtn.href = url;
-          resultBox.style.display = "block";
-          setStatus("¡Listo! Imagen subida con el widget.");
-        }
+    // Copiar URL
+    copyBtn.addEventListener("click", async () => {
+      const url = resultUrl.textContent.trim();
+      if (!url) return;
+      try {
+        await navigator.clipboard.writeText(url);
+        copyBtn.textContent = "¡Copiado!";
+        setTimeout(() => (copyBtn.textContent = "Copiar URL"), 1200);
+      } catch {
+        // Fallback
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(resultUrl);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        document.execCommand("copy");
+        sel.removeAllRanges();
+        copyBtn.textContent = "¡Copiado!";
+        setTimeout(() => (copyBtn.textContent = "Copiar URL"), 1200);
       }
-    );
-
-    openWidgetBtn.addEventListener("click", () => widget.open());
-
-    // ℹ️ NOTA IMPORTANTE
-    // Para producción, considera subidas firmadas (signed uploads) generando la firma en tu backend
-    // para mayor control (p.ej. restricciones, caducidad, etc.).
+    });
   </script>
 </body>
+
 </html>
