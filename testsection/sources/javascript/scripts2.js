@@ -1,12 +1,8 @@
 (() => {
   'use strict';
   // =====================================================
-  // Neon Builder — versión optimizada y refactorizada
-  // - Menos lecturas del DOM (cache de nodos)
-  // - Menos reflows: usa DocumentFragment y rAF
-  // - Utilidades reusables y helpers
-  // - Manejo robusto de listeners y guards
-  // - Misma API/IDs, comportamiento equivalente
+  // Noel Ramirez-Neonautas 2025
+  // Letrero neón - Cotizador interactivo
   // =====================================================
 
   // -------------------------- Utils --------------------------
@@ -20,7 +16,7 @@
   const getFS = (el) => parseFloat(getComputedStyle(el).fontSize) || 0;
 
   // --------------------- Configuración -----------------------
-  const ACRYLIC_RATE_CM2 = 0.06;   // $/cm²
+  const ACRYLIC_RATE_CM2 = 0.06;   // $/cm
   const LED_RATE_M = 26;           // $/m
   const POWER_SUPPLY_USD = 60;     // costo fijo
   const MISC_FIXED_USD = 40;       // consumibles
@@ -576,9 +572,9 @@
   on(textInput, 'input', () => { state.lines = splitLines(textInput.value); clearSelection(); renderAll(); });
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
+  
   // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
   document.querySelector('#nbFinalize')?.addEventListener('click', async () => {
-    // Construye el texto que quieras mostrar en WhatsApp
     const lines = (state?.lines || []).join('\n');
     const size = state?.size || 0;
 
@@ -594,7 +590,6 @@
       const msg = `Hola, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(lines)}%0A${size} cm): ${imageUrl}`;
       const waUrl = `https://wa.me/524428124789/?text=${msg}`;
 
-      // Abre WhatsApp en la MISMA pestaña → sin pestaña en blanco
       navigateAfterHide(waUrl);
     } catch (err) {
       console.error(err);
