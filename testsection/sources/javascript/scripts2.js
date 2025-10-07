@@ -456,17 +456,17 @@
   async function capturePreviewBlob() {
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
 
-    // Capturamos TODO el panel izquierdo (canvas + reglas/medidas)
+    // Capturamos TODO el panel izquierdo (canvas + cotas)
     const el = document.querySelector('.nb-left');
     if (!el) throw new Error('No se encontró .nb-left');
 
-    // Oculta temporalmente elementos marcados para no salir en la captura
+    // Oculta elementos marcados para que NO aparezcan ni empujen layout
     const toHide = Array.from(el.querySelectorAll('[data-hide-in-capture]'));
-    const prevVisibility = toHide.map(n => n.style.visibility);
-    toHide.forEach(n => { n.style.visibility = 'hidden'; });
+    const prevDisplay = toHide.map(n => n.style.display);
+    toHide.forEach(n => { n.style.display = 'none'; });
 
     try {
-      // Espera un frame para asegurar layout estable
+      // Asegura layout estable
       await new Promise(r => requestAnimationFrame(r));
 
       const canvas = await window.html2canvas(el, {
@@ -474,8 +474,6 @@
         scale: Math.min(2, window.devicePixelRatio || 1),
         useCORS: true,
         allowTaint: true,
-        windowWidth: el.scrollWidth,
-        windowHeight: el.scrollHeight,
         logging: false
       });
 
@@ -483,10 +481,11 @@
         canvas.toBlob(b => resolve(b), 'image/png', 0.92)
       );
     } finally {
-      // Restaura visibilidad
-      toHide.forEach((n, i) => { n.style.visibility = prevVisibility[i]; });
+      // Restaura display original
+      toHide.forEach((n, i) => { n.style.display = prevDisplay[i]; });
     }
   }
+
 
 
   // Sube Blob a Cloudinary (unsigned)

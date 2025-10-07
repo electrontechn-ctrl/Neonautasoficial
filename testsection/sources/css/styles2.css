@@ -620,6 +620,7 @@
 .nb-dim {
   position: absolute;
   pointer-events: none;
+  z-index: 5;
   color: #e6ebf3;
   font: 600 12px/1 Poppins, system-ui, sans-serif;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
