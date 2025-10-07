@@ -69,7 +69,7 @@
     { id: 'party', label: 'Césped', src: 'sources/img/bg/fondofiesta.jpg', thumb: 'sources/img/bg/fondofiesta.jpg' },
   ];
 
-  const SCALE_BASE = { w: 1200, h: 540, min: 0.45, max: 1.40 };
+  const SCALE_BASE = { w: 1200, h: 540, min: 0.5, max: 1.40 };
 
   // ------------------------- Estado --------------------------
   const state = {
