@@ -595,7 +595,7 @@
       const waUrl = `https://wa.me/?text=${msg}`;
 
       // Abre WhatsApp en la MISMA pestaña → sin pestaña en blanco
-      window.location.href = waUrl;
+      navigateAfterHide(waUrl);
     } catch (err) {
       console.error(err);
       hideLoadingModal();
@@ -605,7 +605,15 @@
     }
   });
 
-
+  function navigateAfterHide(url) {
+    const el = document.getElementById('loadingModal');
+    const onHidden = () => {
+      el.removeEventListener('hidden.bs.modal', onHidden);
+      window.location.href = url;         // abre WhatsApp en la misma pestaña
+    };
+    el.addEventListener('hidden.bs.modal', onHidden, { once: true });
+    hideLoadingModal();                    // dispara el cierre del modal
+  }
   // ------------------------- Helpers -------------------------
   function clearWordOverrides(type) {
     Object.keys(state.wordStyles).forEach(li => {
