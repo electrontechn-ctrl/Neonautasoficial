@@ -591,7 +591,7 @@
       const blob = await capturePreviewBlob();
       const imageUrl = await uploadToCloudinary(blob);
 
-      const msg = `Hola 👋, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(lines)}%0A${size} cm): ${imageUrl}`;
+      const msg = `Hola, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(lines)}%0A${size} cm): ${imageUrl}`;
       const waUrl = `https://wa.me/524428124789/?text=${msg}`;
 
       // Abre WhatsApp en la MISMA pestaña → sin pestaña en blanco
