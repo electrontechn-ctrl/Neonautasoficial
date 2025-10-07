@@ -493,6 +493,18 @@
     return body.secure_url;
   }
 
+  let loadingModal;
+  function showLoadingModal() {
+    if (!loadingModal) {
+      loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    }
+    loadingModal.show();
+  }
+  function hideLoadingModal() {
+    try { loadingModal?.hide(); } catch (e) { }
+  }
+
+
   // -------------------- Ciclo de renderizado ------------------
   let _rafId = 0;
   function renderAll() {
@@ -565,27 +577,29 @@
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
   // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
-  on(qs('#nbFinalize'), 'click', async () => {
-    const detail = { text: state.lines.join('\n'), lines: state.lines, size: state.size, color: state.color, font: state.font, price: calcPrice() };
-    root?.dispatchEvent(new CustomEvent('neonBuilder:finalize', { detail }));
+  document.querySelector('#nbFinalize')?.addEventListener('click', async () => {
+    // Construye el texto que quieras mostrar en WhatsApp
+    const lines = (state?.lines || []).join('\n');
+    const size = state?.size || 0;
 
-    if (!state.lines.length) return;
-
-    // Abre una pestaña en blanco inmediatamente para no ser bloqueado por el navegador (popup blocker)
-    const waWin = window.open('', '_blank', 'noopener,noreferrer');
+    if (!lines) return;
 
     try {
       setLoading(true);
+      showLoadingModal();
+
       const blob = await capturePreviewBlob();
       const imageUrl = await uploadToCloudinary(blob);
-      const msg = `Hola 👋, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(detail.text)}%0A${detail.size} cm): ${imageUrl}`;
+
+      const msg = `Hola 👋, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(lines)}%0A${size} cm): ${imageUrl}`;
       const waUrl = `https://wa.me/?text=${msg}`;
-      if (waWin) waWin.location.href = waUrl;
-      else window.open(waUrl, '_blank', 'noopener,noreferrer');
+
+      // Abre WhatsApp en la MISMA pestaña → sin pestaña en blanco
+      window.location.href = waUrl;
     } catch (err) {
       console.error(err);
+      hideLoadingModal();
       alert('No se pudo subir la imagen. Revisa Cloudinary o tu conexión.');
-      if (waWin) waWin.close();
     } finally {
       setLoading(false);
     }
