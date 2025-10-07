@@ -461,10 +461,11 @@
     if (!is) finalizeBtn.disabled = false;
   }
 
-  // NUEVO: captura del preview a PNG usando html2canvas
+  // Captura del canvas de preview como Blob PNG
   async function capturePreviewBlob() {
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
     const el = qs('.nb-canvas');
+    // Espera un frame para asegurar layout
     await new Promise(r => requestAnimationFrame(r));
     const canvas = await window.html2canvas(el, {
       backgroundColor: null,
@@ -475,7 +476,7 @@
     return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 0.92));
   }
 
-  // NUEVO: subida unsigned a Cloudinary
+  // Sube Blob a Cloudinary (unsigned)
   async function uploadToCloudinary(blob) {
     if (!blob) throw new Error('Blob vacío');
     const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY.CLOUD_NAME}/image/upload`;
@@ -487,7 +488,7 @@
     const res = await fetch(url, { method: 'POST', body: form });
     const body = await res.json();
     if (!res.ok) throw new Error(body?.error?.message || 'Upload failed');
-    return body.secure_url; // ← usamos secure_url en WhatsApp
+    return body.secure_url;
   }
 
   // -------------------- Ciclo de renderizado ------------------
@@ -563,25 +564,18 @@
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
   // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
   on(qs('#nbFinalize'), 'click', async () => {
-    const detail = {
-      text: state.lines.join('\n'),
-      lines: state.lines,
-      size: state.size,
-      color: state.color,
-      font: state.font,
-      price: calcPrice()
-    };
+    const detail = { text: state.lines.join('\n'), lines: state.lines, size: state.size, color: state.color, font: state.font, price: calcPrice() };
     root?.dispatchEvent(new CustomEvent('neonBuilder:finalize', { detail }));
 
     if (!state.lines.length) return;
 
-    // Abrimos una pestaña en blanco ya (evita bloqueos de pop-ups)
+    // Abre una pestaña en blanco inmediatamente para no ser bloqueado por el navegador (popup blocker)
     const waWin = window.open('', '_blank', 'noopener,noreferrer');
 
     try {
       setLoading(true);
-      const blob = await capturePreviewBlob();    // ← captura del preview
-      const imageUrl = await uploadToCloudinary(blob); // ← subida a Cloudinary
+      const blob = await capturePreviewBlob();
+      const imageUrl = await uploadToCloudinary(blob);
       const msg = `Hola 👋, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(detail.text)}%0A${detail.size} cm): ${imageUrl}`;
       const waUrl = `https://wa.me/?text=${msg}`;
       if (waWin) waWin.location.href = waUrl;
