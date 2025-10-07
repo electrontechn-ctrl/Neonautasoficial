@@ -483,7 +483,7 @@
     if (!blob) throw new Error('Blob vacío');
     const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY.CLOUD_NAME}/image/upload`;
     const form = new FormData();
-    form.append('file', blob, 'neon-preview.png');
+    form.append('file', blob, 'neon-preview7.png');
     form.append('upload_preset', CLOUDINARY.UPLOAD_PRESET);
     if (CLOUDINARY.FOLDER) form.append('folder', CLOUDINARY.FOLDER);
 
