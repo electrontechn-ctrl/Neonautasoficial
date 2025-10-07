@@ -455,17 +455,39 @@
   // Captura del canvas de preview como Blob PNG
   async function capturePreviewBlob() {
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
-    const el = qs('.nb-canvas');
-    // Espera un frame para asegurar layout
-    await new Promise(r => requestAnimationFrame(r));
-    const canvas = await window.html2canvas(el, {
-      backgroundColor: null,
-      scale: Math.min(2, window.devicePixelRatio || 1),
-      useCORS: true,
-      allowTaint: true
-    });
-    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 0.92));
+
+    // Capturamos TODO el panel izquierdo (canvas + reglas/medidas)
+    const el = document.querySelector('.nb-left');
+    if (!el) throw new Error('No se encontró .nb-left');
+
+    // Oculta temporalmente elementos marcados para no salir en la captura
+    const toHide = Array.from(el.querySelectorAll('[data-hide-in-capture]'));
+    const prevVisibility = toHide.map(n => n.style.visibility);
+    toHide.forEach(n => { n.style.visibility = 'hidden'; });
+
+    try {
+      // Espera un frame para asegurar layout estable
+      await new Promise(r => requestAnimationFrame(r));
+
+      const canvas = await window.html2canvas(el, {
+        backgroundColor: null,
+        scale: Math.min(2, window.devicePixelRatio || 1),
+        useCORS: true,
+        allowTaint: true,
+        windowWidth: el.scrollWidth,
+        windowHeight: el.scrollHeight,
+        logging: false
+      });
+
+      return await new Promise(resolve =>
+        canvas.toBlob(b => resolve(b), 'image/png', 0.92)
+      );
+    } finally {
+      // Restaura visibilidad
+      toHide.forEach((n, i) => { n.style.visibility = prevVisibility[i]; });
+    }
   }
+
 
   // Sube Blob a Cloudinary (unsigned)
   async function uploadToCloudinary(blob) {
