@@ -2,7 +2,11 @@
   'use strict';
   // =====================================================
   // Neon Builder — versión optimizada y refactorizada
-  // + Captura de preview, subida a Cloudinary y compartir por WhatsApp
+  // - Menos lecturas del DOM (cache de nodos)
+  // - Menos reflows: usa DocumentFragment y rAF
+  // - Utilidades reusables y helpers
+  // - Manejo robusto de listeners y guards
+  // - Misma API/IDs, comportamiento equivalente
   // =====================================================
 
   // -------------------------- Utils --------------------------
@@ -16,14 +20,6 @@
   const getFS = (el) => parseFloat(getComputedStyle(el).fontSize) || 0;
 
   // --------------------- Configuración -----------------------
-  // Lee Cloudinary desde data-attributes del contenedor (fallback a valores por defecto)
-  const root = qs('#neon-builder');
-  const CLOUDINARY = {
-    CLOUD_NAME: root?.dataset.cloudName || 'danqyk0wz',
-    UPLOAD_PRESET: root?.dataset.uploadPreset || 'storagehml',
-    FOLDER: root?.dataset.folder || ''
-  };
-
   const ACRYLIC_RATE_CM2 = 0.06;   // $/cm²
   const LED_RATE_M = 26;           // $/m
   const POWER_SUPPLY_USD = 60;     // costo fijo
@@ -45,44 +41,44 @@
   };
 
   const CLEARANCE_FACTORS = {      // gap bajo la última línea
-    'Neon1': { base: 0.0,  desc: 0.24 },
-    'Neon2': { base: 0.0,  desc: 0.08 },
-    'Neon3': { base: 0.0,  desc: 0.06 },
+    'Neon1': { base: 0.0, desc: 0.24 },
+    'Neon2': { base: 0.0, desc: 0.08 },
+    'Neon3': { base: 0.0, desc: 0.06 },
     'Pacifico': { base: 0.34, desc: 0.46 },
-    'Poppins':  { base: 0.22, desc: 0.30 },
+    'Poppins': { base: 0.22, desc: 0.30 },
     'Playfair Display': { base: 0.28, desc: 0.38 },
   };
   const DEFAULT_CLEARANCE_FACTOR = { base: 0.32, desc: 0.44 };
 
   const PALETTE = [
-    { label: 'Blanco frío',    color: '#ffffff' },
-    { label: 'Blanco cálido',  color: '#ffe7b2' },
+    { label: 'Blanco frío', color: '#ffffff' },
+    { label: 'Blanco cálido', color: '#ffe7b2' },
     { label: 'Amarillo limón', color: '#f6ff00' },
-    { label: 'Amarillo dorado',color: '#ffd200' },
-    { label: 'Verde',          color: '#39ff14' },
-    { label: 'Rojo',           color: '#ff3333' },
-    { label: 'Morado',         color: '#a970ff' },
-    { label: 'Azul rey',       color: '#1e3aff' },
-    { label: 'Azul hielo',     color: '#7bdfff' },
-    { label: 'Naranja',        color: '#ff7a00' },
+    { label: 'Amarillo dorado', color: '#ffd200' },
+    { label: 'Verde', color: '#39ff14' },
+    { label: 'Rojo', color: '#ff3333' },
+    { label: 'Morado', color: '#a970ff' },
+    { label: 'Azul rey', color: '#1e3aff' },
+    { label: 'Azul hielo', color: '#7bdfff' },
+    { label: 'Naranja', color: '#ff7a00' },
   ];
 
   const FONT_SIZES = { 'Neon1': 90, 'Neon2': 100, 'Neon3': 100 };
   const DEFAULT_FONT_PX = 64;
 
   const SIZE_LIMITS = {
-    50:  { maxCharsPerLine: 8,  maxLines: 2, basePrice: 1890 },
-    70:  { maxCharsPerLine: 11, maxLines: 2, basePrice: 2290 },
-    90:  { maxCharsPerLine: 13, maxLines: 2, basePrice: 2790 },
+    50: { maxCharsPerLine: 8, maxLines: 2, basePrice: 1890 },
+    70: { maxCharsPerLine: 11, maxLines: 2, basePrice: 2290 },
+    90: { maxCharsPerLine: 13, maxLines: 2, basePrice: 2790 },
     100: { maxCharsPerLine: 16, maxLines: 2, basePrice: 3290 },
     120: { maxCharsPerLine: 18, maxLines: 2, basePrice: 3990 },
     150: { maxCharsPerLine: 22, maxLines: 2, basePrice: 4890 },
   };
 
   const BACKGROUNDS = [
-    { id: 'living',     label: 'Sala',   src: 'sources/img/bg/fondooscuro.jpg',   thumb: 'sources/img/bg/fondooscuro.jpg' },
+    { id: 'living', label: 'Sala', src: 'sources/img/bg/fondooscuro.jpg', thumb: 'sources/img/bg/fondooscuro.jpg' },
     { id: 'restaurant', label: 'Blanco', src: 'sources/img/bg/fondoluminoso.jpg', thumb: 'sources/img/bg/fondoluminoso.jpg' },
-    { id: 'party',      label: 'Césped', src: 'sources/img/bg/fondofiesta.jpg',   thumb: 'sources/img/bg/fondofiesta.jpg' },
+    { id: 'party', label: 'Césped', src: 'sources/img/bg/fondofiesta.jpg', thumb: 'sources/img/bg/fondofiesta.jpg' },
   ];
 
   const SCALE_BASE = { w: 1200, h: 540, min: 0.60, max: 1.40 };
@@ -100,6 +96,7 @@
   };
 
   // ---------------------- Cache de nodos ---------------------
+  const root = qs('#neon-builder');
   const preview = qs('#nbPreview');
   const canvasEl = qs('.nb-canvas');
   const textInput = qs('#nbText');
@@ -108,8 +105,6 @@
   const priceEl = qs('#nbPrice');
   const validateEl = qs('#nbValidation');
   const finalizeBtn = qs('#nbFinalize');
-  const finalizeSpinner = finalizeBtn?.querySelector('.spinner-border');
-  const finalizeLabel = finalizeBtn?.querySelector('.label');
   const fontSelect = qs('#nbFont');
   const bgLayer = qs('#nbBg');
   const bgPickerWrap = qs('#nbBgPicker');
@@ -127,6 +122,14 @@
   const wordColorsMenu = qs('#nbWordColorsMenu');
   let selectedWord = null;
   let globalColorBtns = [];
+
+
+  // NUEVO: configuración de Cloudinary tomada de data-attributes del HTML
+  const CLOUDINARY = {
+    CLOUD_NAME: root?.dataset.cloudName || 'danqyk0wz',
+    UPLOAD_PRESET: root?.dataset.uploadPreset || 'storagehml',
+    FOLDER: root?.dataset.folder || ''
+  };
 
   // ----------------- Observers / Resize control ---------------
   const ro = new ResizeObserver(entries => {
@@ -161,13 +164,18 @@
   function computeDynamicClearancePx(box) {
     const lastLine = box?.querySelector('.nb-line:last-child');
     if (!lastLine) return 24;
+
+    // Detecta descendentes en texto real de la última línea
     const hasDesc = /[gjpqy]/.test(lastLine.textContent || '');
+
+    // Elemento con mayor font-size en la última línea
     let target = lastLine;
     let maxSize = getFS(lastLine);
     lastLine.querySelectorAll('.nb-word').forEach(w => {
       const fs = getFS(w);
       if (fs > maxSize) { maxSize = fs; target = w; }
     });
+
     const fam = primaryFont(getComputedStyle(target).fontFamily);
     const factors = CLEARANCE_FACTORS[fam] || DEFAULT_CLEARANCE_FACTOR;
     const factor = hasDesc ? factors.desc : factors.base;
@@ -444,6 +452,44 @@
     if (textHelp) textHelp.textContent = `Máximo ${lim.maxCharsPerLine} letras por renglón • Máx. ${lim.maxLines} renglones`;
   }
 
+  // NUEVO: control de loading del botón
+  function setLoading(is) {
+    if (!finalizeBtn) return;
+    finalizeBtn.disabled = true;
+    if (finalizeSpinner) finalizeSpinner.classList.toggle('d-none', !is);
+    if (finalizeLabel) finalizeLabel.textContent = is ? 'Generando...' : 'Finalizar';
+    if (!is) finalizeBtn.disabled = false;
+  }
+
+  // NUEVO: captura del preview a PNG usando html2canvas
+  async function capturePreviewBlob() {
+    if (!window.html2canvas) throw new Error('html2canvas no cargado');
+    const el = qs('.nb-canvas');
+    await new Promise(r => requestAnimationFrame(r));
+    const canvas = await window.html2canvas(el, {
+      backgroundColor: null,
+      scale: Math.min(2, window.devicePixelRatio || 1),
+      useCORS: true,
+      allowTaint: true
+    });
+    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 0.92));
+  }
+
+  // NUEVO: subida unsigned a Cloudinary
+  async function uploadToCloudinary(blob) {
+    if (!blob) throw new Error('Blob vacío');
+    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY.CLOUD_NAME}/image/upload`;
+    const form = new FormData();
+    form.append('file', blob, 'neon-preview.png');
+    form.append('upload_preset', CLOUDINARY.UPLOAD_PRESET);
+    if (CLOUDINARY.FOLDER) form.append('folder', CLOUDINARY.FOLDER);
+
+    const res = await fetch(url, { method: 'POST', body: form });
+    const body = await res.json();
+    if (!res.ok) throw new Error(body?.error?.message || 'Upload failed');
+    return body.secure_url; // ← usamos secure_url en WhatsApp
+  }
+
   // -------------------- Ciclo de renderizado ------------------
   let _rafId = 0;
   function renderAll() {
@@ -467,15 +513,15 @@
   on(document, 'click', (e) => {
     // cerrar menú de color si está abierto
     if (wordColorsMenu && !wordColorsMenu.hidden &&
-        !e.target.closest('#nbWordColorsMenu') &&
-        !e.target.closest('#nbWordColorBtn')) {
+      !e.target.closest('#nbWordColorsMenu') &&
+      !e.target.closest('#nbWordColorBtn')) {
       wordColorsMenu.hidden = true;
       wordColorBtn?.setAttribute('aria-expanded', 'false');
     }
     // cerrar popover si clic fuera
     if (wordPopover && !wordPopover.hidden &&
-        !e.target.closest('.nb-popover') &&
-        !e.target.closest('.nb-word')) {
+      !e.target.closest('.nb-popover') &&
+      !e.target.closest('.nb-word')) {
       clearSelection();
     }
   });
@@ -515,21 +561,27 @@
   on(textInput, 'input', () => { state.lines = splitLines(textInput.value); clearSelection(); renderAll(); });
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
-
   // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
   on(qs('#nbFinalize'), 'click', async () => {
-    const detail = { text: state.lines.join('\n'), lines: state.lines, size: state.size, color: state.color, font: state.font, price: calcPrice() };
+    const detail = {
+      text: state.lines.join('\n'),
+      lines: state.lines,
+      size: state.size,
+      color: state.color,
+      font: state.font,
+      price: calcPrice()
+    };
     root?.dispatchEvent(new CustomEvent('neonBuilder:finalize', { detail }));
 
     if (!state.lines.length) return;
 
-    // Abre una pestaña en blanco inmediatamente para no ser bloqueado por el navegador (popup blocker)
+    // Abrimos una pestaña en blanco ya (evita bloqueos de pop-ups)
     const waWin = window.open('', '_blank', 'noopener,noreferrer');
 
     try {
       setLoading(true);
-      const blob = await capturePreviewBlob();
-      const imageUrl = await uploadToCloudinary(blob);
+      const blob = await capturePreviewBlob();    // ← captura del preview
+      const imageUrl = await uploadToCloudinary(blob); // ← subida a Cloudinary
       const msg = `Hola 👋, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(detail.text)}%0A${detail.size} cm): ${imageUrl}`;
       const waUrl = `https://wa.me/?text=${msg}`;
       if (waWin) waWin.location.href = waUrl;
@@ -543,6 +595,7 @@
     }
   });
 
+
   // ------------------------- Helpers -------------------------
   function clearWordOverrides(type) {
     Object.keys(state.wordStyles).forEach(li => {
@@ -555,45 +608,6 @@
     });
   }
 
-  // Loading UI
-  function setLoading(is) {
-    if (!finalizeBtn) return;
-    finalizeBtn.disabled = true;
-    if (finalizeSpinner) finalizeSpinner.classList.toggle('d-none', !is);
-    if (finalizeLabel) finalizeLabel.textContent = is ? 'Generando...' : 'Finalizar';
-    if (!is) finalizeBtn.disabled = false;
-  }
-
-  // Captura del canvas de preview como Blob PNG
-  async function capturePreviewBlob() {
-    if (!window.html2canvas) throw new Error('html2canvas no cargado');
-    const el = qs('.nb-canvas');
-    // Espera un frame para asegurar layout
-    await new Promise(r => requestAnimationFrame(r));
-    const canvas = await window.html2canvas(el, {
-      backgroundColor: null,
-      scale: Math.min(2, window.devicePixelRatio || 1),
-      useCORS: true,
-      allowTaint: true
-    });
-    return new Promise(resolve => canvas.toBlob(b => resolve(b), 'image/png', 0.92));
-  }
-
-  // Sube Blob a Cloudinary (unsigned)
-  async function uploadToCloudinary(blob) {
-    if (!blob) throw new Error('Blob vacío');
-    const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY.CLOUD_NAME}/image/upload`;
-    const form = new FormData();
-    form.append('file', blob, 'neon-preview.png');
-    form.append('upload_preset', CLOUDINARY.UPLOAD_PRESET);
-    if (CLOUDINARY.FOLDER) form.append('folder', CLOUDINARY.FOLDER);
-
-    const res = await fetch(url, { method: 'POST', body: form });
-    const body = await res.json();
-    if (!res.ok) throw new Error(body?.error?.message || 'Upload failed');
-    return body.secure_url;
-  }
-
   // ------------------------- Init ----------------------------
   function init() {
     buildBgPicker();
@@ -603,5 +617,6 @@
     state.lines = splitLines('Crea tu frase');
     renderAll();
   }
+
   init();
 })();

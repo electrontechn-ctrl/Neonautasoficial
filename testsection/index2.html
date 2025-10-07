@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,14 +11,7 @@
 </head>
 
 <body>
-  <!--
-    Añadimos data-attributes para Cloudinary en el contenedor principal.
-    Puedes cambiarlos sin tocar el JS.
-  -->
-  <section id="neon-builder" class="nb"
-           data-cloud-name="danqyk0wz"
-           data-upload-preset="storagehml"
-           data-folder="Designs">
+  <section id="neon-builder" class="nb">
     <div class="nb-left">
       <div class="nb-canvas" aria-label="Vista previa del letrero">
         <div class="nb-bg nb-bg--1" id="nbBg"></div>
@@ -103,10 +97,7 @@
         <div id="nbValidation" class="nb-validation" hidden></div>
       </div>
 
-      <button id="nbFinalize" class="nb-btn" disabled>
-        <span class="label">Finalizar</span>
-        <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
-      </button>
+      <button id="nbFinalize" class="nb-btn" disabled>Finalizar</button>
 
       <!-- Popover flotante para palabra seleccionada -->
       <div id="nbWordPopover" class="nb-popover" hidden>
@@ -128,8 +119,6 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- html2canvas para capturar la vista previa a imagen -->
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="sources/javascript/scripts2.js" defer></script>
 
   <noscript>
@@ -138,4 +127,5 @@
     </div>
   </noscript>
 </body>
+
 </html>

@@ -1,2 +1,715 @@
-/* Se mantienen tus estilos tal cual.
-   No es necesario cambiarlos para la integración de Cloudinary/WhatsApp. */
+/* ================================
+   Neon Builder — styles.css (completo)
+   ================================ */
+
+/* Fuentes para las opciones de fuente del letrero */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&family=Playfair+Display:wght@600&display=swap');
+
+
+@font-face {
+  font-family: "Neon1";
+  src:
+    url("../fonts/Neon2.ttf") format("opentype");
+  /* tu archivo OTF */
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neon2";
+  src:
+    url("../fonts/Neon1.otf") format("opentype");
+  /* tu archivo OTF */
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Neon3";
+  src:
+    url("../fonts/Neon3.ttf") format("opentype");
+  /* tu archivo OTF */
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ====== Layout y tema base del componente ====== */
+#neon-builder.nb {
+  /* Tema del componente (scope local) */
+  --nb-color: #ff4d6d;
+  /* color por defecto del neón */
+  --nb-bg: #0a0a12;
+  --nb-panel: #10131a;
+  --nb-border: #283042;
+  --nb-muted: #98a2b3;
+
+  --nb-radius: 14px;
+  --nb-gap: 18px;
+  --nb-shadow: 0 10px 40px rgba(0, 0, 0, .35);
+
+  color: #e6e7ea;
+  display: grid;
+  gap: var(--nb-gap);
+  grid-template-columns: 1fr;
+  /* móviles: apilado */
+  align-items: start;
+}
+
+.nb-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  /* evita overflow en grid */
+}
+
+.nb-right {
+  background: var(--nb-panel);
+  border: 1px solid var(--nb-border);
+  border-radius: var(--nb-radius);
+  padding: 20px;
+  box-shadow: var(--nb-shadow);
+  min-width: 0;
+}
+
+.nb-title {
+  margin: 0 0 8px;
+  font: 600 1.25rem/1.2 Poppins, system-ui, sans-serif;
+}
+
+/* ====== Canvas de vista previa ====== */
+.nb-canvas {
+  position: relative;
+  border-radius: var(--nb-radius);
+  overflow: hidden;
+  background: #111;
+  border: 1px solid var(--nb-border);
+  min-height: 360px;
+  box-shadow: var(--nb-shadow);
+  display: block;
+}
+
+.nb-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(255, 77, 109, .18), transparent 40%),
+    radial-gradient(1200px 600px at 100% 10%, rgba(0, 247, 255, .18), transparent 35%),
+    #0b0f18;
+}
+
+.nb-bg--1 {
+  /* igual que .nb-bg, clase explícita para claridad */
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(255, 77, 109, .18), transparent 40%),
+    radial-gradient(1200px 600px at 100% 10%, rgba(0, 247, 255, .18), transparent 35%),
+    #0b0f18;
+}
+
+.nb-bg--2 {
+  background:
+    linear-gradient(180deg, #171a22 0%, #0f1219 100%),
+    url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450"><rect width="100%" height="100%" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="2"/></svg>') center/contain no-repeat,
+    #0b0f18;
+}
+
+.nb-bg--3 {
+  background:
+    linear-gradient(0deg, rgba(0, 0, 0, .35), rgba(0, 0, 0, .35)),
+    repeating-linear-gradient(0deg, #1c3d1e, #1c3d1e 8px, #204622 8px, #204622 16px);
+}
+
+.nb-preview {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: 40px;
+  text-align: center;
+  mix-blend-mode: screen;
+}
+
+.nb-line {
+  /* el tamaño lo controla JS; aquí NO fijamos font-size */
+  font-family: var(--nb-font, Neon1, system-ui, sans-serif);
+  line-height: 1.05;
+  letter-spacing: .02em;
+  white-space: pre;
+  display: block;
+}
+
+.nb-line+.nb-line {
+  margin-top: .15em;
+}
+
+/* Reglas/medidas visuales */
+.nb-measure {
+  position: absolute;
+  color: #dfe6ee;
+  font: 600 12px/1 Poppins, system-ui, sans-serif;
+  letter-spacing: .02em;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .15);
+  padding: 6px 8px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+
+.nb-measure--h {
+  left: 14px;
+  top: 14px;
+}
+
+.nb-measure--w {
+  right: 14px;
+  bottom: 14px;
+}
+
+/* ====== Picker de fondo ====== */
+.nb-bg-picker {
+  display: flex;
+  gap: 10px;
+}
+
+.nb-bg-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--nb-border);
+  background: #0b0f18;
+  cursor: pointer;
+  position: relative;
+}
+
+.nb-bg-thumb.is-active {
+  outline: 2px solid #00f7ff;
+  outline-offset: 2px;
+}
+
+.nb-note{
+  visibility: hidden;   /* oculta el contenido pero conserva el espacio */
+  display: block;
+  min-height: 28px;     /* alto del espacio que se conserva */
+}
+
+/* ====== Controles ====== */
+.nb-step {
+  margin: 14px 0;
+}
+
+.nb-label {
+  display: block;
+  margin: 0 0 6px;
+  font: 600 12px/1 Poppins, system-ui, sans-serif;
+  color: #c6cbd6;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.nb-input {
+  width: 100%;
+  border-radius: 10px;
+  background: #0c111b;
+  color: #eef2f6;
+  border: 1px solid #2a3244;
+  padding: 10px 12px;
+  font: 500 14px/1.35 Poppins, system-ui, sans-serif;
+}
+
+.nb-input:focus {
+  outline: 2px solid #00f7ff;
+  outline-offset: 2px;
+}
+
+.nb-sizes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width:520px) {
+  .nb-sizes {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.nb-size {
+  background: #0c111b;
+  border: 1px solid #2a3244;
+  border-radius: 12px;
+  padding: 10px;
+  color: #e7ebf2;
+  cursor: pointer;
+  text-align: left;
+  font: 600 13px/1.2 Poppins, system-ui, sans-serif;
+}
+
+.nb-size small {
+  color: #98a2b3;
+  font-weight: 500;
+}
+
+.nb-size.is-active {
+  border-color: #00f7ff;
+  box-shadow: 0 0 0 2px rgba(0, 247, 255, .2) inset;
+}
+
+.nb-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.nb-color {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 2px solid #222a3a;
+  background: var(--c, #ff4d6d);
+  cursor: pointer;
+}
+
+.nb-color.is-active {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ====== Resumen y CTA ====== */
+.nb-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.nb-price {
+  font: 600 14px/1.2 Poppins, system-ui, sans-serif;
+}
+
+.nb-muted {
+  color: var(--nb-muted);
+  font-weight: 500;
+}
+
+.nb-validation {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #7f1d1d;
+  background: rgba(239, 68, 68, .12);
+  color: #fecaca;
+  font: 600 12px/1.3 Poppins, system-ui, sans-serif;
+}
+
+.nb-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font: 700 14px/1 Poppins, system-ui, sans-serif;
+  cursor: pointer;
+  background: #ff4d6d;
+  color: #111;
+  box-shadow: 0 8px 28px rgba(255, 77, 109, .35), inset 0 0 10px rgba(255, 255, 255, .25);
+}
+
+.nb-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* ====== Utilidades ====== */
+.is-hidden {
+  display: none !important;
+}
+
+/* ====== Layout solicitado: 2/3 + 1/3 y altura de pantalla ====== */
+@media (min-width: 992px) {
+
+  /* La sección ocupa toda la altura de la pantalla y 2/3 + 1/3 del ancho */
+  #neon-builder.nb {
+    min-height: 100vh;
+    min-height: 100dvh;
+    /* soporta notch/barras en móviles modernos */
+    grid-template-columns: 2fr 1fr;
+    /* 2/3 izquierda (preview), 1/3 derecha (panel) */
+    align-items: stretch;
+  }
+
+  /* Columnas al 100% de la altura */
+  #neon-builder .nb-left,
+  #neon-builder .nb-right {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /* La vista previa llena su columna; el picker queda debajo */
+  #neon-builder .nb-left {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #neon-builder .nb-canvas {
+    flex: 1 1 auto;
+    height: 100%;
+    min-height: 0;
+    /* permite expandir dentro del grid */
+  }
+
+  /* El panel de personalización hace scroll interno si se desborda */
+  #neon-builder .nb-right {
+    overflow: auto;
+  }
+}
+
+/* ====== Comportamiento móvil: apilado ====== */
+@media (max-width: 991.98px) {
+  #neon-builder.nb {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  #neon-builder .nb-left,
+  #neon-builder .nb-right {
+    height: auto;
+  }
+
+  #neon-builder .nb-canvas {
+    min-height: 360px;
+    height: auto;
+  }
+}
+
+.nb-word {
+  --glow: var(--word-color, var(--nb-color, #ff4d6d));
+  /* ⟵ CLAVE: usa global si no hay color por palabra */
+  position: relative;
+  display: inline-block;
+  padding: 0 .06em;
+  color: #fff;
+
+  /* Fallback universal (Firefox incluido) */
+  text-shadow:
+    1px 0 0 var(--glow), -1px 0 0 var(--glow), 0 1px 0 var(--glow), 0 -1px 0 var(--glow),
+    1px 1px 0 var(--glow), -1px -1px 0 var(--glow), 1px -1px 0 var(--glow), -1px 1px 0 var(--glow),
+    0 0 1px #fff,
+    0 0 4px var(--glow),
+    0 0 10px var(--glow),
+    0 0 20px var(--glow),
+    0 0 40px var(--glow);
+
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .35));
+  border-radius: 6px;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: outline-color .15s ease;
+}
+
+.nb-word.is-selected {
+  outline-color: #21a1ff;
+}
+
+/* El builder será contenedor de referencia para el popover */
+#neon-builder.nb {
+  --nb-color: #ff3333;
+}
+
+/* Popover flotante */
+.nb-popover {
+  position: absolute;
+  z-index: 60;
+  background: #0c111b;
+  color: #e6e7ea;
+  border: 1px solid #2a3244;
+  border-radius: 12px;
+  padding: 10px;
+  min-width: 220px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .45);
+}
+
+.nb-popover[hidden] {
+  display: none;
+}
+
+.nb-popover::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 16px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #2a3244 transparent;
+  /* borde */
+}
+
+.nb-popover::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 16px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent transparent #0c111b transparent;
+  /* relleno */
+}
+
+.nb-popover-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 6px 0;
+}
+
+.nb-popover-row label {
+  font: 600 12px/1 Poppins, system-ui, sans-serif;
+  color: #c6cbd6;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.nb-popover-row input[type="color"] {
+  width: 42px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.nb-popover-row select {
+  flex: 1;
+  background: #0b1020;
+  color: #e6e7ea;
+  border: 1px solid #2a3244;
+  border-radius: 8px;
+  padding: 8px;
+  font: 500 13px/1.2 Poppins, system-ui, sans-serif;
+}
+
+.nb-colors--popover .nb-color {
+  width: 28px;
+  height: 28px;
+  border-width: 2px;
+}
+
+.nb-colors--popover .nb-color.is-active {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Swatch botón (muestra el color actual de la palabra) */
+.nb-chip.swatch {
+  width: 34px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid #d9dee8;
+  background: var(--c, #ff3333);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+  cursor: pointer;
+}
+
+/* Fila con dropdown de colores en el popover */
+.nb-popover-row--color {
+  position: relative;
+}
+
+/* Menú de colores estilo “paleta” */
+.nb-swatch-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 120;
+  background: #ffffff;
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, .08);
+  border-radius: 14px;
+  padding: 12px;
+  box-shadow: 0 22px 50px rgba(0, 0, 0, .35);
+  display: grid;
+  grid-template-columns: repeat(5, 32px);
+  gap: 10px;
+}
+
+.nb-swatch-menu[hidden] {
+  display: none;
+}
+
+/* Botón swatch interno del menú */
+.nb-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, .15);
+  background: var(--c, #000);
+  cursor: pointer;
+}
+
+/* La capa de fondo ahora usa imagen (se ajusta por JS con background-image) */
+.nb-bg {
+  position: absolute;
+  inset: 0;
+  background: #0b0f18 center/cover no-repeat;
+}
+
+.nb-bg::after {
+  /* leve oscurecido opcional para legibilidad del texto */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, .18), rgba(0, 0, 0, .18));
+  pointer-events: none;
+}
+
+/* Miniaturas con imagen */
+.nb-bg-picker {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-left: 16px;
+  /* ← separación a la izquierda (flecha roja) */
+  padding-right: 8px;
+  /* opcional: un pequeño respiro a la derecha */
+  margin-top: 10px;
+  /* separación vertical respecto al canvas */
+}
+
+.nb-bg-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--nb-border);
+  background: #0b0f18 center/cover no-repeat;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .25) inset;
+}
+
+.nb-bg-thumb.is-active {
+  outline: 2px solid #00f7ff;
+  outline-offset: 2px;
+}
+
+#neon-builder.nb {
+  --preview-shift-y: -100px;
+}
+
+/* valor negativo = hacia arriba */
+
+.nb-preview {
+  transform: translateY(var(--preview-shift-y, 0));
+}
+
+/* En móviles, súbelo un poco menos (opcional) */
+@media (max-width: 991.98px) {
+  #neon-builder.nb {
+    --preview-shift-y: -45px;
+  }
+}
+
+/* ===== COTAS (dimensiones) ===== */
+.nb-dim {
+  position: absolute;
+  pointer-events: none;
+  color: #e6ebf3;
+  font: 600 12px/1 Poppins, system-ui, sans-serif;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+}
+
+.nb-dim .nb-dim-line {
+  position: absolute;
+  background: #e6ebf3;
+}
+
+/* Horizontal (debajo del texto) */
+.nb-dim-h {
+  height: 28px;
+}
+
+.nb-dim-h .nb-dim-line {
+  left: 0;
+  right: 0;
+  top: 14px;
+  height: 2px;
+}
+
+.nb-dim-h .nb-dim-line::before,
+.nb-dim-h .nb-dim-line::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  width: 2px;
+  height: 14px;
+  background: #e6ebf3;
+}
+
+.nb-dim-h .nb-dim-line::before {
+  left: 0;
+}
+
+.nb-dim-h .nb-dim-line::after {
+  right: 0;
+}
+
+.nb-dim-h .nb-dim-label {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+/* Vertical (a la izquierda del texto) */
+.nb-dim-v {
+  width: 28px;
+}
+
+.nb-dim-v .nb-dim-line {
+  top: 0;
+  bottom: 0;
+  left: 14px;
+  width: 2px;
+}
+
+.nb-dim-v .nb-dim-line::before,
+.nb-dim-v .nb-dim-line::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  width: 14px;
+  height: 2px;
+  background: #e6ebf3;
+}
+
+.nb-dim-v .nb-dim-line::before {
+  top: 0;
+}
+
+.nb-dim-v .nb-dim-line::after {
+  bottom: 0;
+}
+
+.nb-dim-v .nb-dim-label {
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translate(-100%, -50%) rotate(-90deg);
+  transform-origin: center;
+}
+
+/* Caja interna del texto (para medir) */
+.nb-textbox {
+  display: inline-block;
+}
+
+.nb-preview {
+  padding: clamp(12px, 4vw, 40px);
+}
