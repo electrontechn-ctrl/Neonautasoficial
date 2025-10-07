@@ -11,7 +11,8 @@
 </head>
 
 <body>
-  <section id="neon-builder" class="nb">
+  <section id="neon-builder" class="nb" data-cloud-name="danqyk0wz" data-upload-preset="storagehml"
+    data-folder="Designs">
     <div class="nb-left">
       <div class="nb-canvas" aria-label="Vista previa del letrero">
         <div class="nb-bg nb-bg--1" id="nbBg"></div>
@@ -97,7 +98,10 @@
         <div id="nbValidation" class="nb-validation" hidden></div>
       </div>
 
-      <button id="nbFinalize" class="nb-btn" disabled>Finalizar</button>
+      <button id="nbFinalize" class="nb-btn" disabled>
+        <span class="label">Finalizar</span>
+        <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+      </button>
 
       <!-- Popover flotante para palabra seleccionada -->
       <div id="nbWordPopover" class="nb-popover" hidden>
@@ -118,6 +122,18 @@
     </div>
   </section>
 
+  <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center p-4">
+        <div class="spinner-border" role="status" aria-hidden="true"></div>
+        <div class="mt-3 fw-semibold">Generando y subiendo tu imagen…</div>
+        <div class="text-muted small">Esto puede tardar unos segundos</div>
+      </div>
+    </div>
+  </div>
+
+  
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="sources/javascript/scripts2.js" defer></script>
@@ -127,6 +143,9 @@
       <div class="alert alert-warning">Para usar el catálogo, activa JavaScript.</div>
     </div>
   </noscript>
+
+  <!-- Modal de carga -->
+
 </body>
 
 </html>
