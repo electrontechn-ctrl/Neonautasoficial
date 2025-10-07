@@ -105,6 +105,8 @@
   const priceEl = qs('#nbPrice');
   const validateEl = qs('#nbValidation');
   const finalizeBtn = qs('#nbFinalize');
+  const finalizeSpinner = finalizeBtn?.querySelector('.spinner-border');
+  const finalizeLabel = finalizeBtn?.querySelector('.label');
   const fontSelect = qs('#nbFont');
   const bgLayer = qs('#nbBg');
   const bgPickerWrap = qs('#nbBgPicker');
