@@ -24,11 +24,6 @@
 
   const ACRYLIC_MARGIN_CM = 3;     // margen acrílico por lado
 
-  const LED_LENGTH_FACTORS = {     // reservado para ajustes por fuente
-    'Neon1': 1.25,
-    'Neon2': 1.15,
-    'Neon3': 1.10,
-  };
 
   const DIMENSION_MULTIPLIERS = {  // multiplicadores por fuente
     'Neon1': { w: 1, h: 1 },
@@ -40,9 +35,6 @@
     'Neon1': { base: 0.0, desc: 0.24 },
     'Neon2': { base: 0.0, desc: 0.08 },
     'Neon3': { base: 0.0, desc: 0.06 },
-    'Pacifico': { base: 0.34, desc: 0.46 },
-    'Poppins': { base: 0.22, desc: 0.30 },
-    'Playfair Display': { base: 0.28, desc: 0.38 },
   };
   const DEFAULT_CLEARANCE_FACTOR = { base: 0.32, desc: 0.44 };
 
@@ -77,7 +69,7 @@
     { id: 'party', label: 'Césped', src: 'sources/img/bg/fondofiesta.jpg', thumb: 'sources/img/bg/fondofiesta.jpg' },
   ];
 
-  const SCALE_BASE = { w: 1200, h: 540, min: 0.60, max: 1.40 };
+  const SCALE_BASE = { w: 1200, h: 540, min: 0.30, max: 1.40 };
 
   // ------------------------- Estado --------------------------
   const state = {
@@ -140,6 +132,7 @@
       renderAll();
     }
   });
+
   if (canvasEl) ro.observe(canvasEl);
 
   let _resizeRaf = 0;
@@ -572,7 +565,7 @@
   on(textInput, 'input', () => { state.lines = splitLines(textInput.value); clearSelection(); renderAll(); });
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
-  
+
   // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
   document.querySelector('#nbFinalize')?.addEventListener('click', async () => {
     const lines = (state?.lines || []).join('\n');
