@@ -602,7 +602,7 @@
       const imageUrl = await uploadToCloudinary(blob);
 
       const msg = `Hola, te comparto mi diseño de letrero neón %0AFrase: ${encodeURIComponent(lines)} %0ATamaño real aprox.: ${widthCm} cm (ancho) x ${heightCm} cm (alto) %0AImagen: ${imageUrl}`;
-      const waUrl = `https://wa.me/524428124789/?text=${msg}`;
+      const waUrl = `https://wa.me/524681146000/?text=${msg}`;
 
       navigateAfterHide(waUrl);
     } catch (err) {
