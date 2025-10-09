@@ -14,29 +14,31 @@
   <section id="neon-builder" class="nb" data-cloud-name="danqyk0wz" data-upload-preset="storagehml"
     data-folder="Designs">
     <div class="nb-left">
-      <div class="nb-canvas" aria-label="Vista previa del letrero">
-        <div class="nb-bg nb-bg--1" id="nbBg"></div>
+      <div class="nb-capture">
+        <div class="nb-canvas" aria-label="Vista previa del letrero">
+          <div class="nb-bg nb-bg--1" id="nbBg"></div>
 
-        <!-- Reglas/medidas -->
-        <div class="nb-measure nb-measure--h" data-hide-in-capture><span id="nbHeightCm"><i class="bi bi-info-circle"></i> Haz click en una
-            palabra para personalizar </span></div>
-        <div class="nb-measure nb-measure--w"><span id="nbWidthCm">Los colores pueden verse diferentes en la vida
-            real.</span></div>
+          <!-- Reglas/medidas -->
+          <div class="nb-measure nb-measure--h" data-hide-in-capture><span id="nbHeightCm"><i
+                class="bi bi-info-circle"></i> Haz click en una
+              palabra para personalizar </span></div>
+          <div class="nb-measure nb-measure--w"><span id="nbWidthCm">Los colores pueden verse diferentes en la vida
+              real.</span></div>
 
-        <!-- Texto en neón -->
-        <div class="nb-preview" id="nbPreview" role="img" aria-label="Tu frase en neón"></div>
+          <!-- Texto en neón -->
+          <div class="nb-preview" id="nbPreview" role="img" aria-label="Tu frase en neón"></div>
+        </div>
+
+        <!-- Cotas dinámicas -->
+        <div id="nbDimH" class="nb-dim nb-dim-h" hidden>
+          <div class="nb-dim-line"></div>
+          <div class="nb-dim-label" id="nbDimHLabel">cm</div>
+        </div>
+        <div id="nbDimV" class="nb-dim nb-dim-v" hidden>
+          <div class="nb-dim-line"></div>
+          <div class="nb-dim-label" id="nbDimVLabel">cm</div>
+        </div>
       </div>
-
-      <!-- Cotas dinámicas -->
-      <div id="nbDimH" class="nb-dim nb-dim-h" hidden>
-        <div class="nb-dim-line"></div>
-        <div class="nb-dim-label" id="nbDimHLabel">cm</div>
-      </div>
-      <div id="nbDimV" class="nb-dim nb-dim-v" hidden>
-        <div class="nb-dim-line"></div>
-        <div class="nb-dim-label" id="nbDimVLabel">cm</div>
-      </div>
-
       <!-- Cambiador de fondo -->
       <div id="nbBgPicker" class="nb-bg-picker" role="listbox" aria-label="Fondos" data-hide-in-capture></div>
 
@@ -133,7 +135,7 @@
     </div>
   </div>
 
-  
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="sources/javascript/scripts2.js" defer></script>

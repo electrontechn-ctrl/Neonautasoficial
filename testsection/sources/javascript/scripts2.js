@@ -457,7 +457,7 @@
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
 
     // Capturamos TODO el panel izquierdo (canvas + cotas)
-    const el = document.querySelector('.nb-left');
+    const el = document.querySelector('.nb-capture');
     if (!el) throw new Error('No se encontró .nb-left');
 
     // Oculta elementos marcados para que NO aparezcan ni empujen layout
