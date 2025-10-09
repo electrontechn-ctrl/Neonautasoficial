@@ -653,7 +653,7 @@
       const msg = buildWhatsAppMessage(detail, imageUrl);
 
       // Codifica todo el texto y abre WhatsApp en la misma pestaña
-      const waUrl = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      const waUrl = `https://wa.me/524681146000/?text=${encodeURIComponent(msg)}`;
       navigateAfterHide
         ? navigateAfterHide(waUrl)       // si ya implementaste el cierre elegante del modal
         : (window.location.href = waUrl); // si no, usa esta línea
