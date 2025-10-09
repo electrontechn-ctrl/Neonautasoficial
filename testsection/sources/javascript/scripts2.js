@@ -511,8 +511,17 @@
     loadingModal.show();
   }
   function hideLoadingModal() {
-    try { loadingModal?.hide(); } catch (e) { }
-  }
+  const el = document.getElementById('loadingModal');
+  if (!el || !loadingModal) return;
+
+  // Evita el warning
+  const active = document.activeElement;
+  if (active && el.contains(active)) active.blur();
+
+  document.querySelector('#nbFinalize')?.focus();
+
+  loadingModal.hide();
+}
 
 
   // -------------------- Ciclo de renderizado ------------------
