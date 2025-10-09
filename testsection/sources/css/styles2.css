@@ -1,8 +1,7 @@
 /* ================================
-   Neon Builder — styles.css (completo)
+   Neon Builder — styles.css
    ================================ */
 
-/* Fuentes para las opciones de fuente del letrero */
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&family=Playfair+Display:wght@600&display=swap');
 
 
@@ -10,7 +9,7 @@
   font-family: "Neon1";
   src:
     url("../fonts/Neon2.ttf") format("opentype");
-  /* tu archivo OTF */
+
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -20,7 +19,6 @@
   font-family: "Neon2";
   src:
     url("../fonts/Neon1.otf") format("opentype");
-  /* tu archivo OTF */
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -30,7 +28,6 @@
   font-family: "Neon3";
   src:
     url("../fonts/Neon3.ttf") format("opentype");
-  /* tu archivo OTF */
   font-weight: 800;
   font-style: normal;
   font-display: swap;
@@ -39,9 +36,7 @@
 
 /* ====== Layout y tema base del componente ====== */
 #neon-builder.nb {
-  /* Tema del componente (scope local) */
   --nb-color: #ff4d6d;
-  /* color por defecto del neón */
   --nb-bg: #0a0a12;
   --nb-panel: #10131a;
   --nb-border: #283042;
@@ -55,7 +50,6 @@
   display: grid;
   gap: var(--nb-gap);
   grid-template-columns: 1fr;
-  /* móviles: apilado */
   align-items: start;
 }
 
@@ -65,7 +59,6 @@
   flex-direction: column;
   gap: 12px;
   min-width: 0;
-  /* evita overflow en grid */
 }
 
 .nb-right {
@@ -104,7 +97,6 @@
 }
 
 .nb-bg--1 {
-  /* igual que .nb-bg, clase explícita para claridad */
   background:
     radial-gradient(1200px 600px at 10% -10%, rgba(255, 77, 109, .18), transparent 40%),
     radial-gradient(1200px 600px at 100% 10%, rgba(0, 247, 255, .18), transparent 35%),
@@ -138,7 +130,6 @@
 }
 
 .nb-line {
-  /* el tamaño lo controla JS; aquí NO fijamos font-size */
   font-family: var(--nb-font, Neon1, system-ui, sans-serif);
   line-height: 1.05;
   letter-spacing: .02em;
@@ -150,7 +141,6 @@
   margin-top: .15em;
 }
 
-/* Reglas/medidas visuales */
 .nb-measure {
   position: absolute;
   color: #dfe6ee;
@@ -195,9 +185,9 @@
 }
 
 .nb-note{
-  visibility: hidden;   /* oculta el contenido pero conserva el espacio */
+  visibility: hidden; 
   display: block;
-  min-height: 28px;     /* alto del espacio que se conserva */
+  min-height: 28px;
 }
 
 /* ====== Controles ====== */
@@ -330,27 +320,21 @@
   display: none !important;
 }
 
-/* ====== Layout solicitado: 2/3 + 1/3 y altura de pantalla ====== */
 @media (min-width: 992px) {
 
-  /* La sección ocupa toda la altura de la pantalla y 2/3 + 1/3 del ancho */
   #neon-builder.nb {
     min-height: 100vh;
     min-height: 100dvh;
-    /* soporta notch/barras en móviles modernos */
     grid-template-columns: 2fr 1fr;
-    /* 2/3 izquierda (preview), 1/3 derecha (panel) */
     align-items: stretch;
   }
 
-  /* Columnas al 100% de la altura */
   #neon-builder .nb-left,
   #neon-builder .nb-right {
     height: 100vh;
     height: 100dvh;
   }
 
-  /* La vista previa llena su columna; el picker queda debajo */
   #neon-builder .nb-left {
     display: flex;
     flex-direction: column;
@@ -361,10 +345,8 @@
     flex: 1 1 auto;
     height: 100%;
     min-height: 0;
-    /* permite expandir dentro del grid */
   }
 
-  /* El panel de personalización hace scroll interno si se desborda */
   #neon-builder .nb-right {
     overflow: auto;
   }
@@ -390,13 +372,11 @@
 
 .nb-word {
   --glow: var(--word-color, var(--nb-color, #ff4d6d));
-  /* ⟵ CLAVE: usa global si no hay color por palabra */
   position: relative;
   display: inline-block;
   padding: 0 .06em;
   color: #fff;
 
-  /* Fallback universal (Firefox incluido) */
   text-shadow:
     1px 0 0 var(--glow), -1px 0 0 var(--glow), 0 1px 0 var(--glow), 0 -1px 0 var(--glow),
     1px 1px 0 var(--glow), -1px -1px 0 var(--glow), 1px -1px 0 var(--glow), -1px 1px 0 var(--glow),
@@ -417,12 +397,11 @@
   outline-color: #21a1ff;
 }
 
-/* El builder será contenedor de referencia para el popover */
+
 #neon-builder.nb {
   --nb-color: #ff3333;
 }
 
-/* Popover flotante */
 .nb-popover {
   position: absolute;
   z-index: 60;
@@ -447,7 +426,6 @@
   border-width: 6px;
   border-style: solid;
   border-color: transparent transparent #2a3244 transparent;
-  /* borde */
 }
 
 .nb-popover::before {
@@ -458,7 +436,6 @@
   border-width: 6px;
   border-style: solid;
   border-color: transparent transparent #0c111b transparent;
-  /* relleno */
 }
 
 .nb-popover-row {
@@ -506,7 +483,6 @@
   outline-offset: 2px;
 }
 
-/* Swatch botón (muestra el color actual de la palabra) */
 .nb-chip.swatch {
   width: 34px;
   height: 28px;
@@ -517,12 +493,10 @@
   cursor: pointer;
 }
 
-/* Fila con dropdown de colores en el popover */
 .nb-popover-row--color {
   position: relative;
 }
 
-/* Menú de colores estilo “paleta” */
 .nb-swatch-menu {
   position: absolute;
   top: calc(100% + 8px);
@@ -543,7 +517,6 @@
   display: none;
 }
 
-/* Botón swatch interno del menú */
 .nb-swatch {
   width: 32px;
   height: 32px;
@@ -553,7 +526,6 @@
   cursor: pointer;
 }
 
-/* La capa de fondo ahora usa imagen (se ajusta por JS con background-image) */
 .nb-bg {
   position: absolute;
   inset: 0;
@@ -561,7 +533,6 @@
 }
 
 .nb-bg::after {
-  /* leve oscurecido opcional para legibilidad del texto */
   content: "";
   position: absolute;
   inset: 0;
@@ -569,17 +540,13 @@
   pointer-events: none;
 }
 
-/* Miniaturas con imagen */
 .nb-bg-picker {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   padding-left: 16px;
-  /* ← separación a la izquierda (flecha roja) */
   padding-right: 8px;
-  /* opcional: un pequeño respiro a la derecha */
   margin-top: 10px;
-  /* separación vertical respecto al canvas */
 }
 
 .nb-bg-thumb {
@@ -609,14 +576,12 @@
   transform: translateY(var(--preview-shift-y, 0));
 }
 
-/* En móviles, súbelo un poco menos (opcional) */
 @media (max-width: 991.98px) {
   #neon-builder.nb {
     --preview-shift-y: -45px;
   }
 }
 
-/* ===== COTAS (dimensiones) ===== */
 .nb-dim {
   position: absolute;
   pointer-events: none;
@@ -631,7 +596,6 @@
   background: #e6ebf3;
 }
 
-/* Horizontal (debajo del texto) */
 .nb-dim-h {
   height: 28px;
 }
@@ -669,7 +633,6 @@
   text-align: center;
 }
 
-/* Vertical (a la izquierda del texto) */
 .nb-dim-v {
   width: 28px;
 }
@@ -707,7 +670,6 @@
   transform-origin: center;
 }
 
-/* Caja interna del texto (para medir) */
 .nb-textbox {
   display: inline-block;
 }
