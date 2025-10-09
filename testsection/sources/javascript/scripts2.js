@@ -601,15 +601,6 @@
       const blob = await capturePreviewBlob();
       const imageUrl = await uploadToCloudinary(blob);
 
-      'Hola 👋, te comparto mi diseño de letrero neón:',
-    `Frase: "${detail.text}"`,
-    `Tamaño real aprox.: ${widthCm} cm (ancho) × ${heightCm} cm (alto)`,
-    `Tamaño seleccionado: ${detail.size} cm de ancho`,
-    `Colores: ${colors || '—'}`,
-    `Tipografías: ${fonts || '—'}`,
-    `Imagen: ${imageUrl}`
-
-
       const msg = `Hola, te comparto mi diseño de letrero neón: %0At Frase: ${encodeURIComponent(lines)} %0At Tamaño real aprox: ${widthCm} cm (ancho) x ${heightCm} cm (alto). %0At Imagen: ${imageUrl}`;
       const waUrl = `https://wa.me/524428124789/?text=${msg}`;
 
