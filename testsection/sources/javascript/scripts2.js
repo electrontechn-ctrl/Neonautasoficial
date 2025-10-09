@@ -140,54 +140,6 @@
   on(window, 'resize', rerenderOnResize, { passive: true });
   on(window, 'orientationchange', rerenderOnResize, { passive: true });
 
-
-  const _primaryFont = (s) => (s || '').split(',')[0].trim().replace(/^['"]|['"]$/g, '');
-
-  // Colores usados (incluye overrides por palabra; si no hay, usa el global)
-  function getUsedColors() {
-    const set = new Set();
-    // Global
-    if (state.color) set.add(state.color);
-
-    // Overrides por palabra
-    Object.values(state.wordStyles || {}).forEach(words =>
-      Object.values(words || {}).forEach(st => { if (st.color) set.add(st.color); })
-    );
-
-    return Array.from(set);
-  }
-
-  // Fuentes usadas (incluye overrides por palabra; si no hay, usa la global)
-  function getUsedFonts() {
-    const set = new Set();
-    // Global
-    if (state.font) set.add(_primaryFont(state.font));
-
-    // Overrides por palabra
-    Object.values(state.wordStyles || {}).forEach(words =>
-      Object.values(words || {}).forEach(st => { if (st.font) set.add(_primaryFont(st.font)); })
-    );
-
-    return Array.from(set);
-  }
-
-  function buildWhatsAppMessage(detail, imageUrl) {
-    const { widthCm = 0, heightCm = 0 } = state.dimensions || {};
-    const colors = getUsedColors().join(', ');
-    const fonts = getUsedFonts().join(', ');
-
-    // Redacta como prefieras — aquí un formato claro y breve
-    return [
-      'Hola, te comparto mi diseño de letrero neón:',
-      `Frase: "${detail.text}"`,
-      `Tamaño real aprox.: ${widthCm} cm (ancho) x ${heightCm} cm (alto)`,
-      `Tamaño seleccionado: ${detail.size} cm de ancho`,
-      `Colores: ${colors || '—'}`,
-      `Tipografías: ${fonts || '—'}`,
-      `Imagen: ${imageUrl}`
-    ].join('\n');
-  }
-
   // ------------------- Lógica de medidas ----------------------
   function getDimensionMultiplier(box) {
     // Fuente dominante = mayor font-size en bloque
@@ -505,7 +457,7 @@
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
 
     // Capturamos TODO el panel izquierdo (canvas + cotas)
-    const el = document.querySelector('.nb-capture');
+    const el = document.querySelector('nb-capture');
     if (!el) throw new Error('No se encontró .nb-left');
 
     // Oculta elementos marcados para que NO aparezcan ni empujen layout
@@ -649,14 +601,19 @@
       const blob = await capturePreviewBlob();
       const imageUrl = await uploadToCloudinary(blob);
 
-      // Usa el constructor de mensaje (incluye frase, medidas, colores, fuentes)
-      const msg = buildWhatsAppMessage(detail, imageUrl);
+      'Hola 👋, te comparto mi diseño de letrero neón:',
+    `Frase: "${detail.text}"`,
+    `Tamaño real aprox.: ${widthCm} cm (ancho) × ${heightCm} cm (alto)`,
+    `Tamaño seleccionado: ${detail.size} cm de ancho`,
+    `Colores: ${colors || '—'}`,
+    `Tipografías: ${fonts || '—'}`,
+    `Imagen: ${imageUrl}`
 
-      // Codifica todo el texto y abre WhatsApp en la misma pestaña
-      const waUrl = `https://wa.me/524681146000/?text=${encodeURIComponent(msg)}`;
-      navigateAfterHide
-        ? navigateAfterHide(waUrl)       // si ya implementaste el cierre elegante del modal
-        : (window.location.href = waUrl); // si no, usa esta línea
+
+      const msg = `Hola, te comparto mi diseño de letrero neón: %0At Frase: ${encodeURIComponent(lines)} %0At Tamaño real aprox: ${widthCm} cm (ancho) x ${heightCm} cm (alto). %0At Imagen: ${imageUrl}`;
+      const waUrl = `https://wa.me/524428124789/?text=${msg}`;
+
+      navigateAfterHide(waUrl);
     } catch (err) {
       console.error(err);
       hideLoadingModal();
