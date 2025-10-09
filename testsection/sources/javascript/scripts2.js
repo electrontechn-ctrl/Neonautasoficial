@@ -702,6 +702,8 @@
     buildGlobalColors();
     buildWordMenu();
     state.lines = splitLines('Crea tu frase');
+    const suggested = pickSizeByLetters(state.lines);
+    applySize(suggested);
     renderAll();
   }
 
