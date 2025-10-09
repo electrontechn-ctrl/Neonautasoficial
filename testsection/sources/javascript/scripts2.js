@@ -590,7 +590,8 @@
   // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
   document.querySelector('#nbFinalize')?.addEventListener('click', async () => {
     const lines = (state?.lines || []).join('\n');
-    const size = state?.size || 0;
+    const widthCm = state?.dimensions?.widthCm || 0;
+    const heightCm = state?.dimensions?.heightCm || 0;
 
     if (!lines) return;
 
