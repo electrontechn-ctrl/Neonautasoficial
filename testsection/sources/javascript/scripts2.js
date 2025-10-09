@@ -140,6 +140,46 @@
   on(window, 'resize', rerenderOnResize, { passive: true });
   on(window, 'orientationchange', rerenderOnResize, { passive: true });
 
+  // Devuelve el número máximo de letras (sin espacios) entre todos los renglones
+  function maxLettersPerLine(lines) {
+    if (!Array.isArray(lines) || !lines.length) return 0;
+    return Math.max(...lines.map(l => (l || '').replace(/\s+/g, '').length));
+  }
+
+  // Dada la frase (lines), elige el tamaño más pequeño que cumpla:
+  // - cantidad de renglones <= maxLines
+  // - letras por renglón <= maxCharsPerLine
+  function pickSizeByLetters(lines) {
+    const letters = maxLettersPerLine(lines);
+    const lineCount = lines.length || 1;
+
+    // Ordena tamaños de menor a mayor (50,70,90,...)
+    const sizesAsc = Object.keys(SIZE_LIMITS).map(n => +n).sort((a, b) => a - b);
+
+    // Busca el primer tamaño que cumple límites
+    for (const s of sizesAsc) {
+      const lim = SIZE_LIMITS[s];
+      if (!lim) continue;
+      if (lineCount <= lim.maxLines && letters <= lim.maxCharsPerLine) {
+        return s;
+      }
+    }
+    // Si ninguno cumple, elige el MÁS GRANDE disponible
+    return sizesAsc[sizesAsc.length - 1];
+  }
+
+  // Aplica un tamaño al estado y actualiza los botones de la UI
+  function applySize(newSize) {
+    if (state.size === newSize) return;
+    state.size = newSize;
+    // Refresca el marcado de botones
+    document.querySelectorAll('.nb-size').forEach(btn => {
+      btn.classList.toggle('is-active', +btn.dataset.size === newSize);
+      btn.setAttribute('aria-checked', (+btn.dataset.size === newSize) ? 'true' : 'false');
+    });
+  }
+
+
   // ------------------- Lógica de medidas ----------------------
   function getDimensionMultiplier(box) {
     // Fuente dominante = mayor font-size en bloque
@@ -511,17 +551,17 @@
     loadingModal.show();
   }
   function hideLoadingModal() {
-  const el = document.getElementById('loadingModal');
-  if (!el || !loadingModal) return;
+    const el = document.getElementById('loadingModal');
+    if (!el || !loadingModal) return;
 
-  // Evita el warning
-  const active = document.activeElement;
-  if (active && el.contains(active)) active.blur();
+    // Evita el warning
+    const active = document.activeElement;
+    if (active && el.contains(active)) active.blur();
 
-  document.querySelector('#nbFinalize')?.focus();
+    document.querySelector('#nbFinalize')?.focus();
 
-  loadingModal.hide();
-}
+    loadingModal.hide();
+  }
 
 
   // -------------------- Ciclo de renderizado ------------------
@@ -592,7 +632,17 @@
     selectedWord.style.fontSize = toPx(((FONT_SIZES[wk] || (parentFS / state.scale)) * state.scale));
   });
 
-  on(textInput, 'input', () => { state.lines = splitLines(textInput.value); clearSelection(); renderAll(); });
+  document.querySelector('#nbText').addEventListener('input', () => {
+    state.lines = splitLines(document.querySelector('#nbText').value);
+
+    //Ajuste automático del tamaño por cantidad de letras/renglones
+    const suggested = pickSizeByLetters(state.lines);
+    applySize(suggested);
+
+    clearSelection();
+    renderAll();
+  });
+
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
 
@@ -611,7 +661,7 @@
       const blob = await capturePreviewBlob();
       const imageUrl = await uploadToCloudinary(blob);
 
-      const msg = `Hola, te comparto mi diseño de letrero neón %0AFrase: ${encodeURIComponent(lines)} %0ATamaño real aprox.: ${widthCm} cm (ancho) x ${heightCm} cm (alto) %0AImagen: ${imageUrl}`;
+      const msg = `Hola, te comparto mi diseño de letrero neón %0AFrase: *${encodeURIComponent(lines)}* %0ATamaño real aprox.: ${widthCm} cm (ancho) x ${heightCm} cm (alto) %0AImagen: ${imageUrl}`;
       const waUrl = `https://wa.me/524681146000/?text=${msg}`;
 
       navigateAfterHide(waUrl);
