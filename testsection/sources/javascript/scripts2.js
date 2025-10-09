@@ -114,7 +114,7 @@
   let globalColorBtns = [];
 
 
-  // NUEVO: configuración de Cloudinary tomada de data-attributes del HTML
+  // configuración de Cloudinary
   const CLOUDINARY = {
     CLOUD_NAME: root?.dataset.cloudName || 'danqyk0wz',
     UPLOAD_PRESET: root?.dataset.uploadPreset || 'storagehml',
@@ -146,9 +146,6 @@
     return Math.max(...lines.map(l => (l || '').replace(/\s+/g, '').length));
   }
 
-  // Dada la frase (lines), elige el tamaño más pequeño que cumpla:
-  // - cantidad de renglones <= maxLines
-  // - letras por renglón <= maxCharsPerLine
   function pickSizeByLetters(lines) {
     const letters = maxLettersPerLine(lines);
     const lineCount = lines.length || 1;
@@ -164,7 +161,6 @@
         return s;
       }
     }
-    // Si ninguno cumple, elige el MÁS GRANDE disponible
     return sizesAsc[sizesAsc.length - 1];
   }
 
@@ -447,7 +443,7 @@
     const acrylicAreaCm2 = Math.max(0, Math.round(acrylicW * acrylicH));
     const acrylicCost = acrylicAreaCm2 * ACRYLIC_RATE_CM2;
 
-    // LED (criterio proporcional al área)
+    // LED
     const ledLengthCm = acrylicAreaCm2 / 3.2; // ajustable
     const ledLengthM = ledLengthCm / 100;
     const ledCost = ledLengthM * LED_RATE_M;
@@ -483,7 +479,7 @@
     if (textHelp) textHelp.textContent = `Máximo ${lim.maxCharsPerLine} letras por renglón • Máx. ${lim.maxLines} renglones`;
   }
 
-  // NUEVO: control de loading del botón
+  // control de loading del botón
   function setLoading(is) {
     if (!finalizeBtn) return;
     finalizeBtn.disabled = true;
@@ -492,21 +488,17 @@
     if (!is) finalizeBtn.disabled = false;
   }
 
-  // Captura del canvas de preview como Blob PNG
   async function capturePreviewBlob() {
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
 
-    // Capturamos TODO el panel izquierdo (canvas + cotas)
     const el = document.querySelector('.nb-capture');
     if (!el) throw new Error('No se encontró .nb-left');
 
-    // Oculta elementos marcados para que NO aparezcan ni empujen layout
     const toHide = Array.from(el.querySelectorAll('[data-hide-in-capture]'));
     const prevDisplay = toHide.map(n => n.style.display);
     toHide.forEach(n => { n.style.display = 'none'; });
 
     try {
-      // Asegura layout estable
       await new Promise(r => requestAnimationFrame(r));
 
       const canvas = await window.html2canvas(el, {
@@ -521,14 +513,10 @@
         canvas.toBlob(b => resolve(b), 'image/png', 0.92)
       );
     } finally {
-      // Restaura display original
       toHide.forEach((n, i) => { n.style.display = prevDisplay[i]; });
     }
   }
 
-
-
-  // Sube Blob a Cloudinary (unsigned)
   async function uploadToCloudinary(blob) {
     if (!blob) throw new Error('Blob vacío');
     const url = `https://api.cloudinary.com/v1_1/${CLOUDINARY.CLOUD_NAME}/image/upload`;
@@ -554,7 +542,6 @@
     const el = document.getElementById('loadingModal');
     if (!el || !loadingModal) return;
 
-    // Evita el warning
     const active = document.activeElement;
     if (active && el.contains(active)) active.blur();
 
@@ -592,7 +579,6 @@
       wordColorsMenu.hidden = true;
       wordColorBtn?.setAttribute('aria-expanded', 'false');
     }
-    // cerrar popover si clic fuera
     if (wordPopover && !wordPopover.hidden &&
       !e.target.closest('.nb-popover') &&
       !e.target.closest('.nb-word')) {
@@ -628,7 +614,6 @@
     selectedWord.style.fontFamily = wordFontSel.value;
     const wk = primaryFont(wordFontSel.value);
     const parentFS = getFS(selectedWord.parentElement) || DEFAULT_FONT_PX;
-    // Mantiene consistencia con escalado global
     selectedWord.style.fontSize = toPx(((FONT_SIZES[wk] || (parentFS / state.scale)) * state.scale));
   });
 
@@ -646,7 +631,7 @@
   sizes.forEach(btn => on(btn, 'click', () => { state.size = parseInt(btn.dataset.size, 10); clearSelection(); sizes.forEach(n => n.classList.toggle('is-active', n === btn)); renderAll(); }));
   on(fontSelect, 'change', () => { state.font = fontSelect.value; clearWordOverrides('font'); renderAll(); });
 
-  // =================== NUEVO: finalizar => capturar + subir + WhatsApp ====================
+  // ===================finalizar => capturar + subir + WhatsApp ====================
   document.querySelector('#nbFinalize')?.addEventListener('click', async () => {
     const lines = (state?.lines || []).join('\n');
     const widthCm = state?.dimensions?.widthCm || 0;
