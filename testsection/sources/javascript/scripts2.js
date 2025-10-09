@@ -457,7 +457,7 @@
     if (!window.html2canvas) throw new Error('html2canvas no cargado');
 
     // Capturamos TODO el panel izquierdo (canvas + cotas)
-    const el = document.querySelector('nb-capture');
+    const el = document.querySelector('.nb-capture');
     if (!el) throw new Error('No se encontró .nb-left');
 
     // Oculta elementos marcados para que NO aparezcan ni empujen layout
@@ -601,7 +601,7 @@
       const blob = await capturePreviewBlob();
       const imageUrl = await uploadToCloudinary(blob);
 
-      const msg = `Hola, te comparto mi diseño de letrero neón: %0At Frase: ${encodeURIComponent(lines)} %0At Tamaño real aprox: ${widthCm} cm (ancho) x ${heightCm} cm (alto). %0At Imagen: ${imageUrl}`;
+      const msg = `Hola, te comparto mi diseño de letrero neón (%0A${encodeURIComponent(lines)}%0A${size} cm): ${imageUrl}`;
       const waUrl = `https://wa.me/524428124789/?text=${msg}`;
 
       navigateAfterHide(waUrl);
