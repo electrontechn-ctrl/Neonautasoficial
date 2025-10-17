@@ -48,7 +48,7 @@
 
   color: #e6e7ea;
   display: grid;
-  gap: clamp(16px, 2.5vw, 32px);
+  gap: var(--nb-gap);
   grid-template-columns: 1fr;
   align-items: start;
 }
@@ -680,30 +680,3 @@
 
 
 
-
-
-
-
-
-
-
-
-/* “Safe padding” dentro del área de preview */
-.nb-canvas {
-  padding-inline: clamp(16px, 3vw, 32px); /* margen izq/der adaptable */
-}
-
-/* Asegura que el fondo cubra el padding (el fondo ya es absoluto) */
-.nb-bg {
-  inset: 0;               /* ocupa todo el .nb-canvas */
-  position: absolute;
-}
-
-/* Las capas (texto/cotas) siguen sobre el fondo */
-.nb-preview { position: relative; }
-
-/* Espacio entre los dos paneles de la vista */
-.nb {
-  gap: clamp(16px, 2.5vw, 32px);
-  /* si ya tenías gap, sustituye por este clamp para que sea responsivo */
-}
