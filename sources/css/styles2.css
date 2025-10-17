@@ -709,31 +709,3 @@
   color: var(--nb-muted, #98a2b3);
   max-width: 68ch;
 }
-
-
-
-
-
-
-
-
-
-/* === Gutters laterales y ancho máximo SOLO para la sección del builder === */
-#neon-builder.nb{
-  /* centra y limita el ancho como un .container de Bootstrap */
-  box-sizing: border-box;
-  margin-inline: auto;
-  max-width: 1320px;            /* ≈ container-xxl */
-  padding-left:  clamp(16px, 4vw, 32px);
-  padding-right: clamp(16px, 4vw, 32px);
-}
-
-/* si tu página usa container-xl como ancho principal, usa este ajuste */
-@media (min-width: 1200px){
-  #neon-builder.nb{ max-width: 1140px; } /* ≈ container-xl */
-}
-
-/* En pantallas muy grandes, evita que “sangre” pegado a los bordes */
-@media (min-width: 1600px){
-  #neon-builder.nb{ max-width: 1320px; } /* vuelve a xxl si aplica */
-}
