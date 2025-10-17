@@ -184,8 +184,8 @@
   outline-offset: 2px;
 }
 
-.nb-note{
-  visibility: hidden; 
+.nb-note {
+  visibility: hidden;
   display: block;
   min-height: 28px;
 }
@@ -676,4 +676,44 @@
 
 .nb-preview {
   padding: clamp(12px, 4vw, 40px);
+}
+
+
+/* Intro para integrar la sección del builder con el resto del sitio */
+.nb-intro {
+  color: #e6e7ea;
+}
+
+.nb-kicker {
+  font: 700 12px/1 Poppins, system-ui, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--nb-muted, #98a2b3);
+}
+
+.nb-heading {
+  font: 800 clamp(1.4rem, 2.5vw, 2rem)/1.15 Poppins, system-ui, sans-serif;
+  margin: 0;
+}
+
+.nb-heading-glow {
+  position: relative;
+  color: #fff;
+  text-shadow:
+    0 0 2px #fff,
+    0 0 6px var(--nb-color, #ff4d6d),
+    0 0 14px var(--nb-color, #ff4d6d);
+}
+
+.nb-subtle {
+  color: var(--nb-muted, #98a2b3);
+  max-width: 68ch;
+}
+
+/* separador sutil cuando está pegado al hero/otra sección */
+.nb-intro {
+  border-top: 1px solid var(--nb-border, #283042);
+  border-bottom: 1px solid var(--nb-border, #283042);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .00));
+  border-radius: 14px;
 }
