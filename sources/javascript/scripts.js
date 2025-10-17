@@ -208,28 +208,21 @@
 
   async function loadProducts() {
     try {
-      // 1) versión de despliegue (cámbiala cuando subas una BD nueva)
       const APP_VERSION = '2025-10-17-01';
 
       const SQL = await initSqlJs({
         locateFile: (f) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
       });
 
-      // 2) URL con "cache buster"
       const DB_BASE = 'https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db';
       const DB_URL = `${DB_BASE}?v=${APP_VERSION}`;
 
-      // 3) Saltar caché del navegador/CDN
-      const res = await fetch(DB_URL, { cache: 'no-store' }); // o { cache: 'reload' }
+      const res = await fetch(DB_URL, { cache: 'no-store' }); 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = await res.arrayBuffer();
 
       const db = new SQL.Database(new Uint8Array(buf));
-      const stmt = db.prepare(`
-      SELECT id, title, description, price, size, category, tags, image_url, sizes_label
-      FROM productos
-      ORDER BY id ASC
-    `);
+      const stmt = db.prepare(`SELECT id, title, description, price, size, category, tags, image_url, sizes_label FROM productos ORDER BY id ASC`);
 
       const items = [];
       while (stmt.step()) items.push(stmt.getAsObject());
