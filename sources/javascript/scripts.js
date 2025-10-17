@@ -84,15 +84,13 @@
     persistQuote();
   }
 
-  // Filter logic
   function filterProducts() {
-    const q = norm(searchInput?.value?.trim() || '');
-    const cat = norm(categorySelect?.value || '');
+    const q = norm(searchInput?.value || '');
+    const cat = categorySelect?.value || '';
     const size = sizeSelect?.value || '';
 
-    let matches = 0;
-    let shown = 0;
-
+    // 1) recolectar los que matchean
+    const matched = [];
     products.forEach(card => {
       const title = norm($('.card-title', card)?.textContent || '');
       const tags = norm(card.dataset.tags || '');
@@ -102,27 +100,34 @@
       const matchQ = !q || title.includes(q) || tags.includes(q);
       const matchC = !cat || category === cat;
       const matchS = !size || sizeAttr === size;
-      const match = matchQ && matchC && matchS;
 
-      if (match) {
-        matches++;
-        if (!isExpanded && shown >= MAX_VISIBLE) {
-          card.style.display = 'none';
-        } else {
-          card.style.display = '';
-          shown++;
-        }
+      if (matchQ && matchC && matchS) {
+        matched.push(card);
       } else {
         card.style.display = 'none';
       }
     });
 
-    const noRes = $('#noResults');
-    if (noRes) noRes.hidden = !!matches;
+    // 2) decidir cuántas mostrar
+    const limit = isExpanded
+      ? matched.length
+      : adjustedLimit(MAX_VISIBLE, matched.length, grid, matched[0]);
 
-    if (showMoreContainer) showMoreContainer.hidden = !(matches > MAX_VISIBLE);
-    if (showMoreBtn) showMoreBtn.textContent = isExpanded ? 'Mostrar menos' : 'Mostrar más';
+    // 3) aplicar display
+    matched.forEach((card, i) => {
+      card.style.display = i < limit ? '' : 'none';
+    });
+
+    // 4) UI auxiliar (sin cambios)
+    const noRes = $('#noResults');
+    if (noRes) noRes.style.display = matched.length ? 'none' : '';
+
+    if (showMoreBtn) {
+      showMoreBtn.style.display = (!isExpanded && matched.length > limit) ? '' : 'none';
+      showMoreBtn.textContent = 'Mostrar más';
+    }
   }
+
 
   const resetAndFilter = () => { isExpanded = false; filterProducts(); };
   const debouncedResetAndFilter = debounce(resetAndFilter, 120);
@@ -138,6 +143,25 @@
       $('#detailsPrice').textContent = btn.dataset.price ? fmtMXN.format(Number(btn.dataset.price)) : '';
     });
   }
+
+
+  // Columnas reales del grid en este viewport (aprox. Bootstrap)
+  function getGridColumns(gridEl, cardEl) {
+    if (!gridEl || !cardEl) return 1;
+    const gw = gridEl.getBoundingClientRect().width;
+    const cw = cardEl.getBoundingClientRect().width;
+    const cols = Math.max(1, Math.floor(gw / (cw || 1)));
+    return cols;
+  }
+
+  // Límite ajustado al múltiplo de columnas (sin pasarnos de los matches)
+  function adjustedLimit(limit, matchesCount, gridEl, firstCardEl) {
+    const cols = getGridColumns(gridEl, firstCardEl);
+    const base = Math.min(limit, matchesCount);
+    const rounded = Math.ceil(base / cols) * cols; // 4->6 si hay 3 cols, etc.
+    return Math.min(matchesCount, rounded);
+  }
+
 
   // WhatsApp helpers
   const WHATS_NUMBER = '524681146000';
@@ -217,7 +241,7 @@
       const DB_BASE = 'https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db';
       const DB_URL = `${DB_BASE}?v=${APP_VERSION}`;
 
-      const res = await fetch(DB_URL, { cache: 'no-store' }); 
+      const res = await fetch(DB_URL, { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = await res.arrayBuffer();
 
