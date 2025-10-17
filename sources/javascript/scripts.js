@@ -28,10 +28,8 @@
   const section = $('#catalogoimg');
 
 
-  // State
   let isExpanded = false;
 
-  // Cuántas columnas hay con tus clases: row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4
   function getColCount() {
     const w = window.innerWidth;
     if (w >= 992) return 4;   // lg+
@@ -39,7 +37,6 @@
     if (w >= 576) return 2;   // sm
     return 1;                 // xs
   }
-  // Filas que quieres en la vista previa (1 = una fila completa)
   const PREVIEW_ROWS = 2;
   function getMaxVisible() {
     return getColCount() * PREVIEW_ROWS;
