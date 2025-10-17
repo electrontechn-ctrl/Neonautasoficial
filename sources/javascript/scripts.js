@@ -1,13 +1,6 @@
 (() => {
   'use strict';
 
-  window.addEventListener('resize', debounce(() => {
-    // si estás en modo "mostrar todo", no hace falta recalcular
-    if (window.isExpanded) return;
-    updateMaxVisible();
-    filterProducts(); // vuelve a aplicar con el nuevo MAX_VISIBLE
-  }, 150));
-
   // Utils
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -131,39 +124,8 @@
     if (showMoreBtn) showMoreBtn.textContent = isExpanded ? 'Mostrar menos' : 'Mostrar más';
   }
 
-  const resetAndFilter = () => { isExpanded = false; updateMaxVisible(); filterProducts(); };
+  const resetAndFilter = () => { isExpanded = false; filterProducts(); };
   const debouncedResetAndFilter = debounce(resetAndFilter, 120);
-
-  // Ajusta este valor a tu preferencia mínima (p. ej. 6)
-  const BASE_VISIBLE = 6;
-
-  // Calcula cuántas columnas reales tiene tu grid ahora mismo
-  function getCatalogCols() {
-    const grid =
-      window.grid ||
-      document.querySelector('#catalogo .row, #catalogo .grid, .products-grid');
-    if (!grid) return 1;
-
-    // toma una tarjeta de referencia (visible si hay, si no cualquiera)
-    let card =
-      grid.querySelector('.product-card:not([style*="display: none"])') ||
-      grid.querySelector('.product-card, .card');
-
-    if (!card) return 1;
-
-    const gw = grid.getBoundingClientRect().width || grid.clientWidth || 0;
-    const cw = card.getBoundingClientRect().width || card.clientWidth || 1;
-
-    // columnas aproximadas (Bootstrap-like)
-    return Math.max(1, Math.floor(gw / cw));
-  }
-
-  // Redondea MAX_VISIBLE al múltiplo de columnas (sin tocar filterProducts)
-  function updateMaxVisible() {
-    const cols = getCatalogCols();
-    const rounded = Math.ceil(BASE_VISIBLE / cols) * cols; // 6→6/8/9/12 según cols
-    window.MAX_VISIBLE = Math.max(rounded, BASE_VISIBLE);
-  }
 
   // Modal detalles (carga dinámica)
   if (detailsModal) {
@@ -255,7 +217,7 @@
       const DB_BASE = 'https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db';
       const DB_URL = `${DB_BASE}?v=${APP_VERSION}`;
 
-      const res = await fetch(DB_URL, { cache: 'no-store' });
+      const res = await fetch(DB_URL, { cache: 'no-store' }); 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = await res.arrayBuffer();
 
@@ -269,7 +231,6 @@
 
       grid.innerHTML = items.map(productCardHTML).join('');
       setProductsFromDOM();
-      updateMaxVisible();
       filterProducts();
     } catch (err) {
       console.error('Error cargando productos', err);
@@ -289,7 +250,7 @@
     [categorySelect, sizeSelect].forEach(el => el && ['change', 'input'].forEach(evt => on(el, evt, resetAndFilter)));
 
     // Show more / less
-    if (showMoreBtn) on(showMoreBtn, 'click', () => { isExpanded = !isExpanded; updateMaxVisible(); filterProducts(); if (!isExpanded) $('#catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    if (showMoreBtn) on(showMoreBtn, 'click', () => { isExpanded = !isExpanded; filterProducts(); if (!isExpanded) $('#catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 
     // WhatsApp form
     const waForm = $('#waForm');
