@@ -354,10 +354,10 @@
       io.observe(section);
     }
   });
+  window.addEventListener('resize', debounce(() => {
+    if (window.isExpanded) return;     // si está en "mostrar todo", no hace falta
+    updateMaxVisible(products.length);
+    filterProducts();
+  }, 150));
 })();
 
-window.addEventListener('resize', debounce(() => {
-  if (window.isExpanded) return;     // si está en "mostrar todo", no hace falta
-  updateMaxVisible(products.length);
-  filterProducts();
-}, 150));
