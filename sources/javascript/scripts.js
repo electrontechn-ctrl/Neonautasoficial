@@ -1,6 +1,13 @@
 (() => {
   'use strict';
 
+  window.addEventListener('resize', debounce(() => {
+    // si estás en modo "mostrar todo", no hace falta recalcular
+    if (window.isExpanded) return;
+    updateMaxVisible();
+    filterProducts(); // vuelve a aplicar con el nuevo MAX_VISIBLE
+  }, 150));
+
   // Utils
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
