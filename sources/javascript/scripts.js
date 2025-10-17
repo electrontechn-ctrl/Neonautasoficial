@@ -28,7 +28,7 @@
   const section = $('#catalogoimg');
 
   // State
-  let MAX_VISIBLE = 4; // cards visibles en modo colapsado
+  const MAX_VISIBLE = 4; // cards visibles en modo colapsado
   let isExpanded = false;
   let products = [];
   const quote = JSON.parse(localStorage.getItem('neonautas_quote') || '[]');
@@ -83,71 +83,6 @@
     renderQuote();
     persistQuote();
   }
-
-  // === Ajuste seguro de MAX_VISIBLE sin tocar filterProducts ===
-  const BASE_VISIBLE = 6; // tu mínimo deseado (ajústalo si quieres)
-
-  function getGridEl() {
-    return (
-      window.grid ||
-      document.getElementById('gridProductos') ||
-      document.querySelector('#catalogo .row, #catalogo .grid, .products-grid')
-    );
-  }
-
-  function getAnyCard() {
-    // primero intenta una visible (mejor ancho), luego cualquiera
-    const grid = getGridEl();
-    if (!grid) return null;
-    return (
-      grid.querySelector('.product-card:not([style*="display: none"])') ||
-      grid.querySelector('.product-card, .card')
-    );
-  }
-
-  function getColsSafe() {
-    const grid = getGridEl();
-    if (!grid) return 1;
-
-    // Si es CSS Grid, intenta leer las columnas del template
-    const cs = window.getComputedStyle(grid);
-    if (cs.display.includes('grid')) {
-      const cols = (cs.gridTemplateColumns || '')
-        .split(' ')
-        .filter(Boolean).length;
-      if (cols > 0) return cols;
-    }
-
-    // Fallback por medida: ancho contenedor / ancho tarjeta
-    const gw = grid.getBoundingClientRect().width || grid.clientWidth || 0;
-    const card = getAnyCard();
-    const cw = card ? (card.getBoundingClientRect().width || card.clientWidth || 0) : 0;
-
-    // Si aún no hay ancho (ej: antes de render), usa un ancho mínimo razonable
-    const safeCardWidth = cw > 0 ? cw : 260; // px aprox. de una tarjeta
-    const cols = Math.max(1, Math.floor((gw || 1) / safeCardWidth));
-    return cols;
-  }
-
-  function updateMaxVisible(totalItems) {
-    const cols = getColsSafe();
-    // Si todavía no tenemos items o grid, no cambies nada
-    if (!Number.isFinite(totalItems) || totalItems <= 0) {
-      window.MAX_VISIBLE = BASE_VISIBLE;
-      return;
-    }
-
-    const base = Math.min(BASE_VISIBLE, totalItems);
-    // Redondea hacia arriba al múltiplo de columnas sin pasarte del total
-    const rounded = Math.min(totalItems, Math.ceil(base / cols) * cols);
-
-    // Guarda siempre un número válido >= 1
-    window.MAX_VISIBLE = Math.max(1, rounded || BASE_VISIBLE);
-
-    // (Opcional) debug:
-    // console.log('cols=', cols, 'total=', totalItems, 'MAX_VISIBLE=', window.MAX_VISIBLE);
-  }
-
 
   // Filter logic
   function filterProducts() {
@@ -282,7 +217,7 @@
       const DB_BASE = 'https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db';
       const DB_URL = `${DB_BASE}?v=${APP_VERSION}`;
 
-      const res = await fetch(DB_URL, { cache: 'no-store' });
+      const res = await fetch(DB_URL, { cache: 'no-store' }); 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = await res.arrayBuffer();
 
@@ -354,10 +289,4 @@
       io.observe(section);
     }
   });
-  window.addEventListener('resize', debounce(() => {
-    if (window.isExpanded) return;     // si está en "mostrar todo", no hace falta
-    updateMaxVisible(products.length);
-    filterProducts();
-  }, 150));
 })();
-
