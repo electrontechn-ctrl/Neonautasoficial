@@ -1,5 +1,9 @@
 (() => {
   'use strict';
+  // =====================================================
+  // Noel Ramirez-Neonautas 2025
+  // Letrero neón - pagina web oficial
+  // =====================================================
 
   // Utils
   const $ = (sel, root = document) => root.querySelector(sel);
