@@ -208,12 +208,29 @@
 
   async function loadProducts() {
     try {
-      const SQL = await initSqlJs({ locateFile: (f) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` });
-      const res = await fetch('https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db', { cache: 'force-cache' });
-      const buf = await res.arrayBuffer();
-      const db = new SQL.Database(new Uint8Array(buf));
+      // 1) versión de despliegue (cámbiala cuando subas una BD nueva)
+      const APP_VERSION = '2025-10-17-01';
 
-      const stmt = db.prepare(`SELECT id, title, description, price, size, category, tags, image_url, sizes_label FROM productos ORDER BY id ASC`);
+      const SQL = await initSqlJs({
+        locateFile: (f) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
+      });
+
+      // 2) URL con "cache buster"
+      const DB_BASE = 'https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db';
+      const DB_URL = `${DB_BASE}?v=${APP_VERSION}`;
+
+      // 3) Saltar caché del navegador/CDN
+      const res = await fetch(DB_URL, { cache: 'no-store' }); // o { cache: 'reload' }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = await res.arrayBuffer();
+
+      const db = new SQL.Database(new Uint8Array(buf));
+      const stmt = db.prepare(`
+      SELECT id, title, description, price, size, category, tags, image_url, sizes_label
+      FROM productos
+      ORDER BY id ASC
+    `);
+
       const items = [];
       while (stmt.step()) items.push(stmt.getAsObject());
       stmt.free();
@@ -227,6 +244,7 @@
       grid.innerHTML = '<div class="col"><div class="alert alert-danger">No se pudo cargar el catálogo. Intenta de nuevo más tarde.</div></div>';
     }
   }
+
 
   // Global UI wiring
   on(document, 'DOMContentLoaded', () => {
