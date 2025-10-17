@@ -85,17 +85,18 @@
   }
 
   function filterProducts() {
-    const q = norm(searchInput?.value || '');
-    const cat = categorySelect?.value || '';
-    const size = sizeSelect?.value || '';
+    // Lee filtros actuales
+    const q = norm((window.searchInput?.value || '').trim());
+    const cat = (window.categorySelect?.value || '').trim();
+    const size = (window.sizeSelect?.value || '').trim();
 
-    // 1) recolectar los que matchean
+    // 1) Filtrar tarjetas que coinciden
     const matched = [];
-    products.forEach(card => {
-      const title = norm($('.card-title', card)?.textContent || '');
-      const tags = norm(card.dataset.tags || '');
-      const category = norm(card.dataset.category || '');
-      const sizeAttr = card.dataset.size || '';
+    (window.products || []).forEach(card => {
+      const title = norm(($('.card-title', card)?.textContent || '').trim());
+      const tags = norm((card.dataset.tags || '').trim());
+      const category = norm((card.dataset.category || '').trim());
+      const sizeAttr = (card.dataset.size || '').trim();
 
       const matchQ = !q || title.includes(q) || tags.includes(q);
       const matchC = !cat || category === cat;
@@ -108,25 +109,48 @@
       }
     });
 
-    // 2) decidir cuántas mostrar
-    const limit = isExpanded
-      ? matched.length
-      : adjustedLimit(MAX_VISIBLE, matched.length, grid, matched[0]);
+    // 2) Calcular límite visible redondeado al múltiplo de columnas
+    const gridEl = window.grid || document.getElementById('gridProductos') || document.querySelector('#catalogo .row, #catalogo .grid, .products-grid');
+    const firstCard = matched[0];
 
-    // 3) aplicar display
+    // columnas reales del grid (aprox.) según ancho contenedor / ancho tarjeta
+    const getCols = () => {
+      if (!gridEl || !firstCard) return 1;
+      const gw = gridEl.getBoundingClientRect().width;
+      const cw = firstCard.getBoundingClientRect().width || 1;
+      return Math.max(1, Math.floor(gw / cw));
+    };
+
+    const cols = getCols();
+
+    // límite base y redondeo al múltiplo de columnas (solo en modo compacto)
+    const baseLimit = Math.min(window.MAX_VISIBLE || 6, matched.length);
+    const rounded = Math.min(matched.length, Math.ceil(baseLimit / cols) * cols);
+    const limit = window.isExpanded ? matched.length : rounded;
+
+    // 3) Mostrar/ocultar según límite
     matched.forEach((card, i) => {
       card.style.display = i < limit ? '' : 'none';
     });
 
-    // 4) UI auxiliar (sin cambios)
-    const noRes = $('#noResults');
+    // 4) Estado "sin resultados"
+    const noRes = document.getElementById('noResults');
     if (noRes) noRes.style.display = matched.length ? 'none' : '';
 
+    // 5) Botón "Mostrar más": mantenerlo visible si hay más de MAX_VISIBLE,
+    //    aunque el redondeo ya haya mostrado todo (consistencia visual)
+    const showMoreBtn = window.showMoreBtn || document.getElementById('showMoreBtn');
     if (showMoreBtn) {
-      showMoreBtn.style.display = (!isExpanded && matched.length > limit) ? '' : 'none';
-      showMoreBtn.textContent = 'Mostrar más';
+      const hasMoreThanRounded = matched.length > limit;                 // hay ocultas
+      const hasMoreThanBase = matched.length > (window.MAX_VISIBLE || 6); // más que el mínimo
+      showMoreBtn.style.display = (!window.isExpanded && (hasMoreThanRounded || hasMoreThanBase)) ? '' : 'none';
+      showMoreBtn.textContent = hasMoreThanRounded ? 'Mostrar más' : `Ver todo (${matched.length})`;
     }
+
+    // 6) (Opcional) devolver conteo por si lo quieres usar
+    return { total: matched.length, showing: limit, cols };
   }
+
 
 
   const resetAndFilter = () => { isExpanded = false; filterProducts(); };
