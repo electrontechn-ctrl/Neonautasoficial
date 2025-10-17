@@ -28,7 +28,7 @@
   const section = $('#catalogoimg');
 
   // State
-  const MAX_VISIBLE = 4; // cards visibles en modo colapsado
+  let MAX_VISIBLE = 4; // cards visibles en modo colapsado
   let isExpanded = false;
   let products = [];
   const quote = JSON.parse(localStorage.getItem('neonautas_quote') || '[]');
