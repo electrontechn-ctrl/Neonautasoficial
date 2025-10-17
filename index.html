@@ -1,314 +1,291 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Neonautas</title>
-    <link rel="icon" href="sources/favicon/favicon-nobg-scaled.svg?v=3" type="image/svg+xml" sizes="any">
-    <link rel="icon" href="sources/favicon/favicon-32x32.png" sizes="32x32" type="image/png">
-    <link rel="icon" href="sources/favicon/favicon-16x16.png" sizes="16x16" type="image/png">
-    <link rel="apple-touch-icon" href="sources/favicon/apple-touch-icon.png" sizes="180x180">
 
-    <meta name="theme-color" content="#0a0a12">
+    <!-- SEO & Sharing -->
+    <meta name="description" content="Letreros de neón LED a la medida para negocios, eventos y decoración. Garantía ilimitada" />
+    <meta name="theme-color" content="#0a0a12" />
+    <meta property="og:title" content="Neonautas — Letreros de neón LED" />
+    <meta property="og:description" content="Ilumina tu marca o evento con letreros de neón a la medida." />
+    <meta property="og:type" content="website" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="sources/css/styles.css" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="icon" href="sources/favicon/favicon-nobg-scaled.svg?v=3" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="sources/favicon/favicon-32x32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="sources/favicon/favicon-16x16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="sources/favicon/apple-touch-icon.png" sizes="180x180" />
 
-</head>
+    <!-- Network hints -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin />
 
-<body>
-
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="sources/css/styles.css" rel="stylesheet" />
+  </head>
+  <body>
     <!-- NAV -->
     <nav class="navbar navbar-expand-lg sticky-top glass">
-        <div class="container">
-            <a class="navbar-brand" href="#"><img src="sources/favicon/ico.svg" alt="Neonautas"
-                    class="brand-logo me-2"><span class="brand-glow">Neonautas</span></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-                aria-controls="mainNav" aria-expanded="false" aria-label="Alternar navegación">
-                <span class="navbar-toggler-icon"></span>
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img src="sources/favicon/ico.svg" alt="Neonautas" class="brand-logo me-2" />
+          <span class="brand-glow">Neonautas</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Alternar navegación">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="#catalogo">Catálogo</a></li>
+            <li class="nav-item"><a class="nav-link" href="#como-funciona">Cómo funciona</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+            <li class="nav-item"><a class="nav-link" href="#redes">Redes</a></li>
+          </ul>
+          <div class="ms-lg-3 d-flex gap-2">
+            <button id="openQuoteBtn" class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cotizacion" aria-controls="cotizacion">
+              <i class="bi bi-bag"></i> Cotización
+              <span id="quoteCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-info">0</span>
             </button>
-            <div class="collapse navbar-collapse" id="mainNav">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="#catalogo">Catálogo</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#como-funciona">Cómo funciona</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#redes">Redes</a></li>
-                </ul>
-                <div class="ms-lg-3 d-flex gap-2">
-
-                    <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas"
-                        data-bs-target="#cotizacion" aria-controls="cotizacion">
-                        <i class="bi bi-bag"></i> Cotización
-                        <span id="quoteCount"
-                            class="position-absolute top-0 start-100 translate-middle badge rounded-pill text-bg-info">0</span>
-                    </button>
-                </div>
-            </div>
+          </div>
         </div>
+      </div>
     </nav>
 
     <!-- HERO -->
     <section class="py-5 py-lg-6">
-        <div class="container">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-7">
-                    <h1 class="hero-title display-4 mb-3">Ilumina tu marca o evento con <span class="accent">letreros de
-                            neón</span> a la medida</h1>
-                    <p class="lead text-secondary">Fabricamos letreros de neón LED de alta calidad para negocios,
-                        eventos y decoración. </p>
-                    <div class="d-flex gap-2">
-                        <a href="#catalogo" class="btn btn-primary btn-lg cta-shadow"><i class="bi bi-grid"></i> Ver
-                            catálogo</a>
-                        <a href="#contacto" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Cotiza
-                            tu diseño</a>
-                    </div>
-                    <div class="d-flex gap-2 mt-4 flex-wrap">
-                        <span class="badge rounded-pill badge-neon"><i class="bi bi-shield-check"></i> Garantía
-                            3m</span>
-                        <span class="badge rounded-pill badge-neon"><i class="bi bi-truck"></i> Envío nacional</span>
-                        <span class="badge rounded-pill badge-neon"><i class="bi bi-lightbulb"></i> Ahorro de
-                            energía</span>
-                    </div>
-                </div>
-                <div class="col-lg-5">
-                    <div class="neon-thumb ratio ratio-4x3">
-                        <div>Tu logo en <span
-                                style="color:var(--neon-cyan); text-shadow:0 0 10px rgba(0,247,255,.7)">NEÓN</span> aquí
-                            ✨</div>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-7">
+            <h1 class="hero-title display-4 mb-3">Ilumina tu marca o evento con <span class="accent">letreros de neón</span> a la medida</h1>
+            <p class="lead text-secondary">Fabricamos letreros de neón LED de alta calidad para negocios, eventos y decoración.</p>
+            <div class="d-flex gap-2">
+              <a href="#catalogo" class="btn btn-primary btn-lg cta-shadow"><i class="bi bi-grid"></i> Ver catálogo</a>
+              <a href="#contacto" class="btn btn-outline-light btn-lg"><i class="bi bi-chat-dots"></i> Cotiza tu diseño</a>
             </div>
+            <div class="d-flex gap-2 mt-4 flex-wrap">
+              <span class="badge rounded-pill badge-neon"><i class="bi bi-shield-check"></i> Garantía 3m</span>
+              <span class="badge rounded-pill badge-neon"><i class="bi bi-truck"></i> Envío nacional</span>
+              <span class="badge rounded-pill badge-neon"><i class="bi bi-lightbulb"></i> Ahorro de energía</span>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="neon-thumb ratio ratio-4x3">
+              <div>Tu logo en <span style="color:var(--neon-cyan); text-shadow:0 0 10px rgba(0,247,255,.7)">NEÓN</span> aquí ✨</div>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- FILTROS -->
     <section id="catalogo" class="pb-4">
-        <div class="container">
-            <div class="filter-bar glass rounded-3 p-3">
-                <div class="row g-3 align-items-end">
-                    <div class="col-12 col-md-6 col-lg-4">
-                        <label class="form-label" for="searchInput">Buscar</label>
-                        <input id="searchInput" type="search" class="form-control"
-                            placeholder="Ej. Abierto, barbería, boda, logo...">
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-2">
-                        <label class="form-label" for="categorySelect">Categoría</label>
-                        <select id="categorySelect" class="form-select select-oscuro">
-                            <option value="">Todas</option>
-                            <option>Logos</option>
-                            <option>Eventos</option>
-                            <option>Para negocio</option>
-                        </select>
-                    </div>
-                    <div class="col-6 col-md-3 col-lg-2">
-                        <label class="form-label" for="sizeSelect">Tamaño</label>
-                        <select id="sizeSelect" class="form-select select-oscuro">
-                            <option value="">Todos</option>
-                            <option value="S">S (40–60 cm)</option>
-                            <option value="M">M (60–90 cm)</option>
-                            <option value="L">L (90–120 cm)</option>
-                        </select>
-                    </div>
-                    <div class="col-12 col-lg-4 text-lg-end">
-                        <small class="text-secondary d-block mb-2">Precios estimados en MXN. Instalación no
-                            incluida.</small>
-                        <a href="#contacto" class="btn btn-outline-info"><i class="bi bi-sliders"></i> Diseña el
-                            tuyo</a>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="filter-bar glass rounded-3 p-3">
+          <div class="row g-3 align-items-end">
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label" for="searchInput">Buscar</label>
+              <input id="searchInput" type="search" class="form-control" placeholder="Ej. Abierto, barbería, boda, logo..." />
             </div>
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="form-label" for="categorySelect">Categoría</label>
+              <select id="categorySelect" class="form-select select-oscuro">
+                <option value="">Todas</option>
+                <option>Logos</option>
+                <option>Eventos</option>
+                <option>Para negocio</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 col-lg-2">
+              <label class="form-label" for="sizeSelect">Tamaño</label>
+              <select id="sizeSelect" class="form-select select-oscuro">
+                <option value="">Todos</option>
+                <option value="S">S (40–60 cm)</option>
+                <option value="M">M (60–90 cm)</option>
+                <option value="L">L (90–120 cm)</option>
+              </select>
+            </div>
+            <div class="col-12 col-lg-4 text-lg-end">
+              <small class="text-secondary d-block mb-2">Precios estimados en MXN. Instalación no incluida.</small>
+              <a href="#contacto" class="btn btn-outline-info"><i class="bi bi-sliders"></i> Diseña el tuyo</a>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- CATÁLOGO -->
     <section id="catalogoimg" class="py-4 py-lg-5">
-        <div class="container">
-            <div id="grid" class="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-
-            </div>
-
-            <div id="showMoreContainer" class="text-center mt-3">
-                <button id="showMoreBtn" class="btn btn-outline-info">Más</button>
-            </div>
-
-
-            <p class="text-center text-secondary mt-4">¿Buscas algo específico? <a href="#contacto"
-                    class="link-info">Envíanos tu idea</a> y lo diseñamos.</p>
+      <div class="container">
+        <div id="grid" class="row g-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4"></div>
+        <div id="showMoreContainer" class="text-center mt-3" hidden>
+          <button id="showMoreBtn" class="btn btn-outline-info" type="button">Más</button>
         </div>
+        <p id="noResults" class="text-center text-secondary mt-3" hidden>No se encontraron productos con esos filtros.</p>
+        <p class="text-center text-secondary mt-4">¿Buscas algo específico? <a href="#contacto" class="link-info">Envíanos tu idea</a> y lo diseñamos.</p>
+      </div>
     </section>
 
     <!-- CÓMO FUNCIONA -->
     <section id="como-funciona" class="py-5">
-        <div class="container">
-            <div class="row g-4 align-items-center">
-                <div class="col-lg-6">
-                    <h2 class="mb-3">¿Cómo funciona?</h2>
-                    <ol class="list-group list-group-numbered">
-                        <li class="list-group-item glass">Nos compartes tu idea, logo o texto (medidas y color).</li>
-                        <li class="list-group-item glass">Te enviamos una vista previa y cotización detallada.</li>
-                        <li class="list-group-item glass">Producción 3–10 días hábiles según tamaño y complejidad.</li>
-                        <li class="list-group-item glass">Entrega segura. Incluye fuente 12V.
-                        </li>
-                    </ol>
-                </div>
-                <div class="col-lg-6">
-                    <div class="neon-thumb ratio ratio-16x9">
-                        <div>Proceso simple • Calidad pro</div>
-                    </div>
-                </div>
+      <div class="container">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-6">
+            <h2 class="mb-3">¿Cómo funciona?</h2>
+            <ol class="list-group list-group-numbered">
+              <li class="list-group-item glass">Nos compartes tu idea, logo o texto (medidas y color).</li>
+              <li class="list-group-item glass">Te enviamos una vista previa y cotización detallada.</li>
+              <li class="list-group-item glass">Producción 3–10 días hábiles según tamaño y complejidad.</li>
+              <li class="list-group-item glass">Entrega segura. Incluye fuente 12V.</li>
+            </ol>
+          </div>
+          <div class="col-lg-6">
+            <div class="neon-thumb ratio ratio-16x9">
+              <div>Proceso simple • Calidad pro</div>
             </div>
+          </div>
         </div>
+      </div>
     </section>
 
     <!-- CONTACTO -->
     <section id="contacto" class="py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <h2 class="mb-3">¿Listo para cotizar?</h2>
-                    <p class="text-secondary">Envíanos un mensaje y te respondemos a la brevedad.</p>
-                    <ul class="small text-secondary mb-0">
-                        <li><i class="bi bi-whatsapp"></i> Atención L–D 8:00–22:00</li>
-                        <li><i class="bi bi-truck"></i> Entrega Segura</li>
-                        <li><i class="bi bi-shield-check"></i> Garantía 3 meses</li>
-                    </ul>
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <h2 class="mb-3">¿Listo para cotizar?</h2>
+            <p class="text-secondary">Envíanos un mensaje y te respondemos a la brevedad.</p>
+            <ul class="small text-secondary mb-0">
+              <li><i class="bi bi-whatsapp"></i> Atención L–D 8:00–22:00</li>
+              <li><i class="bi bi-truck"></i> Entrega Segura</li>
+              <li><i class="bi bi-shield-check"></i> Garantía 3 meses</li>
+            </ul>
+          </div>
+          <div class="col-lg-6">
+            <div class="glass rounded-3 p-3">
+              <form class="row g-3" id="waForm">
+                <div class="col-md-6">
+                  <label class="form-label" for="wNombre">Nombre</label>
+                  <input type="text" class="form-control" id="wNombre" required />
                 </div>
-
-                <div class="col-lg-6">
-                    <div class="glass rounded-3 p-3">
-                        <form class="row g-3" onsubmit="sendWhatsApp(event)">
-                            <div class="col-md-6">
-                                <label class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="wNombre" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Ciudad</label>
-                                <input type="text" class="form-control" id="wCiudad" placeholder="SLPZ, DHGO, QRO…">
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label">Mensaje</label>
-                                <textarea id="wMsg" class="form-control" rows="3"
-                                    placeholder="Cuéntanos tu idea, medidas, color…"></textarea>
-                            </div>
-                            <div class="col-12 d-grid d-sm-flex gap-2">
-                                <button class="btn btn-success" type="submit">
-                                    <i class="bi bi-whatsapp"></i> Enviar por WhatsApp
-                                </button>
-                                <a id="wDirect" class="btn btn-outline-light" href="#" target="_blank"
-                                    rel="noopener">Abrir chat</a>
-                            </div>
-                            <small class="text-secondary">*Si ya agregaste productos a “Cotización”, se incluirán en el
-                                mensaje automáticamente.</small>
-                        </form>
-                    </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="wCiudad">Ciudad</label>
+                  <input type="text" class="form-control" id="wCiudad" placeholder="SLPZ, DHGO, QRO…" />
                 </div>
+                <div class="col-12">
+                  <label class="form-label" for="wMsg">Mensaje</label>
+                  <textarea id="wMsg" class="form-control" rows="3" placeholder="Cuéntanos tu idea, medidas, color…"></textarea>
+                </div>
+                <div class="col-12 d-grid d-sm-flex gap-2">
+                  <button class="btn btn-success" type="submit"><i class="bi bi-whatsapp"></i> Enviar por WhatsApp</button>
+                  <a id="wDirect" class="btn btn-outline-light" href="#" target="_blank" rel="noopener">Abrir chat</a>
+                </div>
+                <small class="text-secondary">*Si ya agregaste productos a “Cotización”, se incluirán en el mensaje automáticamente.</small>
+              </form>
             </div>
+          </div>
         </div>
+      </div>
     </section>
-
 
     <!-- REDES -->
     <section id="redes" class="py-5">
-        <div class="container">
-            <div class="row align-items-center g-4 mb-3">
-                <div class="col-lg-6">
-                    <h2 class="mb-2">Síguenos</h2>
-                    <p class="text-secondary mb-0">Novedades, trabajos recientes y promociones.</p>
-                </div>
-            </div>
-            <div class="row g-4 row-cols-1 row-cols-sm-3">
-                <div class="col">
-                    <div class="glass rounded-3 p-3 h-100 social-card">
-                        <a class="social-link social-fb"
-                            href="https://www.facebook.com/profile.php?id=100091794644701&mibextid=ZbWKwL"
-                            target="_blank" rel="noopener">
-                            <i class="bi bi-facebook"></i>
-                            <span class="social-handle">/neonautas</span>
-                        </a>
-                        <p class="small text-secondary mt-2 mb-0">Publicamos fotos y reseñas.</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="glass rounded-3 p-3 h-100 social-card">
-                        <a class="social-link social-ig" href="https://instagram.com/" target="_blank" rel="noopener">
-                            <i class="bi bi-instagram"></i>
-                            <span class="social-handle">@neonautas</span>
-                        </a>
-                        <p class="small text-secondary mt-2 mb-0">Historias y detrás de cámaras.</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="glass rounded-3 p-3 h-100 social-card">
-                        <a class="social-link social-tt" href="https://www.tiktok.com/" target="_blank" rel="noopener">
-                            <i class="bi bi-tiktok"></i>
-                            <span class="social-handle">@neonautas</span>
-                        </a>
-                        <p class="small text-secondary mt-2 mb-0">Videos de montaje y tips.</p>
-                    </div>
-                </div>
-            </div>
+      <div class="container">
+        <div class="row align-items-center g-4 mb-3">
+          <div class="col-lg-6">
+            <h2 class="mb-2">Síguenos</h2>
+            <p class="text-secondary mb-0">Novedades, trabajos recientes y promociones.</p>
+          </div>
         </div>
+        <div class="row g-4 row-cols-1 row-cols-sm-3">
+          <div class="col">
+            <div class="glass rounded-3 p-3 h-100 social-card">
+              <a class="social-link social-fb" href="https://www.facebook.com/profile.php?id=100091794644701&mibextid=ZbWKwL" target="_blank" rel="noopener">
+                <i class="bi bi-facebook"></i>
+                <span class="social-handle">/neonautas</span>
+              </a>
+              <p class="small text-secondary mt-2 mb-0">Publicamos fotos y reseñas.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="glass rounded-3 p-3 h-100 social-card">
+              <a class="social-link social-ig" href="https://instagram.com/" target="_blank" rel="noopener">
+                <i class="bi bi-instagram"></i>
+                <span class="social-handle">@neonautas</span>
+              </a>
+              <p class="small text-secondary mt-2 mb-0">Historias y detrás de cámaras.</p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="glass rounded-3 p-3 h-100 social-card">
+              <a class="social-link social-tt" href="https://www.tiktok.com/" target="_blank" rel="noopener">
+                <i class="bi bi-tiktok"></i>
+                <span class="social-handle">@neonautas</span>
+              </a>
+              <p class="small text-secondary mt-2 mb-0">Videos de montaje y tips.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- FOOTER -->
     <footer class="py-4 border-top border-light-subtle">
-        <div class="container small d-flex flex-column flex-sm-row justify-content-between gap-2">
-            <span>© <span id="year"></span> Neonautas · Todos los derechos reservados</span>
-        </div>
+      <div class="container small d-flex flex-column flex-sm-row justify-content-between gap-2">
+        <span>© <span id="year"></span> Neonautas · Todos los derechos reservados</span>
+      </div>
     </footer>
 
     <!-- OFFCANVAS COTIZACIÓN -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="cotizacion" aria-labelledby="cotizacionLabel">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="cotizacionLabel"><i class="bi bi-bag"></i> Tu cotización</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="cotizacionLabel"><i class="bi bi-bag"></i> Tu cotización</h5>
+        <button class="btn-close" type="button" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+      </div>
+      <div class="offcanvas-body d-flex flex-column">
+        <ul id="quoteList" class="list-group list-group-flush mb-3"></ul>
+        <div class="mt-auto d-grid gap-2">
+          <div class="d-flex justify-content-between"><strong>Total estimado:</strong> <strong id="quoteTotal">$0</strong></div>
+          <button class="btn btn-primary" type="button" data-action="scroll" data-target="#contacto" data-bs-dismiss="offcanvas">Vamos a cotizar</button>
+          <button id="clearQuoteBtn" class="btn btn-outline-light" type="button" data-action="clear-quote">Vaciar</button>
         </div>
-        <div class="offcanvas-body d-flex flex-column">
-            <ul id="quoteList" class="list-group list-group-flush mb-3"></ul>
-            <div class="mt-auto d-grid gap-2">
-                <div class="d-flex justify-content-between"><strong>Total estimado:</strong> <strong
-                        id="quoteTotal">$0</strong></div>
-
-                <button class="btn btn-primary" onclick="location.href='#contacto';" data-bs-dismiss="offcanvas">Vamos a
-                    cotizar</button>
-                <button class="btn btn-outline-light" type="button" onclick="clearQuote()">Vaciar</button>
-            </div>
-        </div>
+      </div>
     </div>
 
     <!-- MODAL DETALLES -->
     <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content glass">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detailsTitle">Detalles</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <div class="modal-body">
-                    <p id="detailsDesc" class="mb-2"></p>
-                    <ul class="list-unstyled small">
-                        <li><i class="bi bi-rulers"></i> Tamaño: <span id="detailsSize"></span></li>
-                        <li><i class="bi bi-shield-check"></i> Garantía: 3 meses</li>
-                        <li><i class="bi bi-plug"></i> Incluye fuente 12V y herrajes</li>
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <span class="me-auto fw-bold" id="detailsPrice"></span>
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
-                </div>
-            </div>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass">
+          <div class="modal-header">
+            <h5 class="modal-title" id="detailsTitle">Detalles</h5>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p id="detailsDesc" class="mb-2"></p>
+            <ul class="list-unstyled small">
+              <li><i class="bi bi-rulers"></i> Tamaño: <span id="detailsSize"></span></li>
+              <li><i class="bi bi-shield-check"></i> Garantía: 3 meses</li>
+              <li><i class="bi bi-plug"></i> Incluye fuente 12V y herrajes</li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <span class="me-auto fw-bold" id="detailsPrice"></span>
+            <button class="btn btn-primary" type="button" data-bs-dismiss="modal">Entendido</button>
+          </div>
         </div>
+      </div>
     </div>
 
-    <a href="#catalogo" id="fab" class="btn btn-primary btn-fab" aria-label="Volver arriba">
-    <i class="bi bi-arrow-up"></i>
-  </a>
+    <a href="#catalogo" id="fab" class="btn btn-primary btn-fab" aria-label="Volver arriba"><i class="bi bi-arrow-up"></i></a>
 
+    <!-- JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
-    <script src="sources/javascript/scripts.js"></script>
-</body>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js" crossorigin="anonymous"></script>
+    <script src="sources/javascript/scripts.js" defer></script>
+    <noscript><div class="container py-4"><div class="alert alert-warning">Para usar el catálogo, activa JavaScript.</div></div></noscript>
+  </body>
 </html>

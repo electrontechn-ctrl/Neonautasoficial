@@ -1,312 +1,281 @@
-// Año footer
-document.getElementById('year').textContent = new Date().getFullYear();
+(() => {
+  'use strict';
 
-// Filtro catálogo
-const searchInput = document.getElementById('searchInput');
-const categorySelect = document.getElementById('categorySelect');
-const sizeSelect = document.getElementById('sizeSelect');
+  // Utils
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+  const on = (el, evt, cb, opts) => el.addEventListener(evt, cb, opts);
+  const fmtMXN = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 0 });
+  const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const debounce = (fn, ms = 150) => { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; };
 
-let products = [];
-function setProductsFromDOM() {
-  products = Array.from(document.querySelectorAll('.product'));
-}
+  // Year in footer (lightweight)
+  on(document, 'DOMContentLoaded', () => { const y = $('#year'); if (y) y.textContent = new Date().getFullYear(); });
 
-const MAX_VISIBLE = 4; // número cards
-let isExpanded = false;
+  // Elements
+  const searchInput = $('#searchInput');
+  const categorySelect = $('#categorySelect');
+  const sizeSelect = $('#sizeSelect');
+  const showMoreContainer = $('#showMoreContainer');
+  const showMoreBtn = $('#showMoreBtn');
+  const quoteList = $('#quoteList');
+  const quoteTotal = $('#quoteTotal');
+  const quoteCount = $('#quoteCount');
+  const wDirect = $('#wDirect');
+  const detailsModal = $('#detailsModal');
+  const grid = $('#grid');
+  const fab = $('#fab');
+  const section = $('#catalogoimg');
 
-const showMoreContainer = document.getElementById('showMoreContainer');
-const showMoreBtn = document.getElementById('showMoreBtn');
+  // State
+  const MAX_VISIBLE = 4; // cards visibles en modo colapsado
+  let isExpanded = false;
+  let products = [];
+  const quote = JSON.parse(localStorage.getItem('neonautas_quote') || '[]');
 
-// Normalizar texto
-const norm = (s) => (s || '').toString().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const persistQuote = () => localStorage.setItem('neonautas_quote', JSON.stringify(quote));
 
-function filterProducts() {
-  const q = norm(searchInput.value.trim());
-  const cat = norm(categorySelect.value);
-  const size = sizeSelect.value; // S, M, L o ""
+  function setProductsFromDOM() {
+    products = $$('.product');
+  }
 
-  let matches = 0; // cuántos cumplen filtros
-  let shown = 0;   // cuántos se muestran
+  function renderQuote() {
+    quoteList.innerHTML = '';
+    let total = 0;
+    const frag = document.createDocumentFragment();
 
-  products.forEach(card => {
-    const title = norm(card.querySelector('.card-title')?.textContent || '');
-    const tags = norm(card.dataset.tags || '');
-    const category = norm(card.dataset.category || '');
-    const sizeAttr = (card.dataset.size || '');
-    const matchQ = !q || title.includes(q) || tags.includes(q);
-    const matchC = !cat || category === cat;
-    const matchS = !size || sizeAttr === size;
-    const match = matchQ && matchC && matchS;
+    quote.forEach((item, idx) => {
+      total += item.price;
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center glass';
+      li.innerHTML = `<span>${item.title}</span><span class="ms-3">${fmtMXN.format(item.price)}</span><button class="btn btn-sm btn-outline-danger" aria-label="Quitar" data-action="remove-quote" data-index="${idx}"><i class='bi bi-x-lg'></i></button>`;
+      frag.appendChild(li);
+    });
 
-    if (match) {
-      matches++;
-      if (!isExpanded && shown >= MAX_VISIBLE) {
-        card.style.display = 'none';
+    quoteList.appendChild(frag);
+    quoteTotal.textContent = fmtMXN.format(total);
+    quoteCount.textContent = String(quote.length);
+  }
+
+  function addToQuote(title, price) {
+    quote.push({ title, price });
+    renderQuote();
+    persistQuote();
+
+    // Toast feedback (Bootstrap)
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-bg-dark border-0 position-fixed bottom-0 end-0 m-3';
+    toast.role = 'status';
+    toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class='bi bi-bag-plus'></i> Añadido: ${title}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button></div>`;
+    document.body.appendChild(toast);
+    const t = new bootstrap.Toast(toast, { delay: 2000 }); t.show();
+    on(toast, 'hidden.bs.toast', () => toast.remove());
+  }
+
+  function removeFromQuote(idx) {
+    quote.splice(idx, 1);
+    renderQuote();
+    persistQuote();
+  }
+
+  function clearQuote() {
+    quote.length = 0;
+    renderQuote();
+    persistQuote();
+  }
+
+  // Filter logic
+  function filterProducts() {
+    const q = norm(searchInput?.value?.trim() || '');
+    const cat = norm(categorySelect?.value || '');
+    const size = sizeSelect?.value || '';
+
+    let matches = 0;
+    let shown = 0;
+
+    products.forEach(card => {
+      const title = norm($('.card-title', card)?.textContent || '');
+      const tags = norm(card.dataset.tags || '');
+      const category = norm(card.dataset.category || '');
+      const sizeAttr = card.dataset.size || '';
+
+      const matchQ = !q || title.includes(q) || tags.includes(q);
+      const matchC = !cat || category === cat;
+      const matchS = !size || sizeAttr === size;
+      const match = matchQ && matchC && matchS;
+
+      if (match) {
+        matches++;
+        if (!isExpanded && shown >= MAX_VISIBLE) {
+          card.style.display = 'none';
+        } else {
+          card.style.display = '';
+          shown++;
+        }
       } else {
-        card.style.display = '';
-        shown++;
+        card.style.display = 'none';
       }
+    });
+
+    const noRes = $('#noResults');
+    if (noRes) noRes.hidden = !!matches;
+
+    if (showMoreContainer) showMoreContainer.hidden = !(matches > MAX_VISIBLE);
+    if (showMoreBtn) showMoreBtn.textContent = isExpanded ? 'Mostrar menos' : 'Mostrar más';
+  }
+
+  const resetAndFilter = () => { isExpanded = false; filterProducts(); };
+  const debouncedResetAndFilter = debounce(resetAndFilter, 120);
+
+  // Modal detalles (carga dinámica)
+  if (detailsModal) {
+    on(detailsModal, 'show.bs.modal', (ev) => {
+      const btn = ev.relatedTarget;
+      if (!btn) return;
+      $('#detailsTitle').textContent = btn.dataset.title || 'Detalles';
+      $('#detailsDesc').textContent = btn.dataset.description || '';
+      $('#detailsSize').textContent = btn.dataset.sizes || '';
+      $('#detailsPrice').textContent = btn.dataset.price ? fmtMXN.format(Number(btn.dataset.price)) : '';
+    });
+  }
+
+  // WhatsApp helpers
+  const WHATS_NUMBER = '524428124789';
+  function buildWhatsMessage({ includeContact = true } = {}) {
+    const nombre = ($('#wNombre')?.value || '').trim();
+    const ciudad = ($('#wCiudad')?.value || '').trim();
+    const msg = ($('#wMsg')?.value || '').trim();
+
+    const lines = [];
+    if (includeContact && (nombre || ciudad)) {
+      lines.push(`Hola, soy ${nombre || '—'}${ciudad ? ' de ' + ciudad : ''}.`, '');
+    }
+
+    lines.push('Estoy interesado en:');
+    if (quote.length) {
+      lines.push(...quote.map((i, k) => `  ${k + 1}. ${i.title} - ${fmtMXN.format(i.price)} MXN`));
+      const total = quote.reduce((a, b) => a + (b.price || 0), 0);
+      lines.push('', `Total estimado: ${fmtMXN.format(total)} MXN`);
     } else {
-      card.style.display = 'none';
+      lines.push('  — (aún sin selección en “Cotización”)');
     }
-  });
 
-  // Mensaje "sin resultados"
-  let noRes = document.getElementById('noResults');
-  if (!noRes) {
-    noRes = document.createElement('p');
-    noRes.id = 'noResults';
-    noRes.className = 'text-center text-secondary mt-3';
-    noRes.textContent = 'No se encontraron productos con esos filtros.';
-    document.querySelector('#catalogo .container').appendChild(noRes);
-  }
-  noRes.style.display = matches ? 'none' : '';
+    if (msg) {
+      lines.push('', 'Mensaje adicional:', msg);
+    }
 
-  // Botón "Más"
-  if (showMoreContainer) {
-    showMoreContainer.style.display = (matches > MAX_VISIBLE) ? '' : 'none';
+    return lines.join('\n');
   }
-  if (showMoreBtn) {
-    showMoreBtn.textContent = isExpanded ? 'Mostrar menos' : 'Mostrar más';
-  }
-}
 
-// Click en "Más"
-if (showMoreBtn) {
-  showMoreBtn.addEventListener('click', () => {
-    isExpanded = !isExpanded; // alterna
-    filterProducts();
-    if (!isExpanded) {
-      const cat = document.getElementById('catalogo');
-      if (cat && 'scrollIntoView' in cat) {
-        cat.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  function sendWhatsApp(e) {
+    e.preventDefault();
+    const text = buildWhatsMessage({ includeContact: true });
+    const url = `https://wa.me/${WHATS_NUMBER}?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank', 'noopener');
+  }
+
+  function updateWhatsLink() { if (wDirect) wDirect.href = `https://wa.me/${WHATS_NUMBER}`; }
+
+  // Product card factory
+  const formatMXN = (num) => Number(num).toLocaleString('es-MX', { maximumFractionDigits: 0 });
+  function productCardHTML(p) {
+    return `
+      <div class="col product" data-tags="${p.tags || ''}" data-category="${p.category || ''}" data-size="${p.size || ''}">
+        <div class="card h-100">
+          <div class="neon-thumb ratio ratio-1x1">
+            <img src="${p.image_url}" alt="${p.title}" loading="lazy" decoding="async">
+          </div>
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">${p.title}</h5>
+            <div class="mt-auto d-flex justify-content-between align-items-center">
+              <span class="price">$${formatMXN(p.price)}</span>
+              <span class="badge text-bg-secondary">${p.size || ''}</span>
+            </div>
+            <div class="d-grid gap-2 mt-3">
+              <button class="btn btn-primary add-to-quote" data-title="${p.title}" data-price="${p.price}">Agregar a cotización</button>
+              <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
+                data-title="${p.title}"
+                data-description="${p.description || ''}"
+                data-price="${p.price}"
+                data-sizes="${p.sizes_label || ''}">
+                Detalles
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  async function loadProducts() {
+    try {
+      const SQL = await initSqlJs({ locateFile: (f) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}` });
+      const res = await fetch('https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db', { cache: 'force-cache' });
+      const buf = await res.arrayBuffer();
+      const db = new SQL.Database(new Uint8Array(buf));
+
+      const stmt = db.prepare(`SELECT id, title, description, price, size, category, tags, image_url, sizes_label FROM productos ORDER BY id ASC`);
+      const items = [];
+      while (stmt.step()) items.push(stmt.getAsObject());
+      stmt.free();
+      db.close();
+
+      grid.innerHTML = items.map(productCardHTML).join('');
+      setProductsFromDOM();
+      filterProducts();
+    } catch (err) {
+      console.error('Error cargando productos', err);
+      grid.innerHTML = '<div class="col"><div class="alert alert-danger">No se pudo cargar el catálogo. Intenta de nuevo más tarde.</div></div>';
+    }
+  }
+
+  // Global UI wiring
+  on(document, 'DOMContentLoaded', () => {
+    updateWhatsLink();
+    loadProducts();
+    renderQuote();
+
+    // Filtering events (debounced)
+    if (searchInput) on(searchInput, 'input', debouncedResetAndFilter);
+    [categorySelect, sizeSelect].forEach(el => el && ['change', 'input'].forEach(evt => on(el, evt, resetAndFilter)));
+
+    // Show more / less
+    if (showMoreBtn) on(showMoreBtn, 'click', () => { isExpanded = !isExpanded; filterProducts(); if (!isExpanded) $('#catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+
+    // WhatsApp form
+    const waForm = $('#waForm');
+    if (waForm) on(waForm, 'submit', sendWhatsApp);
+    ['wNombre', 'wCiudad', 'wMsg'].forEach(id => { const el = document.getElementById(id); if (el) on(el, 'input', updateWhatsLink); });
+
+    // Delegated clicks: add/remove/clear/scroll
+    on(document, 'click', (e) => {
+      const t = e.target.closest('[data-action]') || e.target.closest('.add-to-quote');
+      if (!t) return;
+
+      if (t.classList.contains('add-to-quote')) {
+        addToQuote(t.dataset.title, parseFloat(t.dataset.price || '0'));
       }
+
+      switch (t.dataset.action) {
+        case 'remove-quote':
+          removeFromQuote(parseInt(t.dataset.index, 10));
+          break;
+        case 'clear-quote':
+          clearQuote();
+          break;
+        case 'scroll': {
+          const target = t.dataset.target && document.querySelector(t.dataset.target);
+          if (target && 'scrollIntoView' in target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          break;
+        }
+      }
+    });
+
+    // IntersectionObserver para el FAB
+    if (fab && section) {
+      const io = new IntersectionObserver((entries) => {
+        fab.classList.toggle('visible', entries[0].isIntersecting);
+      }, { threshold: 0.01 });
+      io.observe(section);
     }
   });
-}
-
-// Cambiar filtros o buscar
-function resetAndFilter() { isExpanded = false; filterProducts(); }
-searchInput.addEventListener('input', resetAndFilter);
-;[categorySelect, sizeSelect].forEach(el => { el.addEventListener('change', resetAndFilter); el.addEventListener('input', resetAndFilter); });
-
-
-// Offcanvas
-const quote = [];
-const quoteList = document.getElementById('quoteList');
-const quoteTotal = document.getElementById('quoteTotal');
-const quoteCount = document.getElementById('quoteCount');
-
-
-function renderQuote() {
-  quoteList.innerHTML = '';
-  let total = 0;
-  quote.forEach((item, idx) => {
-    total += item.price;
-    const li = document.createElement('li');
-    li.className = 'list-group-item d-flex justify-content-between align-items-center glass';
-    li.innerHTML = `<span>${item.title}</span>
-                        <span class="ms-3">$${item.price.toLocaleString()}</span>
-                        <button class="btn btn-sm btn-outline-danger" aria-label="Quitar" onclick="removeFromQuote(${idx})"><i class='bi bi-x-lg'></i></button>`;
-    quoteList.appendChild(li);
-  });
-  quoteTotal.textContent = `$${total.toLocaleString()}`;
-  quoteCount.textContent = quote.length;
-}
-
-function addToQuote(title, price) {
-  quote.push({ title, price });
-  renderQuote();
-  const toast = document.createElement('div');
-  toast.className = 'toast align-items-center text-bg-dark border-0 position-fixed bottom-0 end-0 m-3';
-  toast.role = 'status';
-  toast.innerHTML = `<div class="d-flex"><div class="toast-body"><i class='bi bi-bag-plus'></i> Añadido: ${title}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button></div>`;
-  document.body.appendChild(toast);
-  const t = new bootstrap.Toast(toast, { delay: 2000 }); t.show();
-  toast.addEventListener('hidden.bs.toast', () => toast.remove());
-}
-
-function removeFromQuote(idx) { quote.splice(idx, 1); renderQuote(); }
-function clearQuote() { quote.length = 0; renderQuote(); }
-window.removeFromQuote = removeFromQuote; // expose for inline onclick
-window.clearQuote = clearQuote;
-
-document.querySelectorAll('.add-to-quote').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const title = btn.dataset.title;
-    const price = parseFloat(btn.dataset.price || '0');
-    addToQuote(title, price);
-  });
-});
-
-// carga dinámica
-const detailsModal = document.getElementById('detailsModal');
-detailsModal.addEventListener('show.bs.modal', (ev) => {
-  const btn = ev.relatedTarget;
-  if (!btn) return;
-  document.getElementById('detailsTitle').textContent = btn.dataset.title || 'Detalles';
-  document.getElementById('detailsDesc').textContent = btn.dataset.description || '';
-  document.getElementById('detailsSize').textContent = btn.dataset.sizes || '';
-  document.getElementById('detailsPrice').textContent = btn.dataset.price ? `$${Number(btn.dataset.price).toLocaleString()}` : '';
-});
-
-const WHATS_NUMBER = '524428124789';
-const wDirect = document.getElementById('wDirect');
-
-function getQuoteItems() {
-  if (typeof quote !== 'undefined' && Array.isArray(quote)) return quote;
-  if (typeof window !== 'undefined' && Array.isArray(window.quote)) return window.quote;
-
-  const lis = document.querySelectorAll('#quoteList li');
-  if (lis.length) {
-    return Array.from(lis).map(li => {
-      const spans = li.querySelectorAll('span');
-      const title = spans[0]?.textContent.trim() || '';
-      const priceNum = Number((spans[1]?.textContent || '').replace(/[^\d]/g, ''));
-      return { title, price: Number.isFinite(priceNum) ? priceNum : 0 };
-    });
-  }
-  return [];
-}
-
-function buildWhatsMessage({ includeContact = true } = {}) {
-  const nombre = (document.getElementById('wNombre')?.value || '').trim();
-  const ciudad = (document.getElementById('wCiudad')?.value || '').trim();
-  const msg = (document.getElementById('wMsg')?.value || '').trim();
-
-  const items = getQuoteItems();
-
-  const lines = [];
-  if (includeContact && (nombre || ciudad)) {
-    lines.push(`Hola, soy ${nombre || '—'}${ciudad ? ' de ' + ciudad : ''}.`, '');
-  }
-
-  lines.push('Estoy interesado en:');
-  if (items.length) {
-    lines.push(...items.map((i, k) => `  ${k + 1}. ${i.title} - $${i.price.toLocaleString('es-MX')} MXN`));
-    const total = items.reduce((a, b) => a + (b.price || 0), 0);
-    lines.push('', `Total estimado: $${total.toLocaleString('es-MX')} MXN`);
-  } else {
-    lines.push('  — (aún sin selección en “Cotización”)');
-  }
-
-  if (msg) {
-    lines.push('', 'Mensaje adicional:', msg);
-  }
-
-  return lines.join('\n');
-}
-
-function sendWhatsApp(e) {
-  e.preventDefault();
-  const text = buildWhatsMessage({ includeContact: true });
-  const url = `https://wa.me/${WHATS_NUMBER}?text=${encodeURIComponent(text)}`;
-  window.open(url, '_blank', 'noopener');
-}
-
-function updateWhatsLink() {
-  wDirect.href = `https://wa.me/${WHATS_NUMBER}`;
-}
-
-['wNombre', 'wCiudad', 'wMsg'].forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.addEventListener('input', updateWhatsLink);
-});
-
-
-const grid = document.getElementById('grid');
-
-function formatMXN(num) {
-  return Number(num).toLocaleString('es-MX', { maximumFractionDigits: 0 });
-}
-
-function productCardHTML(p) {
-
-  return `
-    <div class="col product" data-tags="${p.tags || ''}" data-category="${p.category || ''}" data-size="${p.size || ''}">
-      <div class="card h-100">
-        <div class="neon-thumb ratio ratio-1x1">
-          <img src="${p.image_url}" alt="${p.title}" loading="lazy" decoding="async">
-        </div>
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">${p.title}</h5>
-          
-          <div class="mt-auto d-flex justify-content-between align-items-center">
-            <span class="price">$${formatMXN(p.price)}</span>
-            <span class="badge text-bg-secondary">${p.size || ''}</span>
-          </div>
-          <div class="d-grid gap-2 mt-3">
-            <button class="btn btn-primary add-to-quote" data-title="${p.title}" data-price="${p.price}">Agregar a cotización</button>
-            <button class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#detailsModal"
-                    data-title="${p.title}"
-                    data-description="${p.description || ''}"
-                    data-price="${p.price}"
-                    data-sizes="${p.sizes_label || ''}">
-              Detalles
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>`;
-}
-
-async function loadProducts() {
-
-  const SQL = await initSqlJs({
-    locateFile: f => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
-  });
-
-
-  const buf = await fetch('https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db').then(r => r.arrayBuffer());
-  const db = new SQL.Database(new Uint8Array(buf));
-
-
-  const stmt = db.prepare(`
-    SELECT id, title, description, price, size, category, tags, image_url, sizes_label
-    FROM productos
-    ORDER BY id ASC
-  `);
-
-  const items = [];
-  while (stmt.step()) items.push(stmt.getAsObject());
-  stmt.free();
-  db.close();
-
-  // Renderizar
-  grid.innerHTML = items.map(productCardHTML).join('');
-
-
-  setProductsFromDOM();
-  document.querySelectorAll('.add-to-quote').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const title = btn.dataset.title;
-      const price = parseFloat(btn.dataset.price || '0');
-      addToQuote(title, price);
-    });
-  });
-
-
-  isExpanded = false;
-  filterProducts();
-}
-
-const fab = document.getElementById("fab");
-const section = document.getElementById("catalogoimg");
-
-// Observa cuándo la sección entra/sale del viewport
-const io = new IntersectionObserver(entries => {
-  const entry = entries[0];
-  fab.classList.toggle('visible', entry.isIntersecting);
-}, {
-  threshold: 0.01     // con 1% de la sección ya se considera visible
-  // rootMargin: "0px 0px -20% 0px"  // opcional para ajustar el punto de aparición
-});
-
-io.observe(section);
-
-
-// Inicial
-updateWhatsLink();
-loadProducts();
-renderQuote();
-
+})();
