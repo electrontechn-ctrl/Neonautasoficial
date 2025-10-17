@@ -208,7 +208,7 @@
 
   async function loadProducts() {
     try {
-      const APP_VERSION = '2025-10-17-02';
+      const APP_VERSION = '2025-10-17-03';
 
       const SQL = await initSqlJs({
         locateFile: (f) => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`
