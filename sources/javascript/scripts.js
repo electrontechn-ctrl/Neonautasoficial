@@ -40,7 +40,7 @@
     return 1;                 // xs
   }
   // Filas que quieres en la vista previa (1 = una fila completa)
-  const PREVIEW_ROWS = 1;
+  const PREVIEW_ROWS = 2;
   function getMaxVisible() {
     return getColCount() * PREVIEW_ROWS;
   }
