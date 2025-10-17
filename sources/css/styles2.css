@@ -709,3 +709,66 @@
   color: var(--nb-muted, #98a2b3);
   max-width: 68ch;
 }
+
+
+
+
+
+
+
+
+
+
+
+/* Separador entre Catálogo y Constructor */
+.nb-divider{
+  padding: 24px 0 8px;                 /* espacio superior e inferior */
+}
+@media (min-width: 992px){
+  .nb-divider{ padding: 36px 0 12px; }
+}
+.nb-hr{
+  border: 0;
+  border-top: 1px solid var(--nb-border, #283042);
+  opacity: .6;
+  margin: 0 0 16px;
+}
+
+/* Tipografías/colores consistentes con el builder */
+.nb-kicker{
+  font: 700 12px/1 Poppins, system-ui, sans-serif;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--nb-muted, #98a2b3);
+  margin: 0;
+}
+.nb-heading{
+  font: 800 clamp(1.3rem, 2.2vw, 1.9rem)/1.15 Poppins, system-ui, sans-serif;
+  margin: 0;
+  color: #e6e7ea;
+}
+.nb-heading-glow{
+  color: #fff;
+  text-shadow:
+    0 0 2px #fff,
+    0 0 6px var(--nb-color, #ff4d6d),
+    0 0 14px var(--nb-color, #ff4d6d);
+}
+.nb-subtle{
+  color: var(--nb-muted, #98a2b3);
+  max-width: 68ch;
+}
+
+/* Botón de llamada a la acción */
+.btn-neon{
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #ff7aa2, #ff4d6d);
+  color: #0b0f17; /* legible sobre el gradiente */
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(255, 77, 109, .25);
+}
+.btn-neon:hover{
+  filter: brightness(1.05);
+  box-shadow: 0 10px 28px rgba(255, 77, 109, .35);
+}
