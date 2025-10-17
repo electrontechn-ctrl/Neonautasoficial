@@ -140,7 +140,7 @@
   }
 
   // WhatsApp helpers
-  const WHATS_NUMBER = '524428124789';
+  const WHATS_NUMBER = '524681146000';
   function buildWhatsMessage({ includeContact = true } = {}) {
     const nombre = ($('#wNombre')?.value || '').trim();
     const ciudad = ($('#wCiudad')?.value || '').trim();
