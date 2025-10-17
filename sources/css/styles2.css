@@ -718,12 +718,7 @@
   border-radius: 14px;
 }
 
-.nb {
-  --nb-max: 1140px;                /* ajusta a tu ancho de Bootstrap (lg/xl) */
-  --nb-pad: max(16px, 4vw);        /* gutters responsivos */
-  padding-left: var(--nb-pad);
-  padding-right: var(--nb-pad);
-}
+
 .nb > .nb-wrap,
 .nb .nb-container,
 .nb .nb-inner {                     /* si tienes un wrapper, aplica aquí */
