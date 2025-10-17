@@ -27,9 +27,25 @@
   const fab = $('#fab');
   const section = $('#catalogoimg');
 
+
   // State
-  const MAX_VISIBLE = 4; // cards visibles en modo colapsado
   let isExpanded = false;
+
+  // Cuántas columnas hay con tus clases: row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4
+  function getColCount() {
+    const w = window.innerWidth;
+    if (w >= 992) return 4;   // lg+
+    if (w >= 768) return 3;   // md
+    if (w >= 576) return 2;   // sm
+    return 1;                 // xs
+  }
+  // Filas que quieres en la vista previa (1 = una fila completa)
+  const PREVIEW_ROWS = 1;
+  function getMaxVisible() {
+    return getColCount() * PREVIEW_ROWS;
+  }
+
+
   let products = [];
   const quote = JSON.parse(localStorage.getItem('neonautas_quote') || '[]');
 
@@ -90,6 +106,7 @@
     const cat = norm(categorySelect?.value || '');
     const size = sizeSelect?.value || '';
 
+    const MAX_VISIBLE = getMaxVisible();
     let matches = 0;
     let shown = 0;
 
@@ -217,7 +234,7 @@
       const DB_BASE = 'https://raw.githubusercontent.com/electrontechn-ctrl/Neonautasoficial/refs/heads/main/sources/data/data.db';
       const DB_URL = `${DB_BASE}?v=${APP_VERSION}`;
 
-      const res = await fetch(DB_URL, { cache: 'no-store' }); 
+      const res = await fetch(DB_URL, { cache: 'no-store' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const buf = await res.arrayBuffer();
 
@@ -280,6 +297,10 @@
         }
       }
     });
+
+    on(window, 'resize', debounce(() => {
+      filterProducts();   // usa el nuevo getMaxVisible()
+    }, 150));
 
     // IntersectionObserver para el FAB
     if (fab && section) {
