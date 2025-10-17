@@ -84,77 +84,79 @@
     persistQuote();
   }
 
+  // Filter logic
   function filterProducts() {
-    // Lee filtros actuales
-    const q = norm((window.searchInput?.value || '').trim());
-    const cat = (window.categorySelect?.value || '').trim();
-    const size = (window.sizeSelect?.value || '').trim();
+    const q = norm(searchInput?.value?.trim() || '');
+    const cat = norm(categorySelect?.value || '');
+    const size = sizeSelect?.value || '';
 
-    // 1) Filtrar tarjetas que coinciden
-    const matched = [];
-    (window.products || []).forEach(card => {
-      const title = norm(($('.card-title', card)?.textContent || '').trim());
-      const tags = norm((card.dataset.tags || '').trim());
-      const category = norm((card.dataset.category || '').trim());
-      const sizeAttr = (card.dataset.size || '').trim();
+    let matches = 0;
+    let shown = 0;
+
+    products.forEach(card => {
+      const title = norm($('.card-title', card)?.textContent || '');
+      const tags = norm(card.dataset.tags || '');
+      const category = norm(card.dataset.category || '');
+      const sizeAttr = card.dataset.size || '';
 
       const matchQ = !q || title.includes(q) || tags.includes(q);
       const matchC = !cat || category === cat;
       const matchS = !size || sizeAttr === size;
+      const match = matchQ && matchC && matchS;
 
-      if (matchQ && matchC && matchS) {
-        matched.push(card);
+      if (match) {
+        matches++;
+        if (!isExpanded && shown >= MAX_VISIBLE) {
+          card.style.display = 'none';
+        } else {
+          card.style.display = '';
+          shown++;
+        }
       } else {
         card.style.display = 'none';
       }
     });
 
-    // 2) Calcular límite visible redondeado al múltiplo de columnas
-    const gridEl = window.grid || document.getElementById('gridProductos') || document.querySelector('#catalogo .row, #catalogo .grid, .products-grid');
-    const firstCard = matched[0];
+    const noRes = $('#noResults');
+    if (noRes) noRes.hidden = !!matches;
 
-    // columnas reales del grid (aprox.) según ancho contenedor / ancho tarjeta
-    const getCols = () => {
-      if (!gridEl || !firstCard) return 1;
-      const gw = gridEl.getBoundingClientRect().width;
-      const cw = firstCard.getBoundingClientRect().width || 1;
-      return Math.max(1, Math.floor(gw / cw));
-    };
-
-    const cols = getCols();
-
-    // límite base y redondeo al múltiplo de columnas (solo en modo compacto)
-    const baseLimit = Math.min(window.MAX_VISIBLE || 6, matched.length);
-    const rounded = Math.min(matched.length, Math.ceil(baseLimit / cols) * cols);
-    const limit = window.isExpanded ? matched.length : rounded;
-
-    // 3) Mostrar/ocultar según límite
-    matched.forEach((card, i) => {
-      card.style.display = i < limit ? '' : 'none';
-    });
-
-    // 4) Estado "sin resultados"
-    const noRes = document.getElementById('noResults');
-    if (noRes) noRes.style.display = matched.length ? 'none' : '';
-
-    // 5) Botón "Mostrar más": mantenerlo visible si hay más de MAX_VISIBLE,
-    //    aunque el redondeo ya haya mostrado todo (consistencia visual)
-    const showMoreBtn = window.showMoreBtn || document.getElementById('showMoreBtn');
-    if (showMoreBtn) {
-      const hasMoreThanRounded = matched.length > limit;                 // hay ocultas
-      const hasMoreThanBase = matched.length > (window.MAX_VISIBLE || 6); // más que el mínimo
-      showMoreBtn.style.display = (!window.isExpanded && (hasMoreThanRounded || hasMoreThanBase)) ? '' : 'none';
-      showMoreBtn.textContent = hasMoreThanRounded ? 'Mostrar más' : `Ver todo (${matched.length})`;
-    }
-
-    // 6) (Opcional) devolver conteo por si lo quieres usar
-    return { total: matched.length, showing: limit, cols };
+    if (showMoreContainer) showMoreContainer.hidden = !(matches > MAX_VISIBLE);
+    if (showMoreBtn) showMoreBtn.textContent = isExpanded ? 'Mostrar menos' : 'Mostrar más';
   }
 
-
-
-  const resetAndFilter = () => { isExpanded = false; filterProducts(); };
+  const resetAndFilter = () => { isExpanded = false; updateMaxVisible(); filterProducts(); };
   const debouncedResetAndFilter = debounce(resetAndFilter, 120);
+
+  // Ajusta este valor a tu preferencia mínima (p. ej. 6)
+  const BASE_VISIBLE = 6;
+
+  // Calcula cuántas columnas reales tiene tu grid ahora mismo
+  function getCatalogCols() {
+    const grid =
+      window.grid ||
+      document.querySelector('#catalogo .row, #catalogo .grid, .products-grid');
+    if (!grid) return 1;
+
+    // toma una tarjeta de referencia (visible si hay, si no cualquiera)
+    let card =
+      grid.querySelector('.product-card:not([style*="display: none"])') ||
+      grid.querySelector('.product-card, .card');
+
+    if (!card) return 1;
+
+    const gw = grid.getBoundingClientRect().width || grid.clientWidth || 0;
+    const cw = card.getBoundingClientRect().width || card.clientWidth || 1;
+
+    // columnas aproximadas (Bootstrap-like)
+    return Math.max(1, Math.floor(gw / cw));
+  }
+
+  // Redondea MAX_VISIBLE al múltiplo de columnas (sin tocar filterProducts)
+  function updateMaxVisible() {
+    const cols = getCatalogCols();
+    const rounded = Math.ceil(BASE_VISIBLE / cols) * cols; // 6→6/8/9/12 según cols
+    window.MAX_VISIBLE = Math.max(rounded, BASE_VISIBLE);
+  }
 
   // Modal detalles (carga dinámica)
   if (detailsModal) {
@@ -167,25 +169,6 @@
       $('#detailsPrice').textContent = btn.dataset.price ? fmtMXN.format(Number(btn.dataset.price)) : '';
     });
   }
-
-
-  // Columnas reales del grid en este viewport (aprox. Bootstrap)
-  function getGridColumns(gridEl, cardEl) {
-    if (!gridEl || !cardEl) return 1;
-    const gw = gridEl.getBoundingClientRect().width;
-    const cw = cardEl.getBoundingClientRect().width;
-    const cols = Math.max(1, Math.floor(gw / (cw || 1)));
-    return cols;
-  }
-
-  // Límite ajustado al múltiplo de columnas (sin pasarnos de los matches)
-  function adjustedLimit(limit, matchesCount, gridEl, firstCardEl) {
-    const cols = getGridColumns(gridEl, firstCardEl);
-    const base = Math.min(limit, matchesCount);
-    const rounded = Math.ceil(base / cols) * cols; // 4->6 si hay 3 cols, etc.
-    return Math.min(matchesCount, rounded);
-  }
-
 
   // WhatsApp helpers
   const WHATS_NUMBER = '524681146000';
@@ -279,6 +262,7 @@
 
       grid.innerHTML = items.map(productCardHTML).join('');
       setProductsFromDOM();
+      updateMaxVisible();
       filterProducts();
     } catch (err) {
       console.error('Error cargando productos', err);
@@ -298,7 +282,7 @@
     [categorySelect, sizeSelect].forEach(el => el && ['change', 'input'].forEach(evt => on(el, evt, resetAndFilter)));
 
     // Show more / less
-    if (showMoreBtn) on(showMoreBtn, 'click', () => { isExpanded = !isExpanded; filterProducts(); if (!isExpanded) $('#catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+    if (showMoreBtn) on(showMoreBtn, 'click', () => { isExpanded = !isExpanded; updateMaxVisible(); filterProducts(); if (!isExpanded) $('#catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 
     // WhatsApp form
     const waForm = $('#waForm');
